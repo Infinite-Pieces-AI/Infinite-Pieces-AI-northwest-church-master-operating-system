@@ -1,0 +1,3 @@
+import { ContentPage } from "@/components/content-page";
+import { getPublishedSermons } from "@/lib/published-content";
+export default function SermonsPage(){const sermons=getPublishedSermons();return <ContentPage eyebrow="Current teaching" title="Sermons and weekly lessons" intro="Approved teaching can connect video, audio, transcript, outline, Scripture references, discussion questions, and the member Bible companion."><div className="info-grid">{sermons.map((sermon)=><article className="info-panel" key={sermon.id}><p className="eyebrow">{sermon.seriesTitle}</p><h2>{sermon.title}</h2><p><strong>{sermon.speaker}</strong></p><p>{sermon.summary}</p><p className="scripture-chip">{sermon.scriptureReferences.join(" · ")}</p></article>)}</div></ContentPage>}

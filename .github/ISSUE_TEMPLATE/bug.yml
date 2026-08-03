@@ -1,0 +1,38 @@
+name: Bug report
+about: Report a reproducible problem without including private church data
+body:
+  - type: markdown
+    attributes:
+      value: "Do not paste member, child, prayer, check-in, counseling, access-token, or safeguarding information. Use synthetic examples."
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction with synthetic data
+    validations:
+      required: true
+  - type: dropdown
+    id: sensitivity
+    attributes:
+      label: Affected boundary
+      options:
+        - Public content
+        - Member authentication
+        - Authorization/RLS
+        - Kids Kingdom or media
+        - Moderation/safeguarding
+        - Integration/worker
+        - Accessibility
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true

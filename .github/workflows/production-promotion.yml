@@ -1,0 +1,102 @@
+name: Production Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which Vercel project should be promoted?"
+        required: true
+        default: both
+        type: choice
+        options:
+          - public
+          - hub
+          - both
+      release_reason:
+        description: "Why is this production release being made?"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_SHA: ${{ github.sha }}
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Require main branch
+        run: |
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
+            echo "Production promotion must be dispatched from main."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: |
+          if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install --no-frozen-lockfile; fi
+      - name: Production preflight
+        run: |
+          pnpm verify:structure
+          pnpm verify:no-real-data
+          pnpm verify:sql-static
+          pnpm verify:workspace
+          pnpm format:check
+          pnpm lint
+          pnpm typecheck
+          pnpm test:unit
+          pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://example.invalid
+          NEXT_PUBLIC_HUB_URL: https://hub.example.invalid
+          NEXT_PUBLIC_ENABLE_DEMO: "false"
+          NEXT_PUBLIC_PWA_ENABLED: "true"
+          WORKER_DRY_RUN: "false"
+          ALLOW_REAL_CHILD_DATA: "false"
+          ALLOW_AUTOMATIC_SOCIAL_PUBLISHING: "false"
+          ALLOW_AI_PRIVATE_DATA_ACCESS: "false"
+          ALLOW_CUSTOM_CHILD_RELEASE: "false"
+
+  deploy-public:
+    if: ${{ inputs.target == 'public' || inputs.target == 'both' }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    steps:
+      - name: Trigger public-site production hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_PUBLIC_PRODUCTION_DEPLOY_HOOK }}
+        run: |
+          test -n "$DEPLOY_HOOK" || { echo "Missing public production deploy hook"; exit 1; }
+          curl --fail-with-body --silent --show-error --request POST "$DEPLOY_HOOK" \
+            --header "Content-Type: application/json" \
+            --data "{\"releaseSha\":\"${RELEASE_SHA}\",\"reason\":\"${{ inputs.release_reason }}\"}"
+
+  deploy-hub:
+    if: ${{ inputs.target == 'hub' || inputs.target == 'both' }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    steps:
+      - name: Trigger member-hub production hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_HUB_PRODUCTION_DEPLOY_HOOK }}
+        run: |
+          test -n "$DEPLOY_HOOK" || { echo "Missing hub production deploy hook"; exit 1; }
+          curl --fail-with-body --silent --show-error --request POST "$DEPLOY_HOOK" \
+            --header "Content-Type: application/json" \
+            --data "{\"releaseSha\":\"${RELEASE_SHA}\",\"reason\":\"${{ inputs.release_reason }}\"}"

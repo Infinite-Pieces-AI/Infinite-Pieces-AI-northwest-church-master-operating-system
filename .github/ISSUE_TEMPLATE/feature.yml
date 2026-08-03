@@ -1,0 +1,30 @@
+name: Feature request
+about: Propose a product change with ownership, privacy, and safety impacts
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Ministry or visitor problem
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome and success measure
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data collected, shared, retained, or deleted
+    validations:
+      required: true
+  - type: checkboxes
+    id: review
+    attributes:
+      label: Required reviews
+      options:
+        - label: Privacy reviewed
+        - label: Safeguarding reviewed if minors are affected
+        - label: Accessibility reviewed
+        - label: Build-versus-integrate decision documented

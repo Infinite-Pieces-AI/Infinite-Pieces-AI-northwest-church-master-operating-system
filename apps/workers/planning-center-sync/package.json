@@ -1,0 +1,24 @@
+{
+  "name": "@church/worker-planning-center-sync",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Mirrors approved Planning Center operational records without replacing the safety-critical source of truth.",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings=0",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@church/planning-center": "workspace:*",
+    "@church/worker-runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  }
+}

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-labelledby="title desc">
+  <title id="title">Synthetic classroom activity placeholder</title>
+  <desc id="desc">An abstract illustration of tables, lesson cards, and a sunlit classroom with no people.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eaf5fa"/>
+      <stop offset="1" stop-color="#cbdde8"/>
+    </linearGradient>
+    <linearGradient id="table" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8dd8b"/>
+      <stop offset="1" stop-color="#d8a944"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#bg)"/>
+  <circle cx="980" cy="120" r="120" fill="#fff4bd" opacity=".8"/>
+  <rect x="90" y="90" width="420" height="250" rx="34" fill="#fff" opacity=".88"/>
+  <rect x="140" y="135" width="320" height="26" rx="13" fill="#1b6d9f"/>
+  <rect x="140" y="190" width="250" height="18" rx="9" fill="#a8c2d1"/>
+  <rect x="140" y="230" width="285" height="18" rx="9" fill="#c2d4de"/>
+  <path d="M100 610h1000l-80-230H180z" fill="url(#table)"/>
+  <rect x="280" y="430" width="180" height="110" rx="16" fill="#fff" transform="rotate(-7 280 430)"/>
+  <rect x="515" y="420" width="180" height="110" rx="16" fill="#fff" transform="rotate(4 515 420)"/>
+  <rect x="750" y="445" width="180" height="110" rx="16" fill="#fff" transform="rotate(-3 750 445)"/>
+  <path d="M320 472h100M320 500h75M555 465h100M555 493h65M790 487h100M790 515h72" stroke="#6c8ca0" stroke-width="12" stroke-linecap="round"/>
+  <g fill="#176da8" opacity=".8"><circle cx="220" cy="670" r="18"/><circle cx="980" cy="660" r="22"/><circle cx="1060" cy="690" r="12"/></g>
+  <text x="600" y="690" text-anchor="middle" font-family="system-ui, sans-serif" font-size="30" font-weight="700" fill="#17334a">Synthetic media workflow preview · No real children</text>
+</svg>

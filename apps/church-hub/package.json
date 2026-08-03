@@ -1,0 +1,41 @@
+{
+  "name": "@church/church-hub",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint . --config ../../eslint.config.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@church/ai": "workspace:*",
+    "@church/authentication": "workspace:*",
+    "@church/authorization": "workspace:*",
+    "@church/bible": "workspace:*",
+    "@church/church-content": "workspace:*",
+    "@church/database": "workspace:*",
+    "@church/group-rotation": "workspace:*",
+    "@church/kids-checkin": "workspace:*",
+    "@church/outreach": "workspace:*",
+    "@church/pwa": "workspace:*",
+    "@church/realtime": "workspace:*",
+    "@church/ui": "workspace:*",
+    "@church/validation": "workspace:*",
+    "@supabase/ssr": "0.12.3",
+    "@supabase/supabase-js": "2.110.9",
+    "next": "16.2.12",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}

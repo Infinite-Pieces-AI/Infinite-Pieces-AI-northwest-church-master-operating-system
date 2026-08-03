@@ -1,0 +1,49 @@
+name: Database Policies
+
+on:
+  pull_request:
+    paths:
+      - "supabase/**"
+      - "packages/database/**"
+      - ".github/workflows/database.yml"
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - "packages/database/**"
+
+permissions:
+  contents: read
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: |
+          if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install --no-frozen-lockfile; fi
+      - name: Start and reset local Supabase
+        run: |
+          pnpm supabase:start
+          pnpm supabase:reset
+      - name: Run pgTAP/RLS tests
+        run: pnpm supabase:test
+      - name: Verify generated types are reproducible
+        run: |
+          cp packages/database/src/generated.types.ts /tmp/generated.types.before.ts
+          pnpm supabase:types
+          if ! diff -u /tmp/generated.types.before.ts packages/database/src/generated.types.ts; then
+            echo "Generated database types changed. Commit the regenerated file with the migration."
+            exit 1
+          fi
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm supabase:stop --no-backup || true

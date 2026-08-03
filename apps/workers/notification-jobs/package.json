@@ -1,0 +1,24 @@
+{
+  "name": "@church/worker-notification-jobs",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Converts approved outbox events into provider-neutral email and web-push delivery jobs.",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --max-warnings=0",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@church/notifications": "workspace:*",
+    "@church/worker-runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  }
+}

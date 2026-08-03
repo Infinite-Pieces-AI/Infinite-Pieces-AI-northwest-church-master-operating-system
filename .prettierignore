@@ -1,0 +1,7 @@
+.next
+node_modules
+coverage
+playwright-report
+test-results
+packages/database/src/generated.types.ts
+pnpm-lock.yaml

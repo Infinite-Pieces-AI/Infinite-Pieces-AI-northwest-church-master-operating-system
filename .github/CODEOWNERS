@@ -1,0 +1,11 @@
+# Replace placeholder teams with church-owned GitHub teams before production.
+* @church-platform/engineering
+
+/apps/public-web/ @church-platform/engineering @church-platform/communications
+/apps/church-hub/app/(protected)/admin/content/ @church-platform/engineering @church-platform/ministry-content
+/supabase/migrations/ @church-platform/engineering @church-platform/security
+/supabase/functions/ @church-platform/engineering @church-platform/security
+/docs/safeguarding/ @church-platform/safeguarding
+/docs/privacy/ @church-platform/privacy
+/docs/incident-response/ @church-platform/security
+/apps/church-hub/app/(protected)/admin/kids/ @church-platform/safeguarding

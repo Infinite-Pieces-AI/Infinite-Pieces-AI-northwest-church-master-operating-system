@@ -1,0 +1,79 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@church/ai": [
+        "../../packages/ai/src/index.ts"
+      ],
+      "@church/analytics": [
+        "../../packages/analytics/src/index.ts"
+      ],
+      "@church/authentication": [
+        "../../packages/authentication/src/index.ts"
+      ],
+      "@church/authorization": [
+        "../../packages/authorization/src/index.ts"
+      ],
+      "@church/bible": [
+        "../../packages/bible/src/index.ts"
+      ],
+      "@church/church-content": [
+        "../../packages/church-content/src/index.ts"
+      ],
+      "@church/config": [
+        "../../packages/config/src/index.ts"
+      ],
+      "@church/database": [
+        "../../packages/database/src/index.ts"
+      ],
+      "@church/group-rotation": [
+        "../../packages/group-rotation/src/index.ts"
+      ],
+      "@church/kids-checkin": [
+        "../../packages/kids-checkin/src/index.ts"
+      ],
+      "@church/notifications": [
+        "../../packages/notifications/src/index.ts"
+      ],
+      "@church/outreach": [
+        "../../packages/outreach/src/index.ts"
+      ],
+      "@church/planning-center": [
+        "../../packages/planning-center/src/index.ts"
+      ],
+      "@church/pwa": [
+        "../../packages/pwa/src/index.ts"
+      ],
+      "@church/realtime": [
+        "../../packages/realtime/src/index.ts"
+      ],
+      "@church/ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@church/validation": [
+        "../../packages/validation/src/index.ts"
+      ],
+      "@church/worker-runtime": [
+        "../../packages/worker-runtime/src/index.ts"
+      ]
+    },
+    "baseUrl": "."
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
