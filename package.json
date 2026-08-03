@@ -42,7 +42,7 @@
     "eslint-config-next": "16.2.12",
     "prettier": "^3.6.0",
     "supabase": "2.110.0",
-    "turbo": "2.10.7",
+    "turbo": "2.10.8",
     "typescript": "^5.9.3",
     "vitest": "^4.0.0"
   }
