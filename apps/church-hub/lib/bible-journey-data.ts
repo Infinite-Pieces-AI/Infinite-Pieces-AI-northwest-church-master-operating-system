@@ -10,7 +10,19 @@ export interface BibleJourneyWeek {
   summary: string;
 }
 
-export const bibleJourneyWeeks: BibleJourneyWeek[] = [...bibleJourneyWeeksA, ...bibleJourneyWeeksB];
+const configuredBibleJourneyWeeks: BibleJourneyWeek[] = [
+  ...bibleJourneyWeeksA,
+  ...bibleJourneyWeeksB,
+];
+
+if (!configuredBibleJourneyWeeks[0]) {
+  throw new Error("The Bible journey requires at least one configured week.");
+}
+
+export const bibleJourneyWeeks = configuredBibleJourneyWeeks as [
+  BibleJourneyWeek,
+  ...BibleJourneyWeek[],
+];
 
 export const bibleJourney = {
   title: "The Story of God",
