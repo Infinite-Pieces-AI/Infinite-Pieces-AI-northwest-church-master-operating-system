@@ -9,6 +9,11 @@ interface FactorState {
   status: "verified" | "unverified";
 }
 
+interface RuntimeTotpFactor {
+  id: string;
+  status: string;
+}
+
 export function MfaSetup({ nextPath }: { nextPath: string }) {
   const router = useRouter();
   const [factor, setFactor] = useState<FactorState | null>(null);
@@ -29,11 +34,13 @@ export function MfaSetup({ nextPath }: { nextPath: string }) {
           setMessage("MFA status could not be loaded.");
           return;
         }
-        const totpFactors = data.totp ?? [];
+        const totpFactors = (data.totp ?? []) as RuntimeTotpFactor[];
         const verified = totpFactors.find((item) => item.status === "verified");
-        const unverified = totpFactors.find((item) => item.status === "unverified");
+        const unverified = totpFactors.find((item) => item.status !== "verified");
         const selected = verified ?? unverified;
-        setFactor(selected ? { id: selected.id, status: selected.status } : null);
+        const selectedStatus: FactorState["status"] =
+          selected?.status === "verified" ? "verified" : "unverified";
+        setFactor(selected ? { id: selected.id, status: selectedStatus } : null);
         setMessage(
           verified
             ? "Enter the current six-digit code from your authenticator app."
