@@ -30,6 +30,11 @@ const currentWeekDetails = {
   ],
 };
 
+const defaultBibleJourneyWeek = bibleJourneyWeeks[0];
+if (!defaultBibleJourneyWeek) {
+  throw new Error("The Bible journey requires at least one configured week.");
+}
+
 function trackPrompt(track: Track, week: BibleJourneyWeek) {
   const prompts: Record<Track, string> = {
     Personal: `Where does “${week.bigIdea}” challenge the way you see yourself, God, or another person?`,
@@ -79,9 +84,10 @@ export function BibleJourneyExperience() {
   const [completed, setCompleted] = useState<Set<RhythmKey>>(() => new Set());
   const [aiPrompt, setAiPrompt] = useState("jesus");
 
-  const selectedWeek = useMemo(
+  const selectedWeek = useMemo<BibleJourneyWeek>(
     () =>
-      bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ?? bibleJourneyWeeks[0],
+      bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ??
+      defaultBibleJourneyWeek,
     [selectedWeekNumber],
   );
   const aiAnswer = useMemo(
