@@ -1,0 +1,153 @@
+@media (max-width: 1120px) {
+  .fellowship-principles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .era-rail {
+    grid-template-columns: repeat(9, 120px);
+  }
+}
+
+@media (max-width: 900px) {
+  .fellowship-hero,
+  .journey-hero,
+  .journey-layout,
+  .host-meetup-panel,
+  .fellowship-safety-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .fellowship-constellation,
+  .journey-orbit {
+    min-height: 220px;
+  }
+
+  .rhythm-panel {
+    position: static;
+  }
+
+  .meetup-grid,
+  .upcoming-week-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .heading-actions,
+  .fellowship-toolbar,
+  .concierge-answer,
+  .community-connection-banner,
+  .meetup-card__footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .heading-actions,
+  .heading-actions .hub-button,
+  .fellowship-toolbar > .hub-button,
+  .concierge-answer .hub-button,
+  .community-connection-banner .hub-button {
+    width: 100%;
+  }
+
+  .fellowship-hero,
+  .journey-hero {
+    padding: 25px;
+    border-radius: 24px;
+  }
+
+  .fellowship-hero h2,
+  .journey-hero h2 {
+    font-size: 2.25rem;
+  }
+
+  .fellowship-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .fellowship-stat-row div {
+    min-width: 0;
+    padding: 11px;
+  }
+
+  .fellowship-stat-row span {
+    font-size: 0.62rem;
+  }
+
+  .connection-concierge,
+  .ai-story-guide {
+    padding: 20px;
+  }
+
+  .connection-concierge__intro,
+  .ai-story-guide__header {
+    display: grid;
+  }
+
+  .concierge-answer {
+    display: grid;
+  }
+
+  .fellowship-principles,
+  .story-movements,
+  .journey-library__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .host-meetup-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .meetup-card {
+    min-height: 0;
+  }
+
+  .meetup-card__footer {
+    display: grid;
+  }
+
+  .meetup-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .attendee-stack {
+    justify-content: start;
+  }
+
+  .journey-orbit strong {
+    width: 135px;
+    height: 135px;
+    font-size: 5rem;
+  }
+
+  .era-rail {
+    margin-inline: -2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fellowship-stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fellowship-stat-row div {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    align-items: center;
+  }
+
+  .fellowship-stat-row span {
+    margin-top: 0;
+  }
+
+  .meetup-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .meetup-details div {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+}

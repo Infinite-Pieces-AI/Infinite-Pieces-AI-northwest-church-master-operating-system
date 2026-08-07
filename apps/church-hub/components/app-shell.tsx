@@ -7,7 +7,8 @@ import { ServiceWorkerRegistration } from "./service-worker-registration";
 
 const sideItems = [
   ["This Week", "/this-week", "⌂"],
-  ["Bible", "/bible", "✦"],
+  ["Bible Journey", "/bible", "✦"],
+  ["Fellowship", "/fellowship", "∞"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
   ["Family", "/family", "⌁"]
@@ -53,9 +54,10 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
           ) : null}
         </nav>
         <div className="sidebar-safety">
-          <strong>Private member space</strong>
+          <strong>Belonging with boundaries</strong>
           <span>
-            Do not copy child, prayer, counseling, or private-group information into public tools.
+            Use public meeting places for open invitations. Keep child, prayer, counseling,
+            safeguarding, and private-group information inside approved workflows.
           </span>
         </div>
       </aside>
@@ -63,7 +65,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         <header className="hub-topbar">
           <div>
             <p>Boston Church Lowell</p>
-            <span>Calm, useful, and member-first</span>
+            <span>Belong · Grow · Follow Jesus together</span>
           </div>
           <div className="viewer-chip">
             <span>{viewer.displayName.slice(0, 1)}</span>
@@ -78,8 +80,8 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         </header>
         {viewer.demo ? (
           <div className="demo-banner">
-            <strong>Demo mode:</strong> all people, children, groups, and activity shown here are
-            synthetic. Production builds block demo mode.
+            <strong>Demo mode:</strong> all people, children, groups, locations, and activity shown
+            here are synthetic. Production builds block demo mode.
           </div>
         ) : null}
         <main className="hub-content">{children}</main>

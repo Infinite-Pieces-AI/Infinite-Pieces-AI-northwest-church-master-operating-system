@@ -34,6 +34,20 @@ tests                Unit, integration, authorization, accessibility, and end-to
 - protected, manually approved production promotion for the two Vercel projects;
 - corrected worker dry-run behavior that inspects without claiming or mutating queued work.
 
+## Connection and formation experience added in version 0.3
+
+- **Fellowship** member meetup board for prayer walks, park playdates, coffee, meals, service, sports, young adults, and whole-church outings;
+- one-minute member invitation builder with audience, public meeting place, time window, family fit, capacity, and waitlist concepts;
+- participant-only meetup threads and separate protected exact-location records in the production schema;
+- an explainable Connection Guide that recommends a healthy next step from explicit member needs and preferences—not private prayer, child, counseling, attendance, or message content;
+- **The Story of God**, a proposed 52-week formation path from Genesis through Revelation;
+- personal, couple, family, teen, and group Bible tracks plus a Read–Notice–Pray–Practice–Share rhythm;
+- approved-source AI Bible companion demo with visible Scripture references, church-teaching boundaries, and generated-explanation labels;
+- richer This Week and Community surfaces that move members from information into embodied fellowship;
+- migrations `0017`–`0019` for Fellowship and Bible Journey with RLS, private details, RSVP/capacity controls, reporting extensions, member-owned progress, and privacy-preserving outbox events.
+
+The design and production boundaries are documented in `docs/product/FELLOWSHIP_AND_BIBLE_JOURNEY.md`.
+
 ## Prerequisites
 
 - Node.js 22+
@@ -97,6 +111,7 @@ pnpm verify:workspace    # verify workspace dependencies, aliases, and Next tran
 ## Start here
 
 - `docs/MASTER_OPERATING_SYSTEM.md`
+- `docs/product/FELLOWSHIP_AND_BIBLE_JOURNEY.md`
 - `docs/SOURCE_INTEGRATION_NOTES.md`
 - `docs/BLUEPRINT.md`
 - `docs/ARCHITECTURE.md`

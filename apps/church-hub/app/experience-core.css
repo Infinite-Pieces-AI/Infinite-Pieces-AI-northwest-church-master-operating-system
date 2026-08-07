@@ -1,0 +1,271 @@
+/* --------------------------------------------------------------------------
+   Connection, Fellowship, and whole-Bible journey experience
+   -------------------------------------------------------------------------- */
+
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.week-hero--connection {
+  min-height: 290px;
+}
+
+.week-hero__promise {
+  max-width: 680px;
+  margin: 18px 0 0;
+  color: #d9e8f0 !important;
+  font-size: 0.95rem;
+}
+
+.connection-concierge {
+  position: relative;
+  overflow: hidden;
+  margin-top: 20px;
+  padding: 26px;
+  border: 1px solid rgba(239, 199, 94, 0.45);
+  border-radius: 26px;
+  color: white;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(239, 199, 94, 0.24), transparent 29%),
+    linear-gradient(135deg, #0a2239, #123f61 62%, #176da8);
+  box-shadow: var(--shadow);
+}
+
+.connection-concierge::after {
+  content: "∞";
+  position: absolute;
+  right: -34px;
+  bottom: -72px;
+  color: rgba(255, 255, 255, 0.055);
+  font-size: 15rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.connection-concierge--compact {
+  margin-top: 20px;
+  padding: 22px;
+}
+
+.connection-concierge__intro {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 920px;
+}
+
+.connection-concierge__intro h2,
+.connection-concierge__intro p {
+  margin-top: 0;
+}
+
+.connection-concierge__intro h2 {
+  margin-bottom: 7px;
+  font-family: Georgia, serif;
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+}
+
+.connection-concierge__intro p:last-child {
+  margin-bottom: 0;
+  color: #c9dce7;
+}
+
+.connection-spark {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(239, 199, 94, 0.65);
+  border-radius: 15px;
+  color: var(--gold);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 1.25rem;
+}
+
+.concierge-chips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.concierge-chips button,
+.ai-prompt-row button,
+.filter-chips button,
+.track-switch button {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.concierge-chips button {
+  padding: 9px 13px;
+  color: #d6e5ed;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.concierge-chips button:hover,
+.concierge-chips button.active {
+  color: var(--navy);
+  border-color: var(--gold2);
+  background: var(--gold2);
+}
+
+.concierge-answer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(3, 17, 30, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+.concierge-answer small,
+.concierge-answer strong {
+  display: block;
+}
+
+.concierge-answer small {
+  color: var(--gold2);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.concierge-answer strong {
+  margin: 4px 0;
+  font-size: 1.04rem;
+}
+
+.concierge-answer p {
+  margin: 0;
+  color: #cbdde7;
+}
+
+.connection-boundary {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  color: #a9c1cf;
+  font-size: 0.72rem;
+}
+
+.lesson-feature-panel {
+  background:
+    radial-gradient(circle at 100% 0, rgba(23, 109, 168, 0.11), transparent 30%),
+    white;
+}
+
+.lesson-feature-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.lesson-feature-steps span {
+  padding: 7px 11px;
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--sky);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.scripture-card {
+  background: linear-gradient(160deg, #fffdf6, #fff7dc);
+}
+
+.fellowship-preview-panel {
+  overflow: hidden;
+}
+
+.fellowship-preview-list {
+  display: grid;
+  gap: 0;
+}
+
+.fellowship-preview-list > a {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-top: 1px solid var(--border);
+  color: inherit;
+  text-decoration: none;
+}
+
+.fellowship-preview-list strong,
+.fellowship-preview-list small,
+.fellowship-preview-list span {
+  display: block;
+}
+
+.fellowship-preview-list small,
+.fellowship-preview-list div > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fellowship-preview-list b {
+  color: var(--blue);
+  font-size: 0.82rem;
+}
+
+.fellowship-preview-icon {
+  width: 38px;
+  height: 38px;
+  display: grid !important;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--navy);
+  background: var(--gold2);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.minister-card {
+  background:
+    radial-gradient(circle at 100% 0, rgba(239, 199, 94, 0.25), transparent 42%),
+    white;
+}
+
+.community-connection-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 23px;
+  border-radius: var(--radius);
+  color: white;
+  background: linear-gradient(135deg, var(--navy), #174f76);
+}
+
+.community-connection-banner h2,
+.community-connection-banner p {
+  margin-top: 0;
+}
+
+.community-connection-banner p:last-child {
+  margin-bottom: 0;
+  color: #c9dce7;
+}
+
