@@ -5,6 +5,13 @@ import { base64UrlToUint8Array } from "@church/pwa";
 
 type Status = "checking" | "unsupported" | "disabled" | "enabled" | "denied" | "working" | "error";
 
+function toApplicationServerKey(value: string): ArrayBuffer {
+  const bytes = base64UrlToUint8Array(value);
+  const buffer = new ArrayBuffer(bytes.byteLength);
+  new Uint8Array(buffer).set(bytes);
+  return buffer;
+}
+
 export function PushNotificationSettings() {
   const [status, setStatus] = useState<Status>("checking");
   const [message, setMessage] = useState("Checking browser support…");
@@ -78,7 +85,7 @@ export function PushNotificationSettings() {
         existing ??
         (await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: base64UrlToUint8Array(publicKey),
+          applicationServerKey: toApplicationServerKey(publicKey),
         }));
       const response = await fetch("/api/push/subscriptions", {
         method: "POST",
