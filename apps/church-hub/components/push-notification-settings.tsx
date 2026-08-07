@@ -10,34 +10,50 @@ export function PushNotificationSettings() {
   const [message, setMessage] = useState("Checking browser support…");
 
   useEffect(() => {
-    if (
-      !("serviceWorker" in navigator) ||
-      !("PushManager" in window) ||
-      !("Notification" in window)
-    ) {
-      setStatus("unsupported");
-      setMessage("This browser does not support web push notifications.");
-      return;
-    }
-    if (Notification.permission === "denied") {
-      setStatus("denied");
-      setMessage("Notifications are blocked in this browser's site settings.");
-      return;
-    }
-    fetch("/api/push/subscriptions", { cache: "no-store" })
-      .then((response) => response.json() as Promise<{ enabled?: boolean }>)
-      .then((data) => {
+    let active = true;
+
+    async function loadSettings() {
+      // Yield once so state updates happen from the asynchronous task rather than
+      // synchronously inside the effect body.
+      await Promise.resolve();
+      if (!active) return;
+
+      if (
+        !("serviceWorker" in navigator) ||
+        !("PushManager" in window) ||
+        !("Notification" in window)
+      ) {
+        setStatus("unsupported");
+        setMessage("This browser does not support web push notifications.");
+        return;
+      }
+      if (Notification.permission === "denied") {
+        setStatus("denied");
+        setMessage("Notifications are blocked in this browser's site settings.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/push/subscriptions", { cache: "no-store" });
+        const data = (await response.json()) as { enabled?: boolean };
+        if (!active) return;
         setStatus(data.enabled ? "enabled" : "disabled");
         setMessage(
           data.enabled
             ? "Push notifications are enabled on at least one device."
             : "Push notifications are currently off.",
         );
-      })
-      .catch(() => {
+      } catch {
+        if (!active) return;
         setStatus("error");
         setMessage("Push settings could not be loaded.");
-      });
+      }
+    }
+
+    void loadSettings();
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function enable() {
