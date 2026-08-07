@@ -18,7 +18,8 @@ export async function getApiViewer(): Promise<ApiViewer | null> {
     return null;
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-  const id = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
-  if (error || !id) return null;
-  return { id, email: String(data.claims.email ?? ""), demo: false };
+  const claims = data?.claims;
+  const id = typeof claims?.sub === "string" ? claims.sub : null;
+  if (error || !claims || !id) return null;
+  return { id, email: String(claims.email ?? ""), demo: false };
 }
