@@ -29,8 +29,20 @@ const demoViewer: Viewer = {
   demo: true
 };
 
+/**
+ * Demo mode is intentionally automatic in local development so designers and
+ * ministry leaders can review the entire Church Hub before Supabase is set up.
+ * Production remains secure by default: demo access is only enabled there when
+ * NEXT_PUBLIC_ENABLE_DEMO is explicitly set to "true".
+ */
+export function isDemoModeEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "false") return false;
+  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "true") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
 export async function getViewer(): Promise<Viewer | null> {
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "true") return demoViewer;
+  if (isDemoModeEnabled()) return demoViewer;
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
