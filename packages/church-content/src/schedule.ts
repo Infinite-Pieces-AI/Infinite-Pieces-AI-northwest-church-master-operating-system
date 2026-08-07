@@ -96,7 +96,7 @@ export function resolveNextService(input: {
   const localNow = partsInTimeZone(now, template.timezone);
   const today = toIsoDate(dateOnlyUtc(localNow.year, localNow.month, localNow.day));
   const currentMinutes = localNow.hour * 60 + localNow.minute;
-  let candidate = nextDateForWeekday(now, template.weekday, template.timezone);
+  const candidate = nextDateForWeekday(now, template.weekday, template.timezone);
 
   for (let attempts = 0; attempts < 8; attempts += 1) {
     const date = toIsoDate(candidate);
