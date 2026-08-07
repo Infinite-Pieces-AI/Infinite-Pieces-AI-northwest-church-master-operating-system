@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { fellowshipMeetups, type FellowshipCategory, type FellowshipMeetup } from "@/lib/demo-data";
 
 const filters = [
@@ -42,12 +42,6 @@ export function FellowshipBoard() {
     "Demo mode: joining, chats, and new invitations stay in this browser session only.",
   );
 
-  useEffect(() => {
-    if (window.location.hash === "#host-meetup-form") {
-      setShowForm(true);
-    }
-  }, []);
-
   const allMeetups = useMemo(() => [...createdMeetups, ...fellowshipMeetups], [createdMeetups]);
   const visibleMeetups = useMemo(
     () => allMeetups.filter((meetup) => meetupMatchesFilter(meetup, filter)),
@@ -55,19 +49,18 @@ export function FellowshipBoard() {
   );
 
   function toggleJoin(meetup: FellowshipMeetup) {
+    const isJoined = joinedIds.has(meetup.id);
     setJoinedIds((current) => {
       const next = new Set(current);
-      if (next.has(meetup.id)) {
-        next.delete(meetup.id);
-        setNotice(`You left “${meetup.title}” in this synthetic demo.`);
-      } else {
-        next.add(meetup.id);
-        setNotice(
-          `You joined “${meetup.title}.” In production, the member-only meetup thread and approved meeting instructions would now unlock.`,
-        );
-      }
+      if (isJoined) next.delete(meetup.id);
+      else next.add(meetup.id);
       return next;
     });
+    setNotice(
+      isJoined
+        ? `You left “${meetup.title}” in this synthetic demo.`
+        : `You joined “${meetup.title}.” In production, the member-only meetup thread and approved meeting instructions would now unlock.`,
+    );
   }
 
   function createMeetup(event: FormEvent<HTMLFormElement>) {
@@ -117,7 +110,7 @@ export function FellowshipBoard() {
 
   return (
     <div className="fellowship-board">
-      <div className="fellowship-toolbar">
+      <div className="fellowship-toolbar" id="fellowship-board-controls">
         <div className="filter-chips" aria-label="Filter fellowship invitations">
           {filters.map(([key, label]) => (
             <button
