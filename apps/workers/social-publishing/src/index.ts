@@ -8,7 +8,7 @@ import {
 await runWorker("social-publishing", async (context) => {
   const events = await claimOutboxEvents(context, ["social_draft.approved"]);
   const enabled = process.env.SOCIAL_AUTO_PUBLISH_ENABLED === "true";
-  let published = 0;
+  const published = 0;
   for (const event of events) {
     try {
       const draftId =
