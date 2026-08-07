@@ -107,10 +107,11 @@ grant execute on function public.can_access_realtime_topic(text, uuid) to authen
 
 -- Supabase Realtime uses policies on realtime.messages for private broadcast
 -- and presence authorization. The DO block keeps local tooling resilient when
--- the managed realtime schema is not available during static analysis.
+-- the managed realtime schema or topic helper is not available during bootstrap.
 do $$
 begin
-  if to_regclass('realtime.messages') is not null then
+  if to_regclass('realtime.messages') is not null
+    and to_regprocedure('realtime.topic()') is not null then
     execute 'alter table realtime.messages enable row level security';
     execute 'drop policy if exists church_realtime_receive on realtime.messages';
     execute 'drop policy if exists church_realtime_send on realtime.messages';
