@@ -1,7 +1,10 @@
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
-export function checkLocalRateLimit(key: string, options: { limit: number; windowMs: number }): { allowed: boolean; retryAfterSeconds: number } {
+export function checkLocalRateLimit(
+  key: string,
+  options: { limit: number; windowMs: number },
+): { allowed: boolean; retryAfterSeconds: number } {
   const now = Date.now();
   const current = buckets.get(key);
   if (!current || current.resetAt <= now) {

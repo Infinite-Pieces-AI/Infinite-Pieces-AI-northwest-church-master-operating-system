@@ -38,7 +38,7 @@ export async function createClient() {
         } catch {
           // Server Components cannot always write cookies; proxy refresh handles this.
         }
-      }
-    }
+      },
+    },
   });
 }

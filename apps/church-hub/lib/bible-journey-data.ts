@@ -10,10 +10,7 @@ export interface BibleJourneyWeek {
   summary: string;
 }
 
-export const bibleJourneyWeeks: BibleJourneyWeek[] = [
-  ...bibleJourneyWeeksA,
-  ...bibleJourneyWeeksB
-];
+export const bibleJourneyWeeks: BibleJourneyWeek[] = [...bibleJourneyWeeksA, ...bibleJourneyWeeksB];
 
 export const bibleJourney = {
   title: "The Story of God",
@@ -29,6 +26,6 @@ export const bibleJourney = {
     { label: "Wisdom", weeks: "30-32" },
     { label: "Jesus", weeks: "33-42" },
     { label: "Church", weeks: "43-51" },
-    { label: "New Creation", weeks: "52" }
-  ]
+    { label: "New Creation", weeks: "52" },
+  ],
 };

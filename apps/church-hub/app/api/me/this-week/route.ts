@@ -14,8 +14,8 @@ export async function GET() {
         id: viewer.id,
         displayName: viewer.displayName,
         roles: viewer.roles,
-        demo: true
-      }
+        demo: true,
+      },
     });
   }
 
@@ -24,16 +24,16 @@ export async function GET() {
     timeZone: "America/New_York",
     year: "numeric",
     month: "2-digit",
-    day: "2-digit"
+    day: "2-digit",
   }).format(new Date());
   const { data, error } = await supabase.rpc("get_my_this_week", {
-    p_reference_date: referenceDate
+    p_reference_date: referenceDate,
   });
 
   if (error || !data) {
     return NextResponse.json(
       { message: "The weekly dashboard is temporarily unavailable." },
-      { status: 503 }
+      { status: 503 },
     );
   }
 
@@ -43,7 +43,7 @@ export async function GET() {
       id: viewer.id,
       displayName: viewer.displayName,
       roles: viewer.roles,
-      demo: false
-    }
+      demo: false,
+    },
   });
 }

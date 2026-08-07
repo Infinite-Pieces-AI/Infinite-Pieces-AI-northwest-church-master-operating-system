@@ -1,11 +1,10 @@
-
 export const aiAllowedSources = [
   "approved_belief_document",
   "published_sermon_transcript",
   "published_weekly_lesson",
   "minister_approved_study_resource",
   "licensed_scripture_passage",
-  "public_ministry_faq"
+  "public_ministry_faq",
 ] as const;
 
 export const aiProhibitedDataClasses = [
@@ -16,7 +15,7 @@ export const aiProhibitedDataClasses = [
   "safeguarding_report",
   "medical_note",
   "custody_detail",
-  "private_channel_message"
+  "private_channel_message",
 ] as const;
 
 export type AiAllowedSource = (typeof aiAllowedSources)[number];
@@ -44,7 +43,7 @@ export function assertAiRequestAllowed(input: {
   recipientIsMinor?: boolean;
 }): void {
   const prohibited = input.requestedDataClasses.filter((item) =>
-    aiProhibitedDataClasses.includes(item as AiProhibitedDataClass)
+    aiProhibitedDataClasses.includes(item as AiProhibitedDataClass),
   );
 
   if (prohibited.length) {
@@ -64,7 +63,7 @@ export function buildBibleCompanionSystemPrompt(): string {
     "Cite every substantive claim to an approved source.",
     "Do not claim pastoral, legal, medical, safeguarding, or doctrinal authority.",
     "Do not access or infer private prayer, child, counseling, attendance, medical, or safeguarding data.",
-    "When the approved library does not support an answer, say so and recommend speaking with a minister."
+    "When the approved library does not support an answer, say so and recommend speaking with a minister.",
   ].join(" ");
 }
 
@@ -96,7 +95,7 @@ export function buildSermonCurriculumSystemPrompt(): string {
     "Transform the approved sermon outline into a seven-day draft curriculum.",
     "Each day must include a concise title, cited Scripture references, one reflection question, and one practical action.",
     "Do not invent a church position, promise an outcome, or treat generated text as the minister's words.",
-    "Return a draft only. A minister must review every day before it is visible to members."
+    "Return a draft only. A minister must review every day before it is visible to members.",
   ].join(" ");
 }
 
@@ -118,13 +117,14 @@ export interface ImagePromptDraft {
 export function buildImagePromptDraft(input: ImagePromptDraftInput): ImagePromptDraft {
   const theme = input.theme.trim().slice(0, 300);
   const emotionalTone = input.emotionalTone.trim().slice(0, 160);
-  if (!theme || !emotionalTone) throw new Error("Image prompt theme and emotional tone are required");
+  if (!theme || !emotionalTone)
+    throw new Error("Image prompt theme and emotional tone are required");
   const prohibited = [
     "no real member likenesses",
     "no child faces without a separately approved real-media workflow",
     "no private information",
     "no fabricated event photography presented as documentary evidence",
-    ...(input.prohibitedElements ?? [])
+    ...(input.prohibitedElements ?? []),
   ];
   return {
     prompt: [
@@ -132,10 +132,10 @@ export function buildImagePromptDraft(input: ImagePromptDraftInput): ImagePrompt
       `Theme: ${theme}.`,
       `Emotional tone: ${emotionalTone}.`,
       `Brand direction: ${input.brandNotes.join(", ") || "warm, accessible, community-centered"}.`,
-      "Any people shown must be clearly fictional or illustrative rather than representations of actual church members."
+      "Any people shown must be clearly fictional or illustrative rather than representations of actual church members.",
     ].join(" "),
     negativePrompt: prohibited.join(", "),
     generatedPeopleAreFictional: true,
-    requiresHumanApproval: true
+    requiresHumanApproval: true,
   };
 }

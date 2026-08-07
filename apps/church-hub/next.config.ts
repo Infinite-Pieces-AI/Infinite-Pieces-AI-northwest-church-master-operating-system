@@ -17,28 +17,46 @@ const productionCsp = [
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
-  "upgrade-insecure-requests"
+  "upgrade-insecure-requests",
 ].join("; ");
 
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@church/ui", "@church/church-content", "@church/validation", "@church/authorization", "@church/authentication", "@church/bible", "@church/ai", "@church/database", "@church/pwa", "@church/realtime", "@church/kids-checkin", "@church/outreach", "@church/group-rotation"],
+  transpilePackages: [
+    "@church/ui",
+    "@church/church-content",
+    "@church/validation",
+    "@church/authorization",
+    "@church/authentication",
+    "@church/bible",
+    "@church/ai",
+    "@church/database",
+    "@church/pwa",
+    "@church/realtime",
+    "@church/kids-checkin",
+    "@church/outreach",
+    "@church/group-rotation",
+  ],
   async headers() {
     const headers = [
       { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "no-referrer" },
       { key: "X-Frame-Options", value: "DENY" },
-      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+      },
       { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
       { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
-      { key: "Cache-Control", value: "private, no-store" }
+      { key: "Cache-Control", value: "private, no-store" },
     ];
-    if (process.env.NODE_ENV === "production") headers.push({ key: "Content-Security-Policy", value: productionCsp });
+    if (process.env.NODE_ENV === "production")
+      headers.push({ key: "Content-Security-Policy", value: productionCsp });
     return [{ source: "/(.*)", headers }];
-  }
+  },
 };
 
 export default nextConfig;

@@ -12,7 +12,7 @@ const allowedPathPrefixes = [
   "/teens",
   "/family-groups",
   "/bible-studies",
-  "/lowell-community"
+  "/lowell-community",
 ] as const;
 
 function equalSecret(supplied: string, expected: string): boolean {
@@ -23,7 +23,9 @@ function equalSecret(supplied: string, expected: string): boolean {
 
 function allowedPath(path: string): boolean {
   if (!path.startsWith("/") || path.includes("..") || path.length > 300) return false;
-  return allowedPathPrefixes.some((prefix) => prefix === "/" ? path === "/" : path === prefix || path.startsWith(`${prefix}/`));
+  return allowedPathPrefixes.some((prefix) =>
+    prefix === "/" ? path === "/" : path === prefix || path.startsWith(`${prefix}/`),
+  );
 }
 
 export async function POST(request: Request) {
@@ -34,10 +36,23 @@ export async function POST(request: Request) {
   }
   const body = (await request.json()) as { paths?: unknown; tags?: unknown };
   const paths = Array.isArray(body.paths)
-    ? [...new Set(body.paths.filter((value): value is string => typeof value === "string" && allowedPath(value)))].slice(0, 25)
+    ? [
+        ...new Set(
+          body.paths.filter(
+            (value): value is string => typeof value === "string" && allowedPath(value),
+          ),
+        ),
+      ].slice(0, 25)
     : ["/"];
   const tags = Array.isArray(body.tags)
-    ? [...new Set(body.tags.filter((value): value is string => typeof value === "string" && /^[a-z0-9:_-]{1,100}$/i.test(value)))].slice(0, 25)
+    ? [
+        ...new Set(
+          body.tags.filter(
+            (value): value is string =>
+              typeof value === "string" && /^[a-z0-9:_-]{1,100}$/i.test(value),
+          ),
+        ),
+      ].slice(0, 25)
     : [];
   for (const path of paths) revalidatePath(path);
   for (const tag of tags) revalidateTag(tag, "max");

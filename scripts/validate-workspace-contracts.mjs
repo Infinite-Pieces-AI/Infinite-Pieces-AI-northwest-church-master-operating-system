@@ -4,14 +4,21 @@ import { dirname, join, relative, resolve } from "node:path";
 const root = process.cwd();
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
 const ignoredDirectories = new Set(["node_modules", ".next", "dist", "coverage", ".turbo", ".git"]);
-const dependencySections = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"];
+const dependencySections = [
+  "dependencies",
+  "devDependencies",
+  "peerDependencies",
+  "optionalDependencies",
+];
 const failures = [];
 
 function readJson(file) {
   try {
     return JSON.parse(readFileSync(file, "utf8"));
   } catch (error) {
-    failures.push(`${relative(root, file)} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+    failures.push(
+      `${relative(root, file)} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`,
+    );
     return null;
   }
 }
@@ -21,7 +28,7 @@ function packageJsonFiles() {
   const patterns = [
     ["apps", 1],
     [join("apps", "workers"), 1],
-    ["packages", 1]
+    ["packages", 1],
   ];
 
   for (const [base, depth] of patterns) {
@@ -99,19 +106,23 @@ const rootPackage = readJson(resolve(root, "package.json"));
 
 for (const [alias, targets] of Object.entries(basePaths)) {
   if (!alias.startsWith("@church/")) continue;
-  if (!packages.has(alias)) failures.push(`tsconfig.base.json alias ${alias} has no workspace package.`);
+  if (!packages.has(alias))
+    failures.push(`tsconfig.base.json alias ${alias} has no workspace package.`);
   if (!Array.isArray(targets) || targets.length === 0) {
     failures.push(`tsconfig.base.json alias ${alias} must have at least one target.`);
     continue;
   }
   for (const target of targets) {
-    if (!existsSync(resolve(root, target))) failures.push(`tsconfig.base.json alias ${alias} points to missing file ${target}.`);
+    if (!existsSync(resolve(root, target)))
+      failures.push(`tsconfig.base.json alias ${alias} points to missing file ${target}.`);
   }
 }
 
 for (const [name, workspace] of packages) {
   const dependencies = allDependencies(workspace.pkg);
-  const internalDependencies = Object.entries(dependencies).filter(([dependency]) => dependency.startsWith("@church/"));
+  const internalDependencies = Object.entries(dependencies).filter(([dependency]) =>
+    dependency.startsWith("@church/"),
+  );
   const imports = collectInternalImports(workspace.directory);
   const configFile = join(workspace.directory, "tsconfig.json");
   const packageConfig = existsSync(configFile) ? readJson(configFile) : null;
@@ -119,9 +130,12 @@ for (const [name, workspace] of packages) {
   const paths = effectivePaths(workspace.directory, basePaths);
 
   for (const [dependency, version] of internalDependencies) {
-    if (!packages.has(dependency)) failures.push(`${name} declares unknown workspace dependency ${dependency}.`);
+    if (!packages.has(dependency))
+      failures.push(`${name} declares unknown workspace dependency ${dependency}.`);
     if (typeof version !== "string" || !version.startsWith("workspace:")) {
-      failures.push(`${name} must reference ${dependency} with the workspace: protocol, not ${String(version)}.`);
+      failures.push(
+        `${name} must reference ${dependency} with the workspace: protocol, not ${String(version)}.`,
+      );
     }
   }
 
@@ -135,25 +149,34 @@ for (const [name, workspace] of packages) {
     }
     const targets = paths[imported];
     if (!Array.isArray(targets) || targets.length === 0) {
-      failures.push(`${name} imports ${imported}, but its effective tsconfig paths do not define that alias.`);
+      failures.push(
+        `${name} imports ${imported}, but its effective tsconfig paths do not define that alias.`,
+      );
       continue;
     }
     for (const target of targets) {
       const resolved = resolveAliasTarget(imported, target, workspace.directory, hasOwnPaths);
       if (!existsSync(resolved)) {
-        failures.push(`${name} alias ${imported} points to missing target ${relative(root, resolved)}.`);
+        failures.push(
+          `${name} alias ${imported} points to missing target ${relative(root, resolved)}.`,
+        );
       }
     }
   }
 
-  if (workspace.directory.startsWith(resolve(root, "apps")) && !workspace.directory.includes(`${join("apps", "workers")}`)) {
+  if (
+    workspace.directory.startsWith(resolve(root, "apps")) &&
+    !workspace.directory.includes(`${join("apps", "workers")}`)
+  ) {
     const nextConfig = join(workspace.directory, "next.config.ts");
     if (existsSync(nextConfig)) {
       const nextSource = readFileSync(nextConfig, "utf8");
       for (const imported of imports) {
         if (imported === name) continue;
         if (!nextSource.includes(`"${imported}"`) && !nextSource.includes(`'${imported}'`)) {
-          failures.push(`${name} imports ${imported}, but next.config.ts does not list it in transpilePackages.`);
+          failures.push(
+            `${name} imports ${imported}, but next.config.ts does not list it in transpilePackages.`,
+          );
         }
       }
     }
@@ -163,17 +186,21 @@ for (const [name, workspace] of packages) {
 if (rootPackage?.version) {
   for (const [name, workspace] of packages) {
     if (workspace.pkg.version !== rootPackage.version) {
-      failures.push(`${name} is version ${workspace.pkg.version}; expected workspace version ${rootPackage.version}.`);
+      failures.push(
+        `${name} is version ${workspace.pkg.version}; expected workspace version ${rootPackage.version}.`,
+      );
     }
   }
 }
 
 if (failures.length > 0) {
-  console.error(`Workspace contract validation failed (${failures.length} issue${failures.length === 1 ? "" : "s"}):`);
+  console.error(
+    `Workspace contract validation failed (${failures.length} issue${failures.length === 1 ? "" : "s"}):`,
+  );
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
 console.log(
-  `Workspace contracts verified: ${packages.size} packages, ${Object.keys(basePaths).length} TypeScript aliases, declared internal dependencies, and Next.js transpilation boundaries.`
+  `Workspace contracts verified: ${packages.size} packages, ${Object.keys(basePaths).length} TypeScript aliases, declared internal dependencies, and Next.js transpilation boundaries.`,
 );

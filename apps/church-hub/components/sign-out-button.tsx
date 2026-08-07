@@ -13,7 +13,7 @@ async function revokeDevicePushSubscription(demo: boolean): Promise<void> {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ endpoint: subscription.endpoint }),
-      keepalive: true
+      keepalive: true,
     }).catch(() => undefined);
   }
   await subscription.unsubscribe().catch(() => false);
@@ -27,7 +27,7 @@ async function clearPrivateDeviceState(): Promise<void> {
   if ("caches" in window) {
     const keys = await caches.keys();
     await Promise.all(
-      keys.filter((key) => key.startsWith("church-hub-offline-")).map((key) => caches.delete(key))
+      keys.filter((key) => key.startsWith("church-hub-offline-")).map((key) => caches.delete(key)),
     );
   }
 }
@@ -48,17 +48,28 @@ export function SignOutButton({ demo }: { demo: boolean }) {
       await clearPrivateDeviceState();
       window.location.replace("/login");
     } catch {
-      setError("Sign-out could not be completed. Close the app and contact a technical administrator if this continues.");
+      setError(
+        "Sign-out could not be completed. Close the app and contact a technical administrator if this continues.",
+      );
       setWorking(false);
     }
   }
 
   return (
     <div>
-      <button className="hub-button hub-button--secondary" type="button" onClick={signOut} disabled={working}>
+      <button
+        className="hub-button hub-button--secondary"
+        type="button"
+        onClick={signOut}
+        disabled={working}
+      >
         {working ? "Signing out…" : "Sign out of this device"}
       </button>
-      {error ? <p className="form-error" role="alert">{error}</p> : null}
+      {error ? (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

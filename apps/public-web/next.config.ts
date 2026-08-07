@@ -5,17 +5,23 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-  { key: "Cross-Origin-Opener-Policy", value: "same-origin" }
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
 ];
 
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@church/ui", "@church/church-content", "@church/validation", "@church/analytics", "@church/database"],
+  transpilePackages: [
+    "@church/ui",
+    "@church/church-content",
+    "@church/validation",
+    "@church/analytics",
+    "@church/database",
+  ],
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
-  }
+  },
 };
 
 export default nextConfig;

@@ -113,11 +113,26 @@
   font-weight: 850;
 }
 
-.fellowship-constellation span:nth-child(1) { top: 9%; left: 34%; }
-.fellowship-constellation span:nth-child(2) { top: 29%; right: 2%; }
-.fellowship-constellation span:nth-child(3) { bottom: 18%; right: 7%; }
-.fellowship-constellation span:nth-child(4) { bottom: 5%; left: 24%; }
-.fellowship-constellation span:nth-child(5) { top: 42%; left: 0; }
+.fellowship-constellation span:nth-child(1) {
+  top: 9%;
+  left: 34%;
+}
+.fellowship-constellation span:nth-child(2) {
+  top: 29%;
+  right: 2%;
+}
+.fellowship-constellation span:nth-child(3) {
+  bottom: 18%;
+  right: 7%;
+}
+.fellowship-constellation span:nth-child(4) {
+  bottom: 5%;
+  left: 24%;
+}
+.fellowship-constellation span:nth-child(5) {
+  top: 42%;
+  left: 0;
+}
 
 .fellowship-principles {
   display: grid;
@@ -199,9 +214,7 @@
   padding: 28px;
   border: 1px solid #bad5e4;
   border-radius: 24px;
-  background:
-    radial-gradient(circle at 0 0, rgba(23, 109, 168, 0.09), transparent 40%),
-    white;
+  background: radial-gradient(circle at 0 0, rgba(23, 109, 168, 0.09), transparent 40%), white;
 }
 
 .host-meetup-panel h2 {
@@ -281,12 +294,24 @@
   background: linear-gradient(90deg, var(--blue), var(--gold));
 }
 
-.meetup-card--prayer .meetup-card__glow { background: linear-gradient(90deg, #6a68c7, #a9a7ef); }
-.meetup-card--families .meetup-card__glow { background: linear-gradient(90deg, #e99e43, #f2d185); }
-.meetup-card--food .meetup-card__glow { background: linear-gradient(90deg, #a9683e, #e4b48d); }
-.meetup-card--service .meetup-card__glow { background: linear-gradient(90deg, #23825b, #83cfaa); }
-.meetup-card--sports .meetup-card__glow { background: linear-gradient(90deg, #1e6aa4, #45c3d2); }
-.meetup-card--whole-church .meetup-card__glow { background: linear-gradient(90deg, #07192b, #efc75e); }
+.meetup-card--prayer .meetup-card__glow {
+  background: linear-gradient(90deg, #6a68c7, #a9a7ef);
+}
+.meetup-card--families .meetup-card__glow {
+  background: linear-gradient(90deg, #e99e43, #f2d185);
+}
+.meetup-card--food .meetup-card__glow {
+  background: linear-gradient(90deg, #a9683e, #e4b48d);
+}
+.meetup-card--service .meetup-card__glow {
+  background: linear-gradient(90deg, #23825b, #83cfaa);
+}
+.meetup-card--sports .meetup-card__glow {
+  background: linear-gradient(90deg, #1e6aa4, #45c3d2);
+}
+.meetup-card--whole-church .meetup-card__glow {
+  background: linear-gradient(90deg, #07192b, #efc75e);
+}
 
 .meetup-card__header {
   display: flex;
@@ -454,8 +479,12 @@
   font-weight: 900;
 }
 
-.attendee-stack > span:nth-child(2) { background: #d5e9f4; }
-.attendee-stack > span:nth-child(3) { background: #dff0e5; }
+.attendee-stack > span:nth-child(2) {
+  background: #d5e9f4;
+}
+.attendee-stack > span:nth-child(3) {
+  background: #dff0e5;
+}
 
 .attendee-stack strong,
 .attendee-stack small {
@@ -524,4 +553,3 @@
 .fellowship-safety-panel li {
   margin: 8px 0;
 }
-

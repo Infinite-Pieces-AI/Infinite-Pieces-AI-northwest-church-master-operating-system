@@ -16,11 +16,26 @@ export default function NotificationsPage() {
         <section className="hub-panel">
           <h2>Default preferences</h2>
           <div className="settings-list">
-            <label><span>Service schedule changes</span><input type="checkbox" defaultChecked /></label>
-            <label><span>Assigned group announcements</span><input type="checkbox" defaultChecked /></label>
-            <label><span>Event reminders</span><input type="checkbox" defaultChecked /></label>
-            <label><span>Community reactions</span><input type="checkbox" /></label>
-            <label><span>Weekly digest</span><input type="checkbox" defaultChecked /></label>
+            <label>
+              <span>Service schedule changes</span>
+              <input type="checkbox" defaultChecked />
+            </label>
+            <label>
+              <span>Assigned group announcements</span>
+              <input type="checkbox" defaultChecked />
+            </label>
+            <label>
+              <span>Event reminders</span>
+              <input type="checkbox" defaultChecked />
+            </label>
+            <label>
+              <span>Community reactions</span>
+              <input type="checkbox" />
+            </label>
+            <label>
+              <span>Weekly digest</span>
+              <input type="checkbox" defaultChecked />
+            </label>
           </div>
         </section>
       </div>

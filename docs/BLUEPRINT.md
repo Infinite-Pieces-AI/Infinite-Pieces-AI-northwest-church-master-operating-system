@@ -6,11 +6,11 @@
 
 Build one church-owned platform with three connected experiences:
 
-| Experience | Audience | Purpose |
-|---|---|---|
-| Public website | Visitors, seekers, local families, search engines | Explain the church, publish one accurate schedule, promote public events, support local discovery, and collect voluntary visit requests. |
-| Private member hub | Approved members, guardians, teens, and group leaders | Weekly lessons, Scripture references, announcements, ministry channels, events, group membership, and family tools. |
-| Ministry administration console | Ministers, Kids Kingdom leaders, moderators, communications leaders, safety administrators, and technical administrators | Publish, approve access, manage groups, operate safety workflows, moderate community spaces, and oversee responsible outreach. |
+| Experience                      | Audience                                                                                                                 | Purpose                                                                                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Public website                  | Visitors, seekers, local families, search engines                                                                        | Explain the church, publish one accurate schedule, promote public events, support local discovery, and collect voluntary visit requests. |
+| Private member hub              | Approved members, guardians, teens, and group leaders                                                                    | Weekly lessons, Scripture references, announcements, ministry channels, events, group membership, and family tools.                      |
+| Ministry administration console | Ministers, Kids Kingdom leaders, moderators, communications leaders, safety administrators, and technical administrators | Publish, approve access, manage groups, operate safety workflows, moderate community spaces, and oversee responsible outreach.           |
 
 The platform is a single private monorepo deployed as two Vercel projects, backed by one PostgreSQL/Supabase project and server-side workers. It integrates proven systems for safety-critical check-in, licensed Bible content, transactional messaging, and other vendor-owned capabilities rather than rebuilding them prematurely.
 
@@ -79,27 +79,27 @@ A technical administrator does not automatically receive pastoral, prayer, child
 
 ## Build versus integrate
 
-| Capability | Decision |
-|---|---|
-| Public website | Build |
-| Member dashboard | Build |
-| Weekly lesson companion | Build |
-| Moderated channels and feed | Build |
-| Constraint-based rotation proposals | Build |
-| Parent connection experience | Build carefully |
-| Outreach dashboard | Build |
-| People/household master record | Integrate current ChMS where practical |
-| Child check-in and release | Integrate first |
-| Bible translation text | Licensed provider |
-| Giving | Link existing official system |
-| Transactional email | Integrate provider |
-| SMS | Defer unless operationally necessary |
-| Push | PWA/Web Push first |
-| Video | Existing official hosting |
-| Native mobile apps | Defer |
-| Facial recognition | Do not build |
-| Autonomous pastoral decisions | Do not build |
-| Religious-interest profiling | Do not build |
+| Capability                          | Decision                               |
+| ----------------------------------- | -------------------------------------- |
+| Public website                      | Build                                  |
+| Member dashboard                    | Build                                  |
+| Weekly lesson companion             | Build                                  |
+| Moderated channels and feed         | Build                                  |
+| Constraint-based rotation proposals | Build                                  |
+| Parent connection experience        | Build carefully                        |
+| Outreach dashboard                  | Build                                  |
+| People/household master record      | Integrate current ChMS where practical |
+| Child check-in and release          | Integrate first                        |
+| Bible translation text              | Licensed provider                      |
+| Giving                              | Link existing official system          |
+| Transactional email                 | Integrate provider                     |
+| SMS                                 | Defer unless operationally necessary   |
+| Push                                | PWA/Web Push first                     |
+| Video                               | Existing official hosting              |
+| Native mobile apps                  | Defer                                  |
+| Facial recognition                  | Do not build                           |
+| Autonomous pastoral decisions       | Do not build                           |
+| Religious-interest profiling        | Do not build                           |
 
 ## Canonical schedule model
 

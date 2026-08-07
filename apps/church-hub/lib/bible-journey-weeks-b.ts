@@ -1,28 +1,233 @@
 export const bibleJourneyWeeksB = [
-  {"week":27,"era":"Exile","title":"Faithful in a Foreign Land","references":["Daniel 1; 3; 6"],"bigIdea":"God's people can remain faithful under pressure without surrendering hope.","summary":"Daniel and his friends model conviction, wisdom, courage, and trust in God's kingdom."},
-  {"week":28,"era":"Exile","title":"Courage for Such a Time","references":["Esther 1-10"],"bigIdea":"Providence often works through courageous, costly action.","summary":"Esther's story explores identity, risk, influence, deliverance, and communal responsibility."},
-  {"week":29,"era":"Return","title":"Return, Rebuild, Renew","references":["Ezra 1-3; Nehemiah 1-6"],"bigIdea":"Restoration requires worship, prayer, planning, perseverance, and shared work.","summary":"The return from exile shows both the joy and difficulty of rebuilding a faithful community."},
-  {"week":30,"era":"Worship","title":"Learning to Pray the Whole Life","references":["Psalms 1; 23; 51; 139"],"bigIdea":"God welcomes honest prayer shaped by trust, repentance, wonder, and worship.","summary":"The Psalms give language for delight, fear, failure, guidance, grief, and praise."},
-  {"week":31,"era":"Wisdom","title":"The Path of Wisdom","references":["Proverbs 1-4"],"bigIdea":"Wisdom is learned through reverence, instruction, practice, and wise community.","summary":"Proverbs frames ordinary choices as spiritual formation and invites a teachable life."},
-  {"week":32,"era":"Expectation","title":"Waiting for the Coming King","references":["Micah 5; Malachi 3-4"],"bigIdea":"God's people wait with hope, repentance, and readiness for his promised messenger and king.","summary":"The Old Testament closes with unresolved longing and a promise that God will come."},
-  {"week":33,"era":"Jesus","title":"The Word Became Flesh","references":["Luke 1-2; John 1:1-18"],"bigIdea":"In Jesus, God enters human history to dwell with us and fulfill his promises.","summary":"The birth narratives reveal humility, joy, incarnation, and the arrival of the promised Savior."},
-  {"week":34,"era":"Jesus","title":"The Kingdom Is Near","references":["Matthew 3-4"],"bigIdea":"Jesus announces God's kingdom and calls people to repent, believe, and follow.","summary":"Baptism, testing, proclamation, and calling introduce the shape of Jesus' mission."},
-  {"week":35,"era":"Jesus","title":"Life in the Kingdom","references":["Matthew 5-7"],"bigIdea":"Jesus forms a people whose inner life and public love reflect the Father's kingdom.","summary":"The Sermon on the Mount addresses character, relationships, prayer, possessions, enemies, and faithful practice."},
-  {"week":36,"era":"Jesus","title":"Authority Filled with Compassion","references":["Mark 2; 4-5"],"bigIdea":"Jesus' authority restores people, confronts fear, and welcomes those pushed aside.","summary":"Healings, forgiveness, deliverance, and calming the storm reveal both power and compassion."},
-  {"week":37,"era":"Jesus","title":"Stories That Reveal the Kingdom","references":["Luke 10; 15"],"bigIdea":"Jesus' parables expose the heart and invite people into mercy, repentance, and joy.","summary":"The Good Samaritan and lost-things parables redefine neighbor love and God's welcome."},
-  {"week":38,"era":"Jesus","title":"The Way of the Cross","references":["Mark 8-10"],"bigIdea":"Following Jesus means receiving his identity and learning servant-shaped greatness.","summary":"Jesus repeatedly connects Messiahship, suffering, surrender, and service."},
-  {"week":39,"era":"Jesus","title":"Glory on the Mountain","references":["Matthew 16-17"],"bigIdea":"Jesus is God's beloved Son, and disciples are called to listen to him.","summary":"Confession, correction, transfiguration, and descent into need show the glory and path of the Messiah."},
-  {"week":40,"era":"Jesus","title":"Love One Another","references":["John 13-17"],"bigIdea":"Jesus prepares his disciples for mission through humble love, the Spirit, prayer, and abiding.","summary":"The upper-room teaching reveals the relational heart of discipleship before the cross."},
-  {"week":41,"era":"Cross","title":"The Crucified King","references":["Luke 22-23"],"bigIdea":"Jesus gives himself in faithful love, bearing sin and revealing God's kingdom through the cross.","summary":"The final meal, arrest, trial, crucifixion, and burial confront betrayal, injustice, forgiveness, and sacrifice."},
-  {"week":42,"era":"Resurrection","title":"He Is Risen","references":["Luke 24; John 20"],"bigIdea":"The risen Jesus defeats death, restores hope, and sends witnesses.","summary":"Empty tomb, opened Scriptures, peace, doubt, and commissioning establish resurrection-shaped life."},
-  {"week":43,"era":"Mission","title":"Sent to Make Disciples","references":["Matthew 28:16-20; Acts 1"],"bigIdea":"Jesus sends his people in his authority, presence, and Spirit-empowered mission.","summary":"The Great Commission and ascension turn disciples outward toward every people and place."},
-  {"week":44,"era":"Spirit","title":"Pentecost and a New Community","references":["Acts 2"],"bigIdea":"The Spirit empowers witness and forms a devoted, generous, worshiping community.","summary":"Pentecost begins the church's public mission and shared life."},
-  {"week":45,"era":"Church","title":"A People Who Share Life","references":["Acts 2:42-47; 4:23-35"],"bigIdea":"The gospel creates a community of teaching, prayer, generosity, courage, and daily fellowship.","summary":"The early church's shared practices offer a vision for belonging without isolation."},
-  {"week":46,"era":"Mission","title":"The Gospel Crosses Boundaries","references":["Acts 8-10"],"bigIdea":"The Spirit leads the church beyond cultural, ethnic, and social barriers.","summary":"Philip, the Ethiopian official, Peter, and Cornelius reveal a widening family of faith."},
-  {"week":47,"era":"Mission","title":"A Life Redirected by Grace","references":["Acts 9; 13"],"bigIdea":"Jesus transforms opponents into witnesses and sends diverse teams on mission.","summary":"Paul's conversion and commissioning show grace, community discernment, and purpose."},
-  {"week":48,"era":"Gospel","title":"Grace, Faith, and New Life","references":["Romans 3-8"],"bigIdea":"God justifies, reconciles, and gives new life through Jesus and the Spirit.","summary":"Romans explains humanity's need, God's grace, union with Christ, freedom, and hope."},
-  {"week":49,"era":"Church","title":"One New Humanity","references":["Ephesians 1-6"],"bigIdea":"In Christ, God forms a reconciled people who live from a new identity.","summary":"Ephesians connects grace, unity, maturity, relationships, mission, and spiritual resilience."},
-  {"week":50,"era":"Spirit","title":"A Spirit-Formed Community","references":["Galatians 5; 1 Corinthians 12-13"],"bigIdea":"The Spirit produces Christlike character and gifts every member for loving service.","summary":"Fruit, gifts, interdependence, and love define a healthy body rather than status or performance."},
-  {"week":51,"era":"Perseverance","title":"Faithful in Trials","references":["James 1; 1 Peter 1-2"],"bigIdea":"Trials can form resilient faith when believers practice wisdom, hope, and holy love together.","summary":"James and Peter equip scattered believers to endure without withdrawing from God or community."},
-  {"week":52,"era":"New Creation","title":"God Makes All Things New","references":["Revelation 21-22"],"bigIdea":"The Bible ends with God dwelling with a healed people in renewed creation.","summary":"New Jerusalem, the river of life, restored access, worship, and hope complete the story from Genesis."}
+  {
+    week: 27,
+    era: "Exile",
+    title: "Faithful in a Foreign Land",
+    references: ["Daniel 1; 3; 6"],
+    bigIdea: "God's people can remain faithful under pressure without surrendering hope.",
+    summary:
+      "Daniel and his friends model conviction, wisdom, courage, and trust in God's kingdom.",
+  },
+  {
+    week: 28,
+    era: "Exile",
+    title: "Courage for Such a Time",
+    references: ["Esther 1-10"],
+    bigIdea: "Providence often works through courageous, costly action.",
+    summary:
+      "Esther's story explores identity, risk, influence, deliverance, and communal responsibility.",
+  },
+  {
+    week: 29,
+    era: "Return",
+    title: "Return, Rebuild, Renew",
+    references: ["Ezra 1-3; Nehemiah 1-6"],
+    bigIdea: "Restoration requires worship, prayer, planning, perseverance, and shared work.",
+    summary:
+      "The return from exile shows both the joy and difficulty of rebuilding a faithful community.",
+  },
+  {
+    week: 30,
+    era: "Worship",
+    title: "Learning to Pray the Whole Life",
+    references: ["Psalms 1; 23; 51; 139"],
+    bigIdea: "God welcomes honest prayer shaped by trust, repentance, wonder, and worship.",
+    summary: "The Psalms give language for delight, fear, failure, guidance, grief, and praise.",
+  },
+  {
+    week: 31,
+    era: "Wisdom",
+    title: "The Path of Wisdom",
+    references: ["Proverbs 1-4"],
+    bigIdea: "Wisdom is learned through reverence, instruction, practice, and wise community.",
+    summary:
+      "Proverbs frames ordinary choices as spiritual formation and invites a teachable life.",
+  },
+  {
+    week: 32,
+    era: "Expectation",
+    title: "Waiting for the Coming King",
+    references: ["Micah 5; Malachi 3-4"],
+    bigIdea:
+      "God's people wait with hope, repentance, and readiness for his promised messenger and king.",
+    summary: "The Old Testament closes with unresolved longing and a promise that God will come.",
+  },
+  {
+    week: 33,
+    era: "Jesus",
+    title: "The Word Became Flesh",
+    references: ["Luke 1-2; John 1:1-18"],
+    bigIdea: "In Jesus, God enters human history to dwell with us and fulfill his promises.",
+    summary:
+      "The birth narratives reveal humility, joy, incarnation, and the arrival of the promised Savior.",
+  },
+  {
+    week: 34,
+    era: "Jesus",
+    title: "The Kingdom Is Near",
+    references: ["Matthew 3-4"],
+    bigIdea: "Jesus announces God's kingdom and calls people to repent, believe, and follow.",
+    summary: "Baptism, testing, proclamation, and calling introduce the shape of Jesus' mission.",
+  },
+  {
+    week: 35,
+    era: "Jesus",
+    title: "Life in the Kingdom",
+    references: ["Matthew 5-7"],
+    bigIdea: "Jesus forms a people whose inner life and public love reflect the Father's kingdom.",
+    summary:
+      "The Sermon on the Mount addresses character, relationships, prayer, possessions, enemies, and faithful practice.",
+  },
+  {
+    week: 36,
+    era: "Jesus",
+    title: "Authority Filled with Compassion",
+    references: ["Mark 2; 4-5"],
+    bigIdea: "Jesus' authority restores people, confronts fear, and welcomes those pushed aside.",
+    summary:
+      "Healings, forgiveness, deliverance, and calming the storm reveal both power and compassion.",
+  },
+  {
+    week: 37,
+    era: "Jesus",
+    title: "Stories That Reveal the Kingdom",
+    references: ["Luke 10; 15"],
+    bigIdea: "Jesus' parables expose the heart and invite people into mercy, repentance, and joy.",
+    summary:
+      "The Good Samaritan and lost-things parables redefine neighbor love and God's welcome.",
+  },
+  {
+    week: 38,
+    era: "Jesus",
+    title: "The Way of the Cross",
+    references: ["Mark 8-10"],
+    bigIdea: "Following Jesus means receiving his identity and learning servant-shaped greatness.",
+    summary: "Jesus repeatedly connects Messiahship, suffering, surrender, and service.",
+  },
+  {
+    week: 39,
+    era: "Jesus",
+    title: "Glory on the Mountain",
+    references: ["Matthew 16-17"],
+    bigIdea: "Jesus is God's beloved Son, and disciples are called to listen to him.",
+    summary:
+      "Confession, correction, transfiguration, and descent into need show the glory and path of the Messiah.",
+  },
+  {
+    week: 40,
+    era: "Jesus",
+    title: "Love One Another",
+    references: ["John 13-17"],
+    bigIdea:
+      "Jesus prepares his disciples for mission through humble love, the Spirit, prayer, and abiding.",
+    summary:
+      "The upper-room teaching reveals the relational heart of discipleship before the cross.",
+  },
+  {
+    week: 41,
+    era: "Cross",
+    title: "The Crucified King",
+    references: ["Luke 22-23"],
+    bigIdea:
+      "Jesus gives himself in faithful love, bearing sin and revealing God's kingdom through the cross.",
+    summary:
+      "The final meal, arrest, trial, crucifixion, and burial confront betrayal, injustice, forgiveness, and sacrifice.",
+  },
+  {
+    week: 42,
+    era: "Resurrection",
+    title: "He Is Risen",
+    references: ["Luke 24; John 20"],
+    bigIdea: "The risen Jesus defeats death, restores hope, and sends witnesses.",
+    summary:
+      "Empty tomb, opened Scriptures, peace, doubt, and commissioning establish resurrection-shaped life.",
+  },
+  {
+    week: 43,
+    era: "Mission",
+    title: "Sent to Make Disciples",
+    references: ["Matthew 28:16-20; Acts 1"],
+    bigIdea: "Jesus sends his people in his authority, presence, and Spirit-empowered mission.",
+    summary:
+      "The Great Commission and ascension turn disciples outward toward every people and place.",
+  },
+  {
+    week: 44,
+    era: "Spirit",
+    title: "Pentecost and a New Community",
+    references: ["Acts 2"],
+    bigIdea: "The Spirit empowers witness and forms a devoted, generous, worshiping community.",
+    summary: "Pentecost begins the church's public mission and shared life.",
+  },
+  {
+    week: 45,
+    era: "Church",
+    title: "A People Who Share Life",
+    references: ["Acts 2:42-47; 4:23-35"],
+    bigIdea:
+      "The gospel creates a community of teaching, prayer, generosity, courage, and daily fellowship.",
+    summary: "The early church's shared practices offer a vision for belonging without isolation.",
+  },
+  {
+    week: 46,
+    era: "Mission",
+    title: "The Gospel Crosses Boundaries",
+    references: ["Acts 8-10"],
+    bigIdea: "The Spirit leads the church beyond cultural, ethnic, and social barriers.",
+    summary:
+      "Philip, the Ethiopian official, Peter, and Cornelius reveal a widening family of faith.",
+  },
+  {
+    week: 47,
+    era: "Mission",
+    title: "A Life Redirected by Grace",
+    references: ["Acts 9; 13"],
+    bigIdea: "Jesus transforms opponents into witnesses and sends diverse teams on mission.",
+    summary: "Paul's conversion and commissioning show grace, community discernment, and purpose.",
+  },
+  {
+    week: 48,
+    era: "Gospel",
+    title: "Grace, Faith, and New Life",
+    references: ["Romans 3-8"],
+    bigIdea: "God justifies, reconciles, and gives new life through Jesus and the Spirit.",
+    summary: "Romans explains humanity's need, God's grace, union with Christ, freedom, and hope.",
+  },
+  {
+    week: 49,
+    era: "Church",
+    title: "One New Humanity",
+    references: ["Ephesians 1-6"],
+    bigIdea: "In Christ, God forms a reconciled people who live from a new identity.",
+    summary:
+      "Ephesians connects grace, unity, maturity, relationships, mission, and spiritual resilience.",
+  },
+  {
+    week: 50,
+    era: "Spirit",
+    title: "A Spirit-Formed Community",
+    references: ["Galatians 5; 1 Corinthians 12-13"],
+    bigIdea: "The Spirit produces Christlike character and gifts every member for loving service.",
+    summary:
+      "Fruit, gifts, interdependence, and love define a healthy body rather than status or performance.",
+  },
+  {
+    week: 51,
+    era: "Perseverance",
+    title: "Faithful in Trials",
+    references: ["James 1; 1 Peter 1-2"],
+    bigIdea:
+      "Trials can form resilient faith when believers practice wisdom, hope, and holy love together.",
+    summary:
+      "James and Peter equip scattered believers to endure without withdrawing from God or community.",
+  },
+  {
+    week: 52,
+    era: "New Creation",
+    title: "God Makes All Things New",
+    references: ["Revelation 21-22"],
+    bigIdea: "The Bible ends with God dwelling with a healed people in renewed creation.",
+    summary:
+      "New Jerusalem, the river of life, restored access, worship, and hope complete the story from Genesis.",
+  },
 ];

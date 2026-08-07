@@ -1,4 +1,3 @@
-
 import { describe, expect, it } from "vitest";
 import { createOutboxEvent } from "@church/notifications";
 
@@ -10,7 +9,7 @@ describe("outbox event contract", () => {
       aggregateType: "weekly_lesson",
       aggregateId: "lesson-id",
       payload: { audience: "all-members" },
-      occurredAt: new Date("2026-08-02T12:00:00.000Z")
+      occurredAt: new Date("2026-08-02T12:00:00.000Z"),
     });
 
     expect(event.type).toBe("weekly_lesson.published");

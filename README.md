@@ -79,10 +79,10 @@ pnpm dev
 
 Create two Vercel projects from this repository:
 
-| Project | Root directory | Suggested domain |
-|---|---|---|
+| Project        | Root directory    | Suggested domain                                       |
+| -------------- | ----------------- | ------------------------------------------------------ |
 | Public website | `apps/public-web` | approved canonical Boston Church Lowell path/subdomain |
-| Member hub | `apps/church-hub` | approved authenticated hub subdomain |
+| Member hub     | `apps/church-hub` | approved authenticated hub subdomain                   |
 
 Pull requests use previews; the optional `staging` branch can host integrated staging. Automatic `main` deployments are disabled in the checked-in Vercel configuration. Production is promoted through the protected `.github/workflows/production-promotion.yml` workflow after full preflight and GitHub environment approval.
 

@@ -10,7 +10,7 @@ const publicSchema = z.object({
   NEXT_PUBLIC_ENABLE_DEMO: booleanString.default("false"),
   NEXT_PUBLIC_PWA_ENABLED: booleanString.default("false"),
   NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(32).optional(),
-  NEXT_PUBLIC_PUBLIC_ANALYTICS_PROVIDER: z.enum(["disabled", "vercel"]).default("disabled")
+  NEXT_PUBLIC_PUBLIC_ANALYTICS_PROVIDER: z.enum(["disabled", "vercel"]).default("disabled"),
 });
 
 const serverSchema = publicSchema.extend({
@@ -29,7 +29,7 @@ const serverSchema = publicSchema.extend({
   SOCIAL_AUTO_PUBLISH_ENABLED: booleanString.default("false"),
   ALLOW_AI_PRIVATE_DATA_ACCESS: booleanString.default("false"),
   ALLOW_CUSTOM_CHILD_RELEASE: booleanString.default("false"),
-  CHILD_RELEASE_SAFETY_REVIEW_ID: z.string().min(6).optional()
+  CHILD_RELEASE_SAFETY_REVIEW_ID: z.string().min(6).optional(),
 });
 
 export function getPublicEnv(source: NodeJS.ProcessEnv = process.env) {
@@ -50,7 +50,10 @@ export function assertProductionSafety(source: NodeJS.ProcessEnv = process.env):
   if (env.WORKER_DRY_RUN !== "false") {
     throw new Error("Production workers require an explicit WORKER_DRY_RUN=false setting");
   }
-  if (env.ALLOW_AUTOMATIC_SOCIAL_PUBLISHING === "true" || env.SOCIAL_AUTO_PUBLISH_ENABLED === "true") {
+  if (
+    env.ALLOW_AUTOMATIC_SOCIAL_PUBLISHING === "true" ||
+    env.SOCIAL_AUTO_PUBLISH_ENABLED === "true"
+  ) {
     throw new Error("Automatic social publishing is prohibited");
   }
   if (env.ALLOW_AI_PRIVATE_DATA_ACCESS === "true") {
@@ -65,6 +68,8 @@ export function assertProductionSafety(source: NodeJS.ProcessEnv = process.env):
 
   const pushValues = [env.NEXT_PUBLIC_VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY, env.VAPID_SUBJECT];
   if (pushValues.some(Boolean) && !pushValues.every(Boolean)) {
-    throw new Error("VAPID push configuration must provide public key, private key, and subject together");
+    throw new Error(
+      "VAPID push configuration must provide public key, private key, and subject together",
+    );
   }
 }

@@ -2,7 +2,7 @@ import type {
   Location,
   ResolvedServiceOccurrence,
   ServiceOverride,
-  ServiceTemplate
+  ServiceTemplate,
 } from "./types";
 
 const weekdayToJsDay = (weekday: number): number => ((weekday % 7) + 7) % 7;
@@ -25,13 +25,13 @@ function partsInTimeZone(date: Date, timeZone: string): ZonedDateTimeParts {
     weekday: "short",
     hour: "2-digit",
     minute: "2-digit",
-    hourCycle: "h23"
+    hourCycle: "h23",
   });
   const values = Object.fromEntries(
     formatter
       .formatToParts(date)
       .filter((part) => part.type !== "literal")
-      .map((part) => [part.type, part.value])
+      .map((part) => [part.type, part.value]),
   );
   const weekdays: Record<string, number> = {
     Sun: 0,
@@ -40,7 +40,7 @@ function partsInTimeZone(date: Date, timeZone: string): ZonedDateTimeParts {
     Wed: 3,
     Thu: 4,
     Fri: 5,
-    Sat: 6
+    Sat: 6,
   };
   const weekday = weekdays[values.weekday ?? ""];
   if (weekday === undefined) throw new Error(`Unable to resolve weekday in ${timeZone}`);
@@ -51,7 +51,7 @@ function partsInTimeZone(date: Date, timeZone: string): ZonedDateTimeParts {
     day: Number(values.day),
     weekday,
     hour: Number(values.hour),
-    minute: Number(values.minute)
+    minute: Number(values.minute),
   };
 }
 
@@ -59,11 +59,7 @@ function dateOnlyUtc(year: number, month: number, day: number): Date {
   return new Date(Date.UTC(year, month - 1, day, 12, 0, 0, 0));
 }
 
-export function nextDateForWeekday(
-  from: Date,
-  weekday: number,
-  timeZone = "UTC"
-): Date {
+export function nextDateForWeekday(from: Date, weekday: number, timeZone = "UTC"): Date {
   const local = partsInTimeZone(from, timeZone);
   const result = dateOnlyUtc(local.year, local.month, local.day);
   const delta = (weekdayToJsDay(weekday) - local.weekday + 7) % 7;
@@ -104,9 +100,7 @@ export function resolveNextService(input: {
 
   for (let attempts = 0; attempts < 8; attempts += 1) {
     const date = toIsoDate(candidate);
-    const override = overrides.find(
-      (item) => item.date === date && item.status === "published"
-    );
+    const override = overrides.find((item) => item.date === date && item.status === "published");
     const effectiveTime = override?.localTime ?? template.localTime;
 
     // Once the local start time has passed, advance to the next weekly occurrence.
@@ -135,7 +129,7 @@ export function resolveNextService(input: {
               ? "small_groups"
               : "scheduled",
         publicMessage: override.publicMessage,
-        source: "override"
+        source: "override",
       };
     }
 
@@ -146,7 +140,7 @@ export function resolveNextService(input: {
       timezone: template.timezone,
       location: templateLocation,
       status: "scheduled",
-      source: "template"
+      source: "template",
     };
   }
 

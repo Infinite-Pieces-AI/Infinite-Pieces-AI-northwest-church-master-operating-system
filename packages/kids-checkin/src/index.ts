@@ -21,7 +21,10 @@ export interface MirroredCheckInStatus {
 export interface CheckInProviderAdapter {
   readonly name: CheckInProviderName;
   createPrecheckLink(request: PrecheckRequest): Promise<string>;
-  fetchHouseholdStatus(householdId: string, serviceSessionId: string): Promise<readonly MirroredCheckInStatus[]>;
+  fetchHouseholdStatus(
+    householdId: string,
+    serviceSessionId: string,
+  ): Promise<readonly MirroredCheckInStatus[]>;
   healthCheck(): Promise<{ ok: boolean; detail: string }>;
 }
 
@@ -35,7 +38,9 @@ export interface ChildLabelPayload {
 
 export interface LabelPrinterAdapter {
   readonly name: string;
-  printChildAndGuardianLabels(payload: ChildLabelPayload): Promise<{ jobId: string; acceptedAt: string }>;
+  printChildAndGuardianLabels(
+    payload: ChildLabelPayload,
+  ): Promise<{ jobId: string; acceptedAt: string }>;
   healthCheck(): Promise<{ ok: boolean; detail: string }>;
 }
 
@@ -68,15 +73,17 @@ export function createPickupCredential(input: {
   householdId: string;
   expiresAt: Date;
 }): string {
-  if (input.secret.length < 32) throw new Error("Pickup credential secret must be at least 32 characters");
-  if (input.expiresAt.getTime() <= Date.now()) throw new Error("Pickup credential expiry must be in the future");
+  if (input.secret.length < 32)
+    throw new Error("Pickup credential secret must be at least 32 characters");
+  if (input.expiresAt.getTime() <= Date.now())
+    throw new Error("Pickup credential expiry must be in the future");
   const payload: PickupCredentialPayload = {
     version: 1,
     keyId: input.keyId,
     serviceSessionId: input.serviceSessionId,
     householdId: input.householdId,
     nonce: randomBytes(18).toString("base64url"),
-    expiresAt: input.expiresAt.toISOString()
+    expiresAt: input.expiresAt.toISOString(),
   };
   const encoded = encode(JSON.stringify(payload));
   const signature = createHmac("sha256", input.secret).update(encoded).digest("base64url");
@@ -91,26 +98,39 @@ export function verifyPickupCredential(input: {
   const [encoded, suppliedSignature] = input.token.split(".");
   if (!encoded || !suppliedSignature) throw new Error("Pickup credential is malformed");
   const payload = JSON.parse(decode(encoded)) as PickupCredentialPayload;
-  if (payload.version !== 1 || !payload.keyId || !payload.serviceSessionId || !payload.householdId) {
+  if (
+    payload.version !== 1 ||
+    !payload.keyId ||
+    !payload.serviceSessionId ||
+    !payload.householdId
+  ) {
     throw new Error("Pickup credential payload is invalid");
   }
   const secret = input.resolveSecret(payload.keyId);
-  if (!secret || secret.length < 32) throw new Error("Pickup credential signing key is unavailable");
+  if (!secret || secret.length < 32)
+    throw new Error("Pickup credential signing key is unavailable");
   const expected = createHmac("sha256", secret).update(encoded).digest();
   const supplied = Buffer.from(suppliedSignature, "base64url");
   if (expected.length !== supplied.length || !timingSafeEqual(expected, supplied)) {
     throw new Error("Pickup credential signature is invalid");
   }
-  if (payload.serviceSessionId !== input.expectedServiceSessionId) throw new Error("Pickup credential is for another service session");
-  if (new Date(payload.expiresAt).getTime() <= Date.now()) throw new Error("Pickup credential has expired");
+  if (payload.serviceSessionId !== input.expectedServiceSessionId)
+    throw new Error("Pickup credential is for another service session");
+  if (new Date(payload.expiresAt).getTime() <= Date.now())
+    throw new Error("Pickup credential has expired");
   return payload;
 }
 
-export function assertCustomChildReleaseApproved(environment: NodeJS.ProcessEnv = process.env): void {
+export function assertCustomChildReleaseApproved(
+  environment: NodeJS.ProcessEnv = process.env,
+): void {
   if (environment.ALLOW_CUSTOM_CHILD_RELEASE !== "true") {
     throw new Error("Custom child release is disabled; use the approved ChMS/provider workflow");
   }
-  if (environment.CHILD_RELEASE_SAFETY_REVIEW_ID?.trim().length === 0 || !environment.CHILD_RELEASE_SAFETY_REVIEW_ID) {
+  if (
+    environment.CHILD_RELEASE_SAFETY_REVIEW_ID?.trim().length === 0 ||
+    !environment.CHILD_RELEASE_SAFETY_REVIEW_ID
+  ) {
     throw new Error("Custom child release requires a documented safety review identifier");
   }
 }

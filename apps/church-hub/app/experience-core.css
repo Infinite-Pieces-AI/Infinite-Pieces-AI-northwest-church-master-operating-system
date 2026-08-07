@@ -168,9 +168,7 @@
 }
 
 .lesson-feature-panel {
-  background:
-    radial-gradient(circle at 100% 0, rgba(23, 109, 168, 0.11), transparent 30%),
-    white;
+  background: radial-gradient(circle at 100% 0, rgba(23, 109, 168, 0.11), transparent 30%), white;
 }
 
 .lesson-feature-steps {
@@ -243,9 +241,7 @@
 }
 
 .minister-card {
-  background:
-    radial-gradient(circle at 100% 0, rgba(239, 199, 94, 0.25), transparent 42%),
-    white;
+  background: radial-gradient(circle at 100% 0, rgba(239, 199, 94, 0.25), transparent 42%), white;
 }
 
 .community-connection-banner {
@@ -268,4 +264,3 @@
   margin-bottom: 0;
   color: #c9dce7;
 }
-

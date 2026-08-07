@@ -17,13 +17,13 @@ const statusLabels: Record<CapabilityStatus, string> = {
   configured: "Configured",
   review: "Needs review",
   blocked: "Blocked by gate",
-  planned: "Planned"
+  planned: "Planned",
 };
 
 export function MasterCapabilityBoard({
   heading,
   introduction,
-  cards
+  cards,
 }: {
   heading: string;
   introduction: string;
@@ -56,7 +56,9 @@ export function MasterCapabilityBoard({
                 <span>{card.boundary}</span>
               </div>
             ) : null}
-            {card.evidence ? <small className="capability-evidence">Evidence: {card.evidence}</small> : null}
+            {card.evidence ? (
+              <small className="capability-evidence">Evidence: {card.evidence}</small>
+            ) : null}
             {card.action ? <div className="row-actions">{card.action}</div> : null}
           </article>
         ))}
@@ -66,7 +68,7 @@ export function MasterCapabilityBoard({
 }
 
 export function ApprovalRail({
-  steps
+  steps,
 }: {
   steps: readonly { label: string; detail: string; state: "complete" | "current" | "future" }[];
 }) {
@@ -87,7 +89,7 @@ export function ApprovalRail({
 
 export function ReadinessChecklist({
   title,
-  items
+  items,
 }: {
   title: string;
   items: readonly { label: string; complete: boolean; evidence?: string }[];

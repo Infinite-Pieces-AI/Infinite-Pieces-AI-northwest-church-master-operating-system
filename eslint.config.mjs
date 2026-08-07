@@ -12,13 +12,13 @@ export default defineConfig([
     "**/playwright-report/**",
     "**/test-results/**",
     "packages/database/src/generated.types.ts",
-    "supabase/.temp/**"
+    "supabase/.temp/**",
   ]),
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/consistent-type-imports": "error",
-      "react/no-unescaped-entities": "off"
-    }
-  }
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ]);

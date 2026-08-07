@@ -15,7 +15,7 @@ if (JSON.stringify(actualNumbers) !== JSON.stringify(expectedNumbers)) {
 
 const sources = migrationFiles.map((file) => ({
   file,
-  sql: readFileSync(join(migrationsDirectory.pathname, file), "utf8")
+  sql: readFileSync(join(migrationsDirectory.pathname, file), "utf8"),
 }));
 const combined = sources.map(({ sql }) => sql).join("\n");
 const withoutLineComments = combined.replace(/--.*$/gm, "");
@@ -38,7 +38,9 @@ for (const { file, sql } of sources) {
 
 const createdTables = [];
 for (const { file, sql } of sources) {
-  for (const match of sql.matchAll(/create\s+table\s+(?:if\s+not\s+exists\s+)?public\.([a-zA-Z_][\w]*)/gi)) {
+  for (const match of sql.matchAll(
+    /create\s+table\s+(?:if\s+not\s+exists\s+)?public\.([a-zA-Z_][\w]*)/gi,
+  )) {
     createdTables.push({ table: match[1].toLowerCase(), file });
   }
 }
@@ -49,22 +51,28 @@ for (const [table, count] of tableCounts) {
 }
 
 const rlsTables = new Set();
-for (const match of withoutLineComments.matchAll(/alter\s+table\s+(?:if\s+exists\s+)?public\.([a-zA-Z_][\w]*)\s+enable\s+row\s+level\s+security/gi)) {
+for (const match of withoutLineComments.matchAll(
+  /alter\s+table\s+(?:if\s+exists\s+)?public\.([a-zA-Z_][\w]*)\s+enable\s+row\s+level\s+security/gi,
+)) {
   rlsTables.add(match[1].toLowerCase());
 }
-for (const match of withoutLineComments.matchAll(/foreach\s+\w+\s+in\s+array\s+array\[([\s\S]*?)\]\s*loop\s*execute\s+format\(\s*'alter table public\.%I enable row level security'/gi)) {
+for (const match of withoutLineComments.matchAll(
+  /foreach\s+\w+\s+in\s+array\s+array\[([\s\S]*?)\]\s*loop\s*execute\s+format\(\s*'alter table public\.%I enable row level security'/gi,
+)) {
   for (const identifier of match[1].matchAll(/'([a-zA-Z_][\w]*)'/g)) {
     rlsTables.add(identifier[1].toLowerCase());
   }
 }
 const missingRls = [...tableCounts.keys()].filter((table) => !rlsTables.has(table)).sort();
-if (missingRls.length) failures.push(`Tables missing explicit RLS enablement: ${missingRls.join(", ")}`);
+if (missingRls.length)
+  failures.push(`Tables missing explicit RLS enablement: ${missingRls.join(", ")}`);
 
 for (const { file, sql } of sources) {
   for (const line of sql.split("\n")) {
     const broadGrant = /grant\s+all\s+on\s+(?:all\s+tables|table\s+public\.)/i.test(line);
     const browserRole = /\b(?:anon|authenticated)\b/i.test(line);
-    if (broadGrant && browserRole) failures.push(`${file}: broad browser-role grant: ${line.trim()}`);
+    if (broadGrant && browserRole)
+      failures.push(`${file}: broad browser-role grant: ${line.trim()}`);
   }
 
   for (const match of sql.matchAll(/\bsecurity\s+definer\b/gi)) {
@@ -72,9 +80,13 @@ for (const { file, sql } of sources) {
     const end = Math.min(sql.length, match.index + match[0].length + 450);
     const context = sql.slice(start, end);
     if (!/\bset\s+search_path\b/i.test(context)) {
-      const names = [...sql.slice(start, match.index).matchAll(/function\s+(?:public\.)?([\w]+)/gi)];
+      const names = [
+        ...sql.slice(start, match.index).matchAll(/function\s+(?:public\.)?([\w]+)/gi),
+      ];
       const functionName = names.at(-1)?.[1] ?? "unknown function";
-      failures.push(`${file}: SECURITY DEFINER function ${functionName} lacks nearby SET search_path`);
+      failures.push(
+        `${file}: SECURITY DEFINER function ${functionName} lacks nearby SET search_path`,
+      );
     }
   }
 }
@@ -86,5 +98,5 @@ if (failures.length) {
 }
 
 console.log(
-  `Static SQL validation passed: ${migrationFiles.length} migrations, ${createdTables.length} public tables, contiguous numbering, balanced transaction/dollar delimiters, and RLS enablement coverage.`
+  `Static SQL validation passed: ${migrationFiles.length} migrations, ${createdTables.length} public tables, contiguous numbering, balanced transaction/dollar delimiters, and RLS enablement coverage.`,
 );

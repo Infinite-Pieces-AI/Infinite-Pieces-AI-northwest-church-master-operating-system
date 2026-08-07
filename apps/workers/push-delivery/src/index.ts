@@ -35,7 +35,7 @@ function asPushPayload(value: Record<string, unknown>): PushNotificationPayload 
     topic: (value.topic ?? "weekly_digest") as PushNotificationPayload["topic"],
     ...(typeof value.tag === "string" ? { tag: value.tag } : {}),
     ...(typeof value.icon === "string" ? { icon: value.icon } : { icon: "/icon.svg" }),
-    ...(typeof value.badge === "string" ? { badge: value.badge } : { badge: "/icon.svg" })
+    ...(typeof value.badge === "string" ? { badge: value.badge } : { badge: "/icon.svg" }),
   });
 }
 
@@ -59,7 +59,7 @@ async function inspectOrClaimJobs(context: WorkerContext): Promise<ClaimedJob[]>
   const { data, error } = await context.supabase.rpc("claim_notification_jobs", {
     requested_channel: "web_push",
     requested_limit: 25,
-    worker_id: `${context.workerName}:${context.runId}`
+    worker_id: `${context.workerName}:${context.runId}`,
   });
   if (error) throw error;
   return (data ?? []) as ClaimedJob[];
@@ -88,7 +88,7 @@ await runWorker("push-delivery", async (context) => {
         context.log("push.would_send", {
           jobId: job.id,
           subscriptionCount: subscriptions.length,
-          topic: payload.topic
+          topic: payload.topic,
         });
         continue;
       }
@@ -101,10 +101,10 @@ await runWorker("push-delivery", async (context) => {
           const result = await webpush.sendNotification(
             {
               endpoint: subscription.endpoint,
-              keys: { p256dh: subscription.p256dh_key, auth: subscription.auth_key }
+              keys: { p256dh: subscription.p256dh_key, auth: subscription.auth_key },
             },
             JSON.stringify(payload),
-            { TTL: 3600, urgency: payload.topic === "service_schedule" ? "high" : "normal" }
+            { TTL: 3600, urgency: payload.topic === "service_schedule" ? "high" : "normal" },
           );
           providerMessageId = result.headers.location ?? providerMessageId;
           const { error: successError } = await context.supabase
@@ -124,7 +124,7 @@ await runWorker("push-delivery", async (context) => {
                 permission_status: "revoked",
                 revoked_at: new Date().toISOString(),
                 last_failure_at: new Date().toISOString(),
-                failure_count: subscription.failure_count + 1
+                failure_count: subscription.failure_count + 1,
               })
               .eq("id", subscription.id);
             if (revokeError) throw revokeError;
@@ -133,7 +133,7 @@ await runWorker("push-delivery", async (context) => {
               .from("push_subscriptions")
               .update({
                 last_failure_at: new Date().toISOString(),
-                failure_count: subscription.failure_count + 1
+                failure_count: subscription.failure_count + 1,
               })
               .eq("id", subscription.id);
             if (updateError) throw updateError;
@@ -145,7 +145,7 @@ await runWorker("push-delivery", async (context) => {
       const { error: completeError } = await context.supabase.rpc("complete_notification_job", {
         requested_id: job.id,
         provider_name: "web-push",
-        provider_message_id: providerMessageId
+        provider_message_id: providerMessageId,
       });
       if (completeError) throw completeError;
       sent += 1;
@@ -156,9 +156,10 @@ await runWorker("push-delivery", async (context) => {
         const { error: failError } = await context.supabase.rpc("fail_notification_job", {
           requested_id: job.id,
           failure_message: message,
-          permanent_failure: false
+          permanent_failure: false,
         });
-        if (failError) context.log("push.fail_record_error", { jobId: job.id, message: failError.message });
+        if (failError)
+          context.log("push.fail_record_error", { jobId: job.id, message: failError.message });
       }
       context.log("push.failed", { jobId: job.id, message });
     }

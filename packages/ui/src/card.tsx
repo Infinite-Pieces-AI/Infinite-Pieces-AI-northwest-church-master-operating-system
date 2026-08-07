@@ -8,9 +8,18 @@ export interface CardProps extends HTMLAttributes<HTMLElement> {
   interactive?: boolean;
 }
 
-export function Card({ children, className, as: Component = "article", interactive = false, ...props }: CardProps) {
+export function Card({
+  children,
+  className,
+  as: Component = "article",
+  interactive = false,
+  ...props
+}: CardProps) {
   return (
-    <Component className={cx("church-card", interactive && "church-card--interactive", className)} {...props}>
+    <Component
+      className={cx("church-card", interactive && "church-card--interactive", className)}
+      {...props}
+    >
       {children}
     </Component>
   );

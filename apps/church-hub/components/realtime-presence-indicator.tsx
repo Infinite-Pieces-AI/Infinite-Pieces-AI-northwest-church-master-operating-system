@@ -9,7 +9,7 @@ export function RealtimePresenceIndicator({
   channelId,
   profileId,
   displayLabel,
-  demo = false
+  demo = false,
 }: {
   channelId: string;
   profileId: string;
@@ -17,14 +17,21 @@ export function RealtimePresenceIndicator({
   demo?: boolean;
 }) {
   const [states, setStates] = useState<readonly SafePresenceState[]>([]);
-  const [status, setStatus] = useState<"offline" | "connecting" | "private" | "unavailable">("offline");
+  const [status, setStatus] = useState<"offline" | "connecting" | "private" | "unavailable">(
+    "offline",
+  );
   const clientInstanceId = useMemo(
-    () => `web_${globalThis.crypto?.randomUUID?.().replaceAll("-", "") ?? Math.random().toString(36).slice(2)}`,
-    []
+    () =>
+      `web_${globalThis.crypto?.randomUUID?.().replaceAll("-", "") ?? Math.random().toString(36).slice(2)}`,
+    [],
   );
 
   useEffect(() => {
-    if (demo || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
+    if (
+      demo ||
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+    ) {
       setStatus(demo ? "private" : "unavailable");
       return;
     }
@@ -39,7 +46,7 @@ export function RealtimePresenceIndicator({
       profileId,
       displayLabel,
       clientInstanceId,
-      onPresenceSync: (next) => active && setStates(next)
+      onPresenceSync: (next) => active && setStates(next),
     })
       .then((session) => {
         disconnect = session.disconnect;
@@ -58,7 +65,13 @@ export function RealtimePresenceIndicator({
     <div className="presence-indicator" aria-live="polite">
       <span className={`presence-dot presence-dot--${status}`} aria-hidden="true" />
       <div>
-        <strong>{status === "private" ? "Private realtime" : status === "connecting" ? "Connecting" : "Realtime unavailable"}</strong>
+        <strong>
+          {status === "private"
+            ? "Private realtime"
+            : status === "connecting"
+              ? "Connecting"
+              : "Realtime unavailable"}
+        </strong>
         <small>
           {demo
             ? "Synthetic preview · database authorization required in production"

@@ -10,7 +10,11 @@ export function PushNotificationSettings() {
   const [message, setMessage] = useState("Checking browser support…");
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+    if (
+      !("serviceWorker" in navigator) ||
+      !("PushManager" in window) ||
+      !("Notification" in window)
+    ) {
       setStatus("unsupported");
       setMessage("This browser does not support web push notifications.");
       return;
@@ -24,7 +28,11 @@ export function PushNotificationSettings() {
       .then((response) => response.json() as Promise<{ enabled?: boolean }>)
       .then((data) => {
         setStatus(data.enabled ? "enabled" : "disabled");
-        setMessage(data.enabled ? "Push notifications are enabled on at least one device." : "Push notifications are currently off.");
+        setMessage(
+          data.enabled
+            ? "Push notifications are enabled on at least one device."
+            : "Push notifications are currently off.",
+        );
       })
       .catch(() => {
         setStatus("error");
@@ -39,28 +47,41 @@ export function PushNotificationSettings() {
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
         setStatus(permission === "denied" ? "denied" : "disabled");
-        setMessage(permission === "denied" ? "Notifications were blocked by the browser." : "Notification permission was not granted.");
+        setMessage(
+          permission === "denied"
+            ? "Notifications were blocked by the browser."
+            : "Notification permission was not granted.",
+        );
         return;
       }
       const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!publicKey) throw new Error("VAPID public key is not configured");
       const registration = await navigator.serviceWorker.ready;
       const existing = await registration.pushManager.getSubscription();
-      const subscription = existing ?? await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: base64UrlToUint8Array(publicKey)
-      });
+      const subscription =
+        existing ??
+        (await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: base64UrlToUint8Array(publicKey),
+        }));
       const response = await fetch("/api/push/subscriptions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: subscription.toJSON(), deviceLabel: navigator.platform || "Member device" })
+        body: JSON.stringify({
+          subscription: subscription.toJSON(),
+          deviceLabel: navigator.platform || "Member device",
+        }),
       });
       if (!response.ok) throw new Error("Subscription could not be saved");
       setStatus("enabled");
-      setMessage("Push notifications are enabled. Lock-screen messages remain generic for privacy.");
+      setMessage(
+        "Push notifications are enabled. Lock-screen messages remain generic for privacy.",
+      );
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "Push notifications could not be enabled.");
+      setMessage(
+        error instanceof Error ? error.message : "Push notifications could not be enabled.",
+      );
     }
   }
 
@@ -73,7 +94,7 @@ export function PushNotificationSettings() {
         await fetch("/api/push/subscriptions", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpoint: subscription.endpoint })
+          body: JSON.stringify({ endpoint: subscription.endpoint }),
         });
         await subscription.unsubscribe();
       }
@@ -91,11 +112,18 @@ export function PushNotificationSettings() {
         <p className="hub-kicker">Web Push · VAPID protected</p>
         <h2>Device notifications</h2>
         <p>{message}</p>
-        <small>Prayer text, child details, counseling content, and safeguarding information are never placed on the lock screen.</small>
+        <small>
+          Prayer text, child details, counseling content, and safeguarding information are never
+          placed on the lock screen.
+        </small>
       </div>
       <div className="row-actions">
         {status !== "enabled" ? (
-          <button className="hub-button hub-button--primary" disabled={["unsupported", "denied", "working", "checking"].includes(status)} onClick={enable}>
+          <button
+            className="hub-button hub-button--primary"
+            disabled={["unsupported", "denied", "working", "checking"].includes(status)}
+            onClick={enable}
+          >
             Enable on this device
           </button>
         ) : (

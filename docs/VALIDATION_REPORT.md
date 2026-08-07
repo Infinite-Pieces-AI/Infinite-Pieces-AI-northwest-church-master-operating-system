@@ -12,27 +12,27 @@ This is a **production-minded engineering artifact**, not authorization to load 
 
 ## Repository-wide checks completed
 
-| Check | Result |
-|---|---:|
-| Required architecture structure | 48 required files present |
-| Synthetic-data, unsafe-flag, and committed-secret scan | Passed |
-| Source syntax parsing | 177 TypeScript, TSX, JavaScript, and module files passed |
-| JSON parsing | 62 files passed |
-| YAML workflow/configuration parsing | 8 files passed |
-| TOML parsing | 1 file passed |
-| Workspace contracts | 27 packages passed |
-| TypeScript aliases | 18 aliases resolved |
-| Internal package dependency declarations | Passed |
-| Next.js internal-package transpilation boundaries | Passed |
-| Service-worker JavaScript syntax | Passed |
-| PWA package semantic typecheck | Passed |
-| Targeted public-web, member-hub, and worker semantic typechecks | Passed with temporary dependency declarations |
-| Merged domain-package semantic typecheck | Passed with temporary Node runtime declarations |
-| Static SQL validation | 16 contiguous migrations and 95 public tables passed |
-| RLS-enablement coverage | Explicit coverage found for all 95 public application tables |
-| SQL transaction and dollar-quote balance | Passed |
-| `SECURITY DEFINER` search-path checks | Passed |
-| Executable domain smoke suite | 7 merged packages passed |
+| Check                                                           |                                                       Result |
+| --------------------------------------------------------------- | -----------------------------------------------------------: |
+| Required architecture structure                                 |                                    48 required files present |
+| Synthetic-data, unsafe-flag, and committed-secret scan          |                                                       Passed |
+| Source syntax parsing                                           |     177 TypeScript, TSX, JavaScript, and module files passed |
+| JSON parsing                                                    |                                              62 files passed |
+| YAML workflow/configuration parsing                             |                                               8 files passed |
+| TOML parsing                                                    |                                                1 file passed |
+| Workspace contracts                                             |                                           27 packages passed |
+| TypeScript aliases                                              |                                          18 aliases resolved |
+| Internal package dependency declarations                        |                                                       Passed |
+| Next.js internal-package transpilation boundaries               |                                                       Passed |
+| Service-worker JavaScript syntax                                |                                                       Passed |
+| PWA package semantic typecheck                                  |                                                       Passed |
+| Targeted public-web, member-hub, and worker semantic typechecks |                Passed with temporary dependency declarations |
+| Merged domain-package semantic typecheck                        |              Passed with temporary Node runtime declarations |
+| Static SQL validation                                           |         16 contiguous migrations and 95 public tables passed |
+| RLS-enablement coverage                                         | Explicit coverage found for all 95 public application tables |
+| SQL transaction and dollar-quote balance                        |                                                       Passed |
+| `SECURITY DEFINER` search-path checks                           |                                                       Passed |
+| Executable domain smoke suite                                   |                                     7 merged packages passed |
 
 ## Executable domain smoke coverage
 

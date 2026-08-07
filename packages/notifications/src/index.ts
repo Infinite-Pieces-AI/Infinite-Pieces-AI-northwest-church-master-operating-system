@@ -43,7 +43,7 @@ export function createOutboxEvent<TPayload extends Record<string, unknown>>(inpu
     aggregateId: input.aggregateId,
     payload: input.payload,
     occurredAt: (input.occurredAt ?? new Date()).toISOString(),
-    ...(input.correlationId ? { correlationId: input.correlationId } : {})
+    ...(input.correlationId ? { correlationId: input.correlationId } : {}),
   };
 }
 
@@ -53,7 +53,7 @@ export const pushNotificationTopics = [
   "assigned_group",
   "event_reminder",
   "kids_operational",
-  "weekly_digest"
+  "weekly_digest",
 ] as const;
 export type PushNotificationTopic = (typeof pushNotificationTopics)[number];
 
@@ -73,7 +73,7 @@ const forbiddenPushTerms = [
   "custody",
   "medical diagnosis",
   "safeguarding report",
-  "child full name"
+  "child full name",
 ] as const;
 
 /**
@@ -86,9 +86,11 @@ export function sanitizePushPayload(input: PushNotificationPayload): PushNotific
   if (!title || !body) throw new Error("Push title and body are required");
   const lower = `${title} ${body}`.toLowerCase();
   const prohibited = forbiddenPushTerms.find((term) => lower.includes(term));
-  if (prohibited) throw new Error(`Push notification contains prohibited lock-screen detail: ${prohibited}`);
+  if (prohibited)
+    throw new Error(`Push notification contains prohibited lock-screen detail: ${prohibited}`);
   const parsed = new URL(input.url, "https://hub.invalid");
-  if (parsed.origin !== "https://hub.invalid") throw new Error("Push URL must be an internal relative path");
+  if (parsed.origin !== "https://hub.invalid")
+    throw new Error("Push URL must be an internal relative path");
   if (!pushNotificationTopics.includes(input.topic)) throw new Error("Push topic is invalid");
   return {
     title,
@@ -97,6 +99,6 @@ export function sanitizePushPayload(input: PushNotificationPayload): PushNotific
     topic: input.topic,
     ...(input.tag ? { tag: input.tag.slice(0, 80) } : {}),
     ...(input.icon ? { icon: input.icon } : {}),
-    ...(input.badge ? { badge: input.badge } : {})
+    ...(input.badge ? { badge: input.badge } : {}),
   };
 }

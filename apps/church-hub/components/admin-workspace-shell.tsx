@@ -1,9 +1,8 @@
-
 import { PageHeading } from "@/components/page-heading";
 
 export function AdminWorkspaceShell({
   title,
-  description
+  description,
 }: {
   title: string;
   description: string;

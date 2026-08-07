@@ -6,8 +6,17 @@ export function SiteFooter() {
       <div className="page-shell footer-grid">
         <div>
           <p className="footer-brand">Boston Church Lowell</p>
-          <p>Sunday worship at 10:00 AM<br />Butler Middle School<br />1140 Gorham Street, Lowell, MA 01852</p>
-          <p className="fine-print">Service details must be confirmed by the designated church content owner before production launch.</p>
+          <p>
+            Sunday worship at 10:00 AM
+            <br />
+            Butler Middle School
+            <br />
+            1140 Gorham Street, Lowell, MA 01852
+          </p>
+          <p className="fine-print">
+            Service details must be confirmed by the designated church content owner before
+            production launch.
+          </p>
         </div>
         <div>
           <h2>Visit</h2>
@@ -30,7 +39,10 @@ export function SiteFooter() {
           <a href={process.env.NEXT_PUBLIC_HUB_URL ?? "http://localhost:3001/login"}>Member Hub</a>
         </div>
       </div>
-      <div className="page-shell footer-bottom"><span>© {new Date().getFullYear()} Boston Church Lowell / Northwest</span><span>Church-owned digital platform</span></div>
+      <div className="page-shell footer-bottom">
+        <span>© {new Date().getFullYear()} Boston Church Lowell / Northwest</span>
+        <span>Church-owned digital platform</span>
+      </div>
     </footer>
   );
 }

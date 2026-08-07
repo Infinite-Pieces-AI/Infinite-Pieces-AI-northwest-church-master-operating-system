@@ -172,15 +172,15 @@ Private media is readable only when an approved database media record maps the e
 
 ## Failure modes and fallbacks
 
-| Failure | Behavior |
-|---|---|
+| Failure                     | Behavior                                                                          |
+| --------------------------- | --------------------------------------------------------------------------------- |
 | Public database unavailable | Show a reviewed static service fallback plus status alert; do not invent changes. |
-| Hub unavailable | Publish phone/email fallback and use existing ChMS/communications. |
-| Planning Center unavailable | Follow the rehearsed manual Sunday check-in plan. |
-| Worker failure | Event remains pending or retries with bounded exponential backoff. |
-| Email failure | Invitation is revoked before retry where delivery cannot be completed. |
-| AI unavailable | Approved source content remains available; no generated answer is required. |
-| Social adapter unavailable | Draft remains approved/scheduled but unpublished; no silent fallback. |
+| Hub unavailable             | Publish phone/email fallback and use existing ChMS/communications.                |
+| Planning Center unavailable | Follow the rehearsed manual Sunday check-in plan.                                 |
+| Worker failure              | Event remains pending or retries with bounded exponential backoff.                |
+| Email failure               | Invitation is revoked before retry where delivery cannot be completed.            |
+| AI unavailable              | Approved source content remains available; no generated answer is required.       |
+| Social adapter unavailable  | Draft remains approved/scheduled but unpublished; no silent fallback.             |
 
 ## Master ecosystem extensions
 

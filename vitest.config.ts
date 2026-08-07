@@ -14,12 +14,16 @@ export default defineConfig({
       "@church/church-content": `${root}packages/church-content/src/index.ts`,
       "@church/group-rotation": `${root}packages/group-rotation/src/index.ts`,
       "@church/notifications": `${root}packages/notifications/src/index.ts`,
-      "@church/validation": `${root}packages/validation/src/index.ts`
-    }
+      "@church/validation": `${root}packages/validation/src/index.ts`,
+    },
   },
   test: {
-    include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts", "packages/*/test/**/*.test.ts"],
+    include: [
+      "tests/unit/**/*.test.ts",
+      "tests/integration/**/*.test.ts",
+      "packages/*/test/**/*.test.ts",
+    ],
     environment: "node",
-    coverage: { reporter: ["text", "json", "html"] }
-  }
+    coverage: { reporter: ["text", "json", "html"] },
+  },
 });

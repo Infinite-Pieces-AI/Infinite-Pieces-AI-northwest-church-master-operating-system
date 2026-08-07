@@ -12,12 +12,12 @@ describe("master ecosystem packages", () => {
       secret,
       serviceSessionId: "service-2026-09-06",
       householdId: "household-1",
-      expiresAt: new Date(Date.now() + 60_000)
+      expiresAt: new Date(Date.now() + 60_000),
     });
     const payload = verifyPickupCredential({
       token,
       resolveSecret: (keyId) => (keyId === "sunday-key-1" ? secret : undefined),
-      expectedServiceSessionId: "service-2026-09-06"
+      expectedServiceSessionId: "service-2026-09-06",
     });
     expect(payload.householdId).toBe("household-1");
   });
@@ -26,7 +26,7 @@ describe("master ecosystem packages", () => {
     const subscription = normalizePushSubscription({
       endpoint: "https://push.example.test/subscription/1",
       expirationTime: null,
-      keys: { p256dh: "abc", auth: "def" }
+      keys: { p256dh: "abc", auth: "def" },
     });
     expect(subscription.endpoint).toContain("push.example.test");
     expect(base64UrlToUint8Array("AQAB").length).toBeGreaterThan(0);
@@ -40,7 +40,7 @@ describe("master ecosystem packages", () => {
       displayLabel: "Sample Member",
       activity: "typing",
       clientInstanceId: "browser-1",
-      updatedAt: "2026-08-02T12:00:00.000Z"
+      updatedAt: "2026-08-02T12:00:00.000Z",
     });
     expect(state.displayLabel).toBe("Sample Member");
   });
@@ -51,7 +51,7 @@ describe("master ecosystem packages", () => {
       impressions: 240,
       clicks: 4,
       averagePosition: 8.4,
-      locality: "Lowell, Massachusetts"
+      locality: "Lowell, Massachusetts",
     });
     expect(scored.recommendedAction).toBe("create_people_first_page");
     const brief = createPeopleFirstContentBrief({
@@ -59,7 +59,7 @@ describe("master ecosystem packages", () => {
       searchIntent: scored.query,
       locality: scored.locality,
       approvedFacts: { serviceTime: "Sunday at 10:00 AM" },
-      recommendedSections: ["What to expect", "Kids Kingdom", "Directions"]
+      recommendedSections: ["What to expect", "Kids Kingdom", "Directions"],
     });
     expect(brief.publishAutomatically).toBe(false);
   });

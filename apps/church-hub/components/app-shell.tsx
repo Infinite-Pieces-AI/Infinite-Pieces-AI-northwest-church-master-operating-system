@@ -11,7 +11,7 @@ const sideItems = [
   ["Fellowship", "/fellowship", "∞"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
-  ["Family", "/family", "⌁"]
+  ["Family", "/family", "⌁"],
 ] as const;
 
 const adminPermissions: readonly Permission[] = [
@@ -22,13 +22,11 @@ const adminPermissions: readonly Permission[] = [
   "moderation.review",
   "outreach.manage",
   "audit.read",
-  "system.health.read"
+  "system.health.read",
 ];
 
 export function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
-  const canAdmin = adminPermissions.some((permission) =>
-    hasPermission(viewer.roles, permission)
-  );
+  const canAdmin = adminPermissions.some((permission) => hasPermission(viewer.roles, permission));
 
   return (
     <div className="hub-shell">

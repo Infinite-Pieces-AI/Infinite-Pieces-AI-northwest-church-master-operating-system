@@ -5,7 +5,7 @@ const items = [
   ["Bible", "/bible", "✦"],
   ["Meetups", "/fellowship", "∞"],
   ["Community", "/community", "◌"],
-  ["Family", "/family", "⌁"]
+  ["Family", "/family", "⌁"],
 ] as const;
 
 export function MobileNav({ canAdmin }: { canAdmin: boolean }) {

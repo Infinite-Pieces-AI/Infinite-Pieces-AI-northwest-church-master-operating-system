@@ -1,11 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import {
-  fellowshipMeetups,
-  type FellowshipCategory,
-  type FellowshipMeetup
-} from "@/lib/demo-data";
+import { fellowshipMeetups, type FellowshipCategory, type FellowshipMeetup } from "@/lib/demo-data";
 
 const filters = [
   ["all", "All invitations"],
@@ -14,7 +10,7 @@ const filters = [
   ["prayer", "Prayer"],
   ["food", "Coffee & meals"],
   ["service", "Serve together"],
-  ["sports", "Active"]
+  ["sports", "Active"],
 ] as const;
 
 type FilterKey = (typeof filters)[number][0];
@@ -27,7 +23,7 @@ const categoryLabels: Record<FellowshipCategory, string> = {
   service: "Service",
   sports: "Sports",
   "young-adults": "Young adults",
-  "whole-church": "Whole church"
+  "whole-church": "Whole church",
 };
 
 function meetupMatchesFilter(meetup: FellowshipMeetup, filter: FilterKey) {
@@ -43,7 +39,7 @@ export function FellowshipBoard() {
   const [createdMeetups, setCreatedMeetups] = useState<FellowshipMeetup[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [notice, setNotice] = useState(
-    "Demo mode: joining, chats, and new invitations stay in this browser session only."
+    "Demo mode: joining, chats, and new invitations stay in this browser session only.",
   );
 
   useEffect(() => {
@@ -52,13 +48,10 @@ export function FellowshipBoard() {
     }
   }, []);
 
-  const allMeetups = useMemo(
-    () => [...createdMeetups, ...fellowshipMeetups],
-    [createdMeetups]
-  );
+  const allMeetups = useMemo(() => [...createdMeetups, ...fellowshipMeetups], [createdMeetups]);
   const visibleMeetups = useMemo(
     () => allMeetups.filter((meetup) => meetupMatchesFilter(meetup, filter)),
-    [allMeetups, filter]
+    [allMeetups, filter],
   );
 
   function toggleJoin(meetup: FellowshipMeetup) {
@@ -70,7 +63,7 @@ export function FellowshipBoard() {
       } else {
         next.add(meetup.id);
         setNotice(
-          `You joined “${meetup.title}.” In production, the member-only meetup thread and approved meeting instructions would now unlock.`
+          `You joined “${meetup.title}.” In production, the member-only meetup thread and approved meeting instructions would now unlock.`,
         );
       }
       return next;
@@ -110,13 +103,13 @@ export function FellowshipBoard() {
       familyFriendly,
       spontaneous: date.toLowerCase().includes("today"),
       exactLocationAfterJoin: true,
-      tags: [categoryLabels[category], familyFriendly ? "Kids welcome" : "Member created"]
+      tags: [categoryLabels[category], familyFriendly ? "Kids welcome" : "Member created"],
     };
 
     setCreatedMeetups((current) => [newMeetup, ...current]);
     setJoinedIds((current) => new Set(current).add(newMeetup.id));
     setNotice(
-      `“${title}” was added to this synthetic demo. A real post would require the selected visibility, safety, and moderation checks.`
+      `“${title}” was added to this synthetic demo. A real post would require the selected visibility, safety, and moderation checks.`,
     );
     setShowForm(false);
     event.currentTarget.reset();
@@ -148,7 +141,9 @@ export function FellowshipBoard() {
         </button>
       </div>
 
-      <p className="fellowship-notice" aria-live="polite">{notice}</p>
+      <p className="fellowship-notice" aria-live="polite">
+        {notice}
+      </p>
 
       {showForm ? (
         <section id="host-meetup-form" className="host-meetup-panel">
@@ -171,7 +166,9 @@ export function FellowshipBoard() {
                 Type
                 <select name="category" defaultValue="prayer">
                   {Object.entries(categoryLabels).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -209,7 +206,11 @@ export function FellowshipBoard() {
               <button className="hub-button hub-button--primary" type="submit">
                 Add synthetic invitation
               </button>
-              <button className="hub-button hub-button--secondary" type="button" onClick={() => setShowForm(false)}>
+              <button
+                className="hub-button hub-button--secondary"
+                type="button"
+                onClick={() => setShowForm(false)}
+              >
                 Cancel
               </button>
             </div>
@@ -220,8 +221,11 @@ export function FellowshipBoard() {
       <div className="meetup-grid">
         {visibleMeetups.map((meetup) => {
           const joined = joinedIds.has(meetup.id);
-          const displayedAttendees = meetup.attendeeCount + (joined && meetup.id !== "meetup-2" ? 1 : 0);
-          const remaining = meetup.capacity ? Math.max(meetup.capacity - displayedAttendees, 0) : null;
+          const displayedAttendees =
+            meetup.attendeeCount + (joined && meetup.id !== "meetup-2" ? 1 : 0);
+          const remaining = meetup.capacity
+            ? Math.max(meetup.capacity - displayedAttendees, 0)
+            : null;
 
           return (
             <article className={`meetup-card meetup-card--${meetup.category}`} key={meetup.id}>
@@ -230,7 +234,9 @@ export function FellowshipBoard() {
                 <div className="meetup-category">
                   <span aria-hidden="true">{meetup.spontaneous ? "⚡" : "∞"}</span>
                   <div>
-                    <small>{meetup.spontaneous ? "Open today" : categoryLabels[meetup.category]}</small>
+                    <small>
+                      {meetup.spontaneous ? "Open today" : categoryLabels[meetup.category]}
+                    </small>
                     <strong>{meetup.audience}</strong>
                   </div>
                 </div>
@@ -241,9 +247,22 @@ export function FellowshipBoard() {
                 <h2>{meetup.title}</h2>
                 <p>{meetup.description}</p>
                 <dl className="meetup-details">
-                  <div><dt>When</dt><dd>{meetup.dateLabel} · {meetup.timeLabel}</dd></div>
-                  <div><dt>Where</dt><dd>{meetup.locationName} · {meetup.area}</dd></div>
-                  <div><dt>Host</dt><dd>{meetup.host}</dd></div>
+                  <div>
+                    <dt>When</dt>
+                    <dd>
+                      {meetup.dateLabel} · {meetup.timeLabel}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Where</dt>
+                    <dd>
+                      {meetup.locationName} · {meetup.area}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Host</dt>
+                    <dd>{meetup.host}</dd>
+                  </div>
                 </dl>
                 {meetup.exactLocationAfterJoin ? (
                   <p className={`location-reveal${joined ? " location-reveal--open" : ""}`}>
@@ -254,13 +273,20 @@ export function FellowshipBoard() {
                   </p>
                 ) : null}
                 <div className="meetup-tags">
-                  {meetup.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                  {meetup.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
                 </div>
               </div>
 
               <footer className="meetup-card__footer">
-                <div className="attendee-stack" aria-label={`${displayedAttendees} members joining`}>
-                  <span>{meetup.hostInitial}</span><span>A</span><span>K</span>
+                <div
+                  className="attendee-stack"
+                  aria-label={`${displayedAttendees} members joining`}
+                >
+                  <span>{meetup.hostInitial}</span>
+                  <span>A</span>
+                  <span>K</span>
                   <strong>{displayedAttendees} joining</strong>
                   {remaining !== null ? <small>{remaining} spots open</small> : null}
                 </div>
@@ -275,11 +301,13 @@ export function FellowshipBoard() {
                   <button
                     type="button"
                     className="meetup-chat-button"
-                    onClick={() => setNotice(
-                      joined
-                        ? `The member-only thread for “${meetup.title}” would open here.`
-                        : `Join “${meetup.title}” before opening its member-only thread.`
-                    )}
+                    onClick={() =>
+                      setNotice(
+                        joined
+                          ? `The member-only thread for “${meetup.title}” would open here.`
+                          : `Join “${meetup.title}” before opening its member-only thread.`,
+                      )
+                    }
                   >
                     Open meetup chat
                   </button>
@@ -295,7 +323,11 @@ export function FellowshipBoard() {
           <span aria-hidden="true">∞</span>
           <h2>No invitations match this filter yet.</h2>
           <p>Be the person who creates the first simple invitation.</p>
-          <button className="hub-button hub-button--primary" type="button" onClick={() => setShowForm(true)}>
+          <button
+            className="hub-button hub-button--primary"
+            type="button"
+            onClick={() => setShowForm(true)}
+          >
             Host a meetup
           </button>
         </section>

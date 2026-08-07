@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   bibleJourney,
   bibleJourneyWeeks,
-  fellowshipMeetups
+  fellowshipMeetups,
 } from "../../apps/church-hub/lib/demo-data";
 
 describe("fellowship and whole-Bible journey demo contracts", () => {
   it("provides a complete, contiguous Genesis-to-Revelation formation path", () => {
     expect(bibleJourneyWeeks).toHaveLength(52);
     expect(bibleJourneyWeeks.map((week) => week.week)).toEqual(
-      Array.from({ length: 52 }, (_, index) => index + 1)
+      Array.from({ length: 52 }, (_, index) => index + 1),
     );
     expect(bibleJourneyWeeks[0].references).toContain("Genesis 1-2");
     expect(bibleJourneyWeeks[51].references).toContain("Revelation 21-22");
@@ -28,7 +28,9 @@ describe("fellowship and whole-Bible journey demo contracts", () => {
 
   it("models varied, public-place fellowship invitations without phone-number dependency", () => {
     expect(fellowshipMeetups.length).toBeGreaterThanOrEqual(6);
-    expect(new Set(fellowshipMeetups.map((meetup) => meetup.category)).size).toBeGreaterThanOrEqual(5);
+    expect(new Set(fellowshipMeetups.map((meetup) => meetup.category)).size).toBeGreaterThanOrEqual(
+      5,
+    );
     expect(fellowshipMeetups.some((meetup) => meetup.spontaneous)).toBe(true);
     expect(fellowshipMeetups.some((meetup) => meetup.familyFriendly)).toBe(true);
 

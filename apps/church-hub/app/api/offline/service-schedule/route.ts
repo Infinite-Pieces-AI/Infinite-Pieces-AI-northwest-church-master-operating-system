@@ -12,15 +12,15 @@ export async function GET() {
   if (!snapshot) {
     return NextResponse.json(
       { error: "The approved service schedule is temporarily unavailable." },
-      { status: 503 }
+      { status: 503 },
     );
   }
   return NextResponse.json(
     {
       version: 1,
       generatedAt: new Date().toISOString(),
-      service: snapshot.service
+      service: snapshot.service,
     },
-    { headers: offlineSafeResponseHeaders }
+    { headers: offlineSafeResponseHeaders },
   );
 }

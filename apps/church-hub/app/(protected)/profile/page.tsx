@@ -14,12 +14,17 @@ export default async function ProfilePage() {
       <section className="hub-panel">
         <h2>{viewer.displayName}</h2>
         <p>{viewer.email}</p>
-        <p><strong>Roles:</strong> {viewer.roles.join(", ")}</p>
+        <p>
+          <strong>Roles:</strong> {viewer.roles.join(", ")}
+        </p>
         <div className="row-actions">
           <button className="hub-button hub-button--secondary">Review active sessions</button>
           <SignOutButton demo={viewer.demo} />
         </div>
-        <p className="privacy-note">Signing out also removes this device’s web-push subscription and clears the bounded offline cache.</p>
+        <p className="privacy-note">
+          Signing out also removes this device’s web-push subscription and clears the bounded
+          offline cache.
+        </p>
       </section>
     </>
   );

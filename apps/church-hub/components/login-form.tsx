@@ -1,3 +1,39 @@
 "use client";
 import { useState } from "react";
-export function LoginForm(){const[status,setStatus]=useState<"idle"|"busy"|"sent"|"error">("idle");const[msg,setMsg]=useState("");async function submit(event:React.FormEvent<HTMLFormElement>){event.preventDefault();setStatus("busy");const form=new FormData(event.currentTarget);const response=await fetch("/api/auth/magic-link",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:form.get("email")})});const result=await response.json() as {message:string};setMsg(result.message);setStatus(response.ok?"sent":"error")}return <form className="auth-form" onSubmit={submit}><label><span>Email address</span><input type="email" name="email" autoComplete="email" required /></label><button className="hub-button hub-button--primary" disabled={status==="busy"}>{status==="busy"?"Sending secure link…":"Email me a secure sign-in link"}</button>{msg?<p className={`auth-message auth-message--${status}`} role="status">{msg}</p>:null}<p className="auth-fine-print">Sign-in does not create a public profile. New accounts require a single-use invitation and leadership approval.</p></form>}
+export function LoginForm() {
+  const [status, setStatus] = useState<"idle" | "busy" | "sent" | "error">("idle");
+  const [msg, setMsg] = useState("");
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("busy");
+    const form = new FormData(event.currentTarget);
+    const response = await fetch("/api/auth/magic-link", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: form.get("email") }),
+    });
+    const result = (await response.json()) as { message: string };
+    setMsg(result.message);
+    setStatus(response.ok ? "sent" : "error");
+  }
+  return (
+    <form className="auth-form" onSubmit={submit}>
+      <label>
+        <span>Email address</span>
+        <input type="email" name="email" autoComplete="email" required />
+      </label>
+      <button className="hub-button hub-button--primary" disabled={status === "busy"}>
+        {status === "busy" ? "Sending secure link…" : "Email me a secure sign-in link"}
+      </button>
+      {msg ? (
+        <p className={`auth-message auth-message--${status}`} role="status">
+          {msg}
+        </p>
+      ) : null}
+      <p className="auth-fine-print">
+        Sign-in does not create a public profile. New accounts require a single-use invitation and
+        leadership approval.
+      </p>
+    </form>
+  );
+}

@@ -1,19 +1,15 @@
-
-import {
-  PlanningCenterClient,
-  type PlanningCenterCollection
-} from "@church/planning-center";
+import { PlanningCenterClient, type PlanningCenterCollection } from "@church/planning-center";
 import {
   claimOutboxEvents,
   completeOutboxEvent,
   failOutboxEvent,
-  runWorker
+  runWorker,
 } from "@church/worker-runtime";
 
 await runWorker("planning-center-sync", async (context) => {
   const events = await claimOutboxEvents(context, [
     "planning_center.sync_requested",
-    "checkin.status_updated"
+    "checkin.status_updated",
   ]);
   const appId = process.env.PLANNING_CENTER_APP_ID;
   const secret = process.env.PLANNING_CENTER_SECRET;
@@ -21,7 +17,7 @@ await runWorker("planning-center-sync", async (context) => {
   if (!appId || !secret) {
     context.log("integration.disabled", {
       reason: "Planning Center credentials not configured",
-      claimed: events.length
+      claimed: events.length,
     });
     return { claimed: events.length, processed: 0 };
   }
@@ -33,22 +29,20 @@ await runWorker("planning-center-sync", async (context) => {
     try {
       if (event.event_type === "planning_center.sync_requested") {
         const resource =
-          typeof event.payload.resource === "string"
-            ? event.payload.resource
-            : "/people/v2/people";
+          typeof event.payload.resource === "string" ? event.payload.resource : "/people/v2/people";
         const response = await client.get<PlanningCenterCollection>(resource, {
-          per_page: "25"
+          per_page: "25",
         });
         context.log("planning_center.read", {
           eventId: event.id,
           resource,
-          recordCount: response.data.length
+          recordCount: response.data.length,
         });
         // Production mapping must copy only approved fields into integration mirror tables.
       } else {
         context.log("checkin.status_observed", {
           eventId: event.id,
-          externalReference: event.payload.external_reference ?? null
+          externalReference: event.payload.external_reference ?? null,
         });
       }
 
@@ -58,7 +52,7 @@ await runWorker("planning-center-sync", async (context) => {
       await failOutboxEvent(
         context,
         event.id,
-        error instanceof Error ? error.message : "Planning Center synchronization failed"
+        error instanceof Error ? error.message : "Planning Center synchronization failed",
       );
     }
   }

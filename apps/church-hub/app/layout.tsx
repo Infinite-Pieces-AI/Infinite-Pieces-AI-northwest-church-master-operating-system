@@ -10,16 +10,20 @@ export const metadata: Metadata = {
   description: "Invite-only Boston Church Lowell member hub",
   robots: { index: false, follow: false, noarchive: true, nosnippet: true },
   applicationName: "Church Hub",
-  manifest: "/manifest.webmanifest"
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = {
   themeColor: "#07192b",
   width: "device-width",
   initialScale: 1,
-  viewportFit: "cover"
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="en"><body>{children}</body></html>;
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
 }

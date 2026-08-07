@@ -1,4 +1,3 @@
-
 # Edge functions
 
 Edge functions are reserved for verified server-to-server boundaries and privileged workflows.

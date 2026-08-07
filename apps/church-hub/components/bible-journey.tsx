@@ -11,7 +11,7 @@ const rhythmSteps = [
   ["notice", "Notice", "Write one thing the story reveals about God and people."],
   ["pray", "Pray", "Respond to God with one honest sentence."],
   ["practice", "Practice", "Choose one concrete act of faith or love."],
-  ["share", "Share", "Bring one insight or question to another person."]
+  ["share", "Share", "Bring one insight or question to another person."],
 ] as const;
 
 type RhythmKey = (typeof rhythmSteps)[number][0];
@@ -21,13 +21,13 @@ const currentWeekDetails = {
     "God speaks order, beauty, and life into what is unformed.",
     "Human beings receive dignity as image-bearers, not as a reward for performance.",
     "People receive purpose through stewardship, work, worship, rest, and relationship.",
-    "The first human community is designed around belonging rather than isolation."
+    "The first human community is designed around belonging rather than isolation.",
   ],
   practices: [
     "Name one person whose dignity you can intentionally honor this week.",
     "Create one small rhythm of rest that remembers God is the source of life.",
-    "Care for one place, responsibility, or relationship entrusted to you."
-  ]
+    "Care for one place, responsibility, or relationship entrusted to you.",
+  ],
 };
 
 function trackPrompt(track: Track, week: BibleJourneyWeek) {
@@ -36,7 +36,7 @@ function trackPrompt(track: Track, week: BibleJourneyWeek) {
     Couple: `What shared rhythm could help your relationship live out this week’s big idea together?`,
     Family: `What simple object lesson, meal conversation, or outdoor activity could help children remember ${week.references.join(", ")}?`,
     Teen: `Where does this story confront pressure, identity, comparison, fear, or the need to belong?`,
-    Group: `What would change in our group if we practiced this week’s truth visibly and together?`
+    Group: `What would change in our group if we practiced this week’s truth visibly and together?`,
   };
   return prompts[track];
 }
@@ -49,27 +49,27 @@ function buildAiAnswer(prompt: string, week: BibleJourneyWeek, track: Track) {
         week.week === 1
           ? "Genesis begins with life, image, presence, and shared purpose. The rest of Scripture traces how God restores what sin fractures, reaching fulfillment in Jesus and the renewed creation described at the Bible’s end."
           : `This week belongs to the same story moving from creation, through covenant and Israel, toward Jesus, the Spirit-formed church, and new creation. Leadership-approved notes would make the specific connection for “${week.title}.”`,
-      citations: [...week.references, "John 1:1-18", "Colossians 1:15-20", "Revelation 21-22"]
+      citations: [...week.references, "John 1:1-18", "Colossians 1:15-20", "Revelation 21-22"],
     };
   }
   if (prompt === "pray") {
     return {
       title: "A short prayer framework",
       body: `Praise God for what “${week.title}” reveals. Confess where trust or practice has been missing. Ask for help to live the big idea—${week.bigIdea.toLowerCase()}—and name one person or situation where you want to respond faithfully.`,
-      citations: week.references
+      citations: week.references,
     };
   }
   if (prompt === "discuss") {
     return {
       title: `${track} discussion starter`,
       body: trackPrompt(track, week),
-      citations: week.references
+      citations: week.references,
     };
   }
   return {
     title: "One small next step",
     body: `Read ${week.references.join(", ")}, write one sentence about God, one sentence about people, and one action that would make “${week.bigIdea}” visible before the week ends.`,
-    citations: week.references
+    citations: week.references,
   };
 }
 
@@ -80,12 +80,13 @@ export function BibleJourneyExperience() {
   const [aiPrompt, setAiPrompt] = useState("jesus");
 
   const selectedWeek = useMemo(
-    () => bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ?? bibleJourneyWeeks[0],
-    [selectedWeekNumber]
+    () =>
+      bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ?? bibleJourneyWeeks[0],
+    [selectedWeekNumber],
   );
   const aiAnswer = useMemo(
     () => buildAiAnswer(aiPrompt, selectedWeek, track),
-    [aiPrompt, selectedWeek, track]
+    [aiPrompt, selectedWeek, track],
   );
   const rhythmProgress = Math.round((completed.size / rhythmSteps.length) * 100);
   const journeyProgress = Math.round((selectedWeek.week / bibleJourneyWeeks.length) * 100);
@@ -104,14 +105,23 @@ export function BibleJourneyExperience() {
       <section className="journey-hero">
         <div className="journey-hero__copy">
           <p className="hub-kicker">Whole-Bible formation path</p>
-          <span className="journey-week-label">Week {selectedWeek.week} of {bibleJourneyWeeks.length}</span>
+          <span className="journey-week-label">
+            Week {selectedWeek.week} of {bibleJourneyWeeks.length}
+          </span>
           <h2>{selectedWeek.title}</h2>
           <p>{selectedWeek.summary}</p>
           <div className="journey-reference-row">
-            {selectedWeek.references.map((reference) => <span key={reference}>{reference}</span>)}
+            {selectedWeek.references.map((reference) => (
+              <span key={reference}>{reference}</span>
+            ))}
           </div>
-          <div className="journey-progress" aria-label={`${journeyProgress}% through the Bible journey`}>
-            <div><span style={{ width: `${journeyProgress}%` }} /></div>
+          <div
+            className="journey-progress"
+            aria-label={`${journeyProgress}% through the Bible journey`}
+          >
+            <div>
+              <span style={{ width: `${journeyProgress}%` }} />
+            </div>
             <small>{journeyProgress}% through the journey · creation to new creation</small>
           </div>
         </div>
@@ -127,7 +137,11 @@ export function BibleJourneyExperience() {
           <button
             key={era.label}
             type="button"
-            className={selectedWeek.era === era.label || (selectedWeek.week === 1 && index === 0) ? "active" : ""}
+            className={
+              selectedWeek.era === era.label || (selectedWeek.week === 1 && index === 0)
+                ? "active"
+                : ""
+            }
             onClick={() => {
               const firstWeek = Number(era.weeks.split("-")[0]);
               setSelectedWeekNumber(firstWeek);
@@ -162,7 +176,9 @@ export function BibleJourneyExperience() {
               </div>
               <h3>Practice the story</h3>
               <ul className="practice-list">
-                {currentWeekDetails.practices.map((practice) => <li key={practice}>{practice}</li>)}
+                {currentWeekDetails.practices.map((practice) => (
+                  <li key={practice}>{practice}</li>
+                ))}
               </ul>
             </>
           ) : (
@@ -199,8 +215,12 @@ export function BibleJourneyExperience() {
         <aside className="hub-panel rhythm-panel">
           <p className="hub-kicker">Five-movement weekly rhythm</p>
           <h2>Read. Notice. Pray. Practice. Share.</h2>
-          <div className="rhythm-meter"><span style={{ width: `${rhythmProgress}%` }} /></div>
-          <small>{completed.size} of {rhythmSteps.length} movements completed in this demo</small>
+          <div className="rhythm-meter">
+            <span style={{ width: `${rhythmProgress}%` }} />
+          </div>
+          <small>
+            {completed.size} of {rhythmSteps.length} movements completed in this demo
+          </small>
           <div className="rhythm-list">
             {rhythmSteps.map(([key, label, description]) => (
               <label key={key} className={completed.has(key) ? "complete" : ""}>
@@ -209,7 +229,10 @@ export function BibleJourneyExperience() {
                   checked={completed.has(key)}
                   onChange={() => toggleRhythm(key)}
                 />
-                <span><strong>{label}</strong><small>{description}</small></span>
+                <span>
+                  <strong>{label}</strong>
+                  <small>{description}</small>
+                </span>
               </label>
             ))}
           </div>
@@ -217,29 +240,56 @@ export function BibleJourneyExperience() {
             Open licensed Scripture reader
           </button>
           <p className="privacy-note">
-            Passage text is not bundled in source control. The production reader requires an approved
-            licensed Bible provider.
+            Passage text is not bundled in source control. The production reader requires an
+            approved licensed Bible provider.
           </p>
         </aside>
       </div>
 
       <section className="ai-story-guide">
         <div className="ai-story-guide__header">
-          <span className="connection-spark" aria-hidden="true">✦</span>
+          <span className="connection-spark" aria-hidden="true">
+            ✦
+          </span>
           <div>
             <p className="hub-kicker">Approved-source Bible companion</p>
             <h2>Explore the story without replacing Scripture, leaders, or community.</h2>
             <p>
               The future assistant answers from licensed Scripture references and minister-approved
-              resources, separates generated explanation from church teaching, and displays citations.
+              resources, separates generated explanation from church teaching, and displays
+              citations.
             </p>
           </div>
         </div>
         <div className="ai-prompt-row">
-          <button type="button" className={aiPrompt === "jesus" ? "active" : ""} onClick={() => setAiPrompt("jesus")}>How does this connect to Jesus?</button>
-          <button type="button" className={aiPrompt === "pray" ? "active" : ""} onClick={() => setAiPrompt("pray")}>Help me pray this story</button>
-          <button type="button" className={aiPrompt === "discuss" ? "active" : ""} onClick={() => setAiPrompt("discuss")}>Give my track a question</button>
-          <button type="button" className={aiPrompt === "practice" ? "active" : ""} onClick={() => setAiPrompt("practice")}>Give me one next step</button>
+          <button
+            type="button"
+            className={aiPrompt === "jesus" ? "active" : ""}
+            onClick={() => setAiPrompt("jesus")}
+          >
+            How does this connect to Jesus?
+          </button>
+          <button
+            type="button"
+            className={aiPrompt === "pray" ? "active" : ""}
+            onClick={() => setAiPrompt("pray")}
+          >
+            Help me pray this story
+          </button>
+          <button
+            type="button"
+            className={aiPrompt === "discuss" ? "active" : ""}
+            onClick={() => setAiPrompt("discuss")}
+          >
+            Give my track a question
+          </button>
+          <button
+            type="button"
+            className={aiPrompt === "practice" ? "active" : ""}
+            onClick={() => setAiPrompt("practice")}
+          >
+            Give me one next step
+          </button>
         </div>
         <div className="ai-answer-card" aria-live="polite">
           <div className="ai-answer-labels">
@@ -250,7 +300,9 @@ export function BibleJourneyExperience() {
           <h3>{aiAnswer.title}</h3>
           <p>{aiAnswer.body}</p>
           <div className="citation-row">
-            {aiAnswer.citations.map((citation) => <span key={citation}>{citation}</span>)}
+            {aiAnswer.citations.map((citation) => (
+              <span key={citation}>{citation}</span>
+            ))}
           </div>
         </div>
       </section>
@@ -283,7 +335,12 @@ export function BibleJourneyExperience() {
                 onClick={() => setSelectedWeekNumber(week.week)}
               >
                 <span>{week.week}</span>
-                <div><strong>{week.title}</strong><small>{week.era} · {week.references.join(", ")}</small></div>
+                <div>
+                  <strong>{week.title}</strong>
+                  <small>
+                    {week.era} · {week.references.join(", ")}
+                  </small>
+                </div>
               </button>
             ))}
           </div>

@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { generateRotationProposal, type RotationInput } from "@church/group-rotation";
 import { hasPermission } from "@church/authorization";
@@ -16,7 +15,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { message: "Invalid rotation input", issues: parsed.error.flatten() },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -26,6 +25,6 @@ export async function POST(request: Request) {
     persisted: false,
     approvalRequired: true,
     warning:
-      "This endpoint creates a review-only proposal. It never activates memberships or notifies members."
+      "This endpoint creates a review-only proposal. It never activates memberships or notifies members.",
   });
 }

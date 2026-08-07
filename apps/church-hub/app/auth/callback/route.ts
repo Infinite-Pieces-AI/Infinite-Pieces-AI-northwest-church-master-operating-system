@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 function safeInternalPath(value: string | null): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return "/this-week";
+  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\"))
+    return "/this-week";
   return value;
 }
 

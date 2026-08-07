@@ -20,13 +20,26 @@ export default function FellowshipPage() {
             coffee after work, a service project, an open lunch table, or a whole-church outing.
           </p>
           <div className="fellowship-stat-row">
-            <div><strong>6</strong><span>open invitations</span></div>
-            <div><strong>91</strong><span>synthetic joins this week</span></div>
-            <div><strong>5</strong><span>ways to connect today</span></div>
+            <div>
+              <strong>6</strong>
+              <span>open invitations</span>
+            </div>
+            <div>
+              <strong>91</strong>
+              <span>synthetic joins this week</span>
+            </div>
+            <div>
+              <strong>5</strong>
+              <span>ways to connect today</span>
+            </div>
           </div>
         </div>
         <div className="fellowship-constellation" aria-hidden="true">
-          <span>Prayer</span><span>Families</span><span>Meals</span><span>Service</span><span>Sports</span>
+          <span>Prayer</span>
+          <span>Families</span>
+          <span>Meals</span>
+          <span>Service</span>
+          <span>Sports</span>
           <strong>∞</strong>
         </div>
       </section>
@@ -34,10 +47,37 @@ export default function FellowshipPage() {
       <ConnectionConcierge />
 
       <section className="fellowship-principles">
-        <article><span aria-hidden="true">01</span><div><strong>Low pressure</strong><p>Come late, leave early, bring children, or simply observe before joining.</p></div></article>
-        <article><span aria-hidden="true">02</span><div><strong>Member safe</strong><p>General public locations are visible; sensitive meeting details unlock only to approved participants.</p></div></article>
-        <article><span aria-hidden="true">03</span><div><strong>No phone-number barrier</strong><p>Members can discover and join through the Hub, then use a meetup-specific thread.</p></div></article>
-        <article><span aria-hidden="true">04</span><div><strong>Ordinary life counts</strong><p>Connection does not require a formal event, a large group, or weeks of planning.</p></div></article>
+        <article>
+          <span aria-hidden="true">01</span>
+          <div>
+            <strong>Low pressure</strong>
+            <p>Come late, leave early, bring children, or simply observe before joining.</p>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">02</span>
+          <div>
+            <strong>Member safe</strong>
+            <p>
+              General public locations are visible; sensitive meeting details unlock only to
+              approved participants.
+            </p>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">03</span>
+          <div>
+            <strong>No phone-number barrier</strong>
+            <p>Members can discover and join through the Hub, then use a meetup-specific thread.</p>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">04</span>
+          <div>
+            <strong>Ordinary life counts</strong>
+            <p>Connection does not require a formal event, a large group, or weeks of planning.</p>
+          </div>
+        </article>
       </section>
 
       <FellowshipBoard />
