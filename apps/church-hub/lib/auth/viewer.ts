@@ -49,8 +49,9 @@ export async function getViewer(): Promise<Viewer | null> {
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-  const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
-  if (error || !userId) return null;
+  const claims = data?.claims;
+  const userId = typeof claims?.sub === "string" ? claims.sub : null;
+  if (error || !claims || !userId) return null;
 
   const [{ data: profile }, { data: assignments }] = await Promise.all([
     supabase.from("profiles").select("display_name,email").eq("id", userId).maybeSingle(),
@@ -73,9 +74,9 @@ export async function getViewer(): Promise<Viewer | null> {
   return {
     id: userId,
     displayName: profile?.display_name ?? "Member",
-    email: profile?.email ?? String(data.claims.email ?? ""),
+    email: profile?.email ?? String(claims.email ?? ""),
     roles: roles.length ? roles : ["member"],
-    aal: data.claims.aal === "aal2" ? "aal2" : "aal1",
+    aal: claims.aal === "aal2" ? "aal2" : "aal1",
     demo: false,
   };
 }
