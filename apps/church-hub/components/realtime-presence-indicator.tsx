@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import type { SafePresenceState } from "@church/realtime";
 import { createClient } from "@/lib/supabase/client";
 import { openPrivateChannel } from "@/lib/realtime/private-channel";
@@ -16,29 +16,26 @@ export function RealtimePresenceIndicator({
   displayLabel: string;
   demo?: boolean;
 }) {
+  const reactInstanceId = useId();
+  const realtimeConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
+  const realtimeEnabled = !demo && realtimeConfigured;
   const [states, setStates] = useState<readonly SafePresenceState[]>([]);
   const [status, setStatus] = useState<"offline" | "connecting" | "private" | "unavailable">(
-    "offline",
+    demo ? "private" : realtimeEnabled ? "connecting" : "unavailable",
   );
   const clientInstanceId = useMemo(
     () =>
-      `web_${globalThis.crypto?.randomUUID?.().replaceAll("-", "") ?? Math.random().toString(36).slice(2)}`,
-    [],
+      `web_${profileId.replaceAll("-", "")}_${channelId.replaceAll("-", "")}_${reactInstanceId.replace(/[^a-zA-Z0-9]/g, "")}`,
+    [channelId, profileId, reactInstanceId],
   );
 
   useEffect(() => {
-    if (
-      demo ||
-      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-    ) {
-      setStatus(demo ? "private" : "unavailable");
-      return;
-    }
+    if (!realtimeEnabled) return;
 
     let active = true;
     let disconnect: (() => Promise<void>) | undefined;
-    setStatus("connecting");
     void openPrivateChannel({
       supabase: createClient(),
       scope: "channel",
@@ -52,13 +49,15 @@ export function RealtimePresenceIndicator({
         disconnect = session.disconnect;
         if (active) setStatus("private");
       })
-      .catch(() => active && setStatus("unavailable"));
+      .catch(() => {
+        if (active) setStatus("unavailable");
+      });
 
     return () => {
       active = false;
       if (disconnect) void disconnect();
     };
-  }, [channelId, clientInstanceId, demo, displayLabel, profileId]);
+  }, [channelId, clientInstanceId, displayLabel, profileId, realtimeEnabled]);
 
   const visible = states.filter((state) => state.activity !== "typing").slice(0, 3);
   return (
