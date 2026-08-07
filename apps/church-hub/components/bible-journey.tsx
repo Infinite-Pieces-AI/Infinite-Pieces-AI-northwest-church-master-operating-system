@@ -86,8 +86,7 @@ export function BibleJourneyExperience() {
 
   const selectedWeek = useMemo<BibleJourneyWeek>(
     () =>
-      bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ??
-      defaultBibleJourneyWeek,
+      bibleJourneyWeeks.find((week) => week.week === selectedWeekNumber) ?? defaultBibleJourneyWeek,
     [selectedWeekNumber],
   );
   const aiAnswer = useMemo(
