@@ -8,6 +8,7 @@ export interface OutreachViewer {
   email: string;
   roles: AppRole[];
   aal: "aal1" | "aal2";
+  sessionIssuedAt: number | null;
   demo: boolean;
 }
 
@@ -17,6 +18,7 @@ const demoViewer: OutreachViewer = {
   email: "outreach.leader@example.invalid",
   roles: ["minister", "technical_admin"],
   aal: "aal2",
+  sessionIssuedAt: Math.floor(Date.now() / 1000),
   demo: true,
 };
 
@@ -53,6 +55,7 @@ async function getOutreachViewer(): Promise<OutreachViewer | null> {
       Array.isArray(item.role) ? item.role[0]?.key : item.role?.key,
     )
     .filter((role: AppRole | undefined): role is AppRole => Boolean(role));
+  const issuedAt = typeof claims.iat === "number" ? claims.iat : Number(claims.iat ?? 0);
 
   return {
     id: userId,
@@ -60,6 +63,7 @@ async function getOutreachViewer(): Promise<OutreachViewer | null> {
     email: profile?.email ?? String(claims.email ?? ""),
     roles,
     aal: claims.aal === "aal2" ? "aal2" : "aal1",
+    sessionIssuedAt: Number.isFinite(issuedAt) && issuedAt > 0 ? issuedAt : null,
     demo: false,
   };
 }
@@ -68,10 +72,23 @@ export async function requireOutreachViewer(): Promise<OutreachViewer> {
   const viewer = await getOutreachViewer();
   if (!viewer) redirect("/login");
   if (!hasPermission(viewer.roles, "outreach.manage")) redirect("/login?error=forbidden");
+
+  const hubUrl = process.env.NEXT_PUBLIC_CHURCH_HUB_URL ?? "http://localhost:3001";
+  const outreachUrl = process.env.NEXT_PUBLIC_OUTREACH_URL ?? "http://localhost:3002";
   if (!viewer.demo && viewer.aal !== "aal2") {
-    const hubUrl = process.env.NEXT_PUBLIC_CHURCH_HUB_URL ?? "http://localhost:3001";
-    const outreachUrl = process.env.NEXT_PUBLIC_OUTREACH_URL ?? "http://localhost:3002";
-    redirect(`${hubUrl}/mfa?next=${encodeURIComponent(`${outreachUrl}/radar`)}`);
+    redirect(`${hubUrl}/mfa?next=${encodeURIComponent(`${outreachUrl}/overview`)}`);
+  }
+  if (!viewer.demo) {
+    const maximumAge = Math.max(300, Number(process.env.OUTREACH_SESSION_MAX_AGE_SECONDS ?? 3600));
+    const age = viewer.sessionIssuedAt ? Math.floor(Date.now() / 1000) - viewer.sessionIssuedAt : Number.POSITIVE_INFINITY;
+    if (age > maximumAge) {
+      redirect(`${hubUrl}/login?next=${encodeURIComponent(`${outreachUrl}/overview`)}&reason=recent-session-required`);
+    }
+    const supabase = await createClient();
+    await supabase.rpc("record_outreach_access", {
+      p_environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "production",
+      p_session_issued_at: new Date((viewer.sessionIssuedAt ?? 0) * 1000).toISOString(),
+    });
   }
   return viewer;
 }
