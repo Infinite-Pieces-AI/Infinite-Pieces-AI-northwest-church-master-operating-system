@@ -99,7 +99,7 @@ export function BusinessProfileEligibilityGate() {
       if (!response.ok || !result.evaluation) {
         throw new Error(result.message ?? "The review could not be evaluated.");
       }
-      setReview((current) => ({ ...current, decision: result.decision }));
+      setReview((current) => ({ ...current, decision: result.decision ?? "pending" }));
       setMessage(
         `${result.evaluation.eligible ? "Eligibility gates passed." : "Eligibility remains blocked."} ${result.evaluation.explanation}`,
       );
