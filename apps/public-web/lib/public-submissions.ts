@@ -33,7 +33,10 @@ export function getPublicSubmissionAdminClient(): SupabaseClient | null {
 
 export function normalizeOptionalText(value: unknown, maximumLength: number): string | null {
   if (typeof value !== "string") return null;
-  const normalized = value.trim().replace(/\u0000/g, "").slice(0, maximumLength);
+  const normalized = value
+    .trim()
+    .replace(/\u0000/g, "")
+    .slice(0, maximumLength);
   return normalized || null;
 }
 
