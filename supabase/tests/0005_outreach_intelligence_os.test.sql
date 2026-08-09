@@ -42,8 +42,28 @@ select is(
   1,
   'Connector management is role restricted'
 );
-select col_not_exists('public', 'public_conversation_signals', 'person_identifier', 'Signals do not store a person identifier');
-select col_not_exists('public', 'public_conversation_signals', 'inferred_religious_belief', 'Signals do not store inferred religious belief');
+select is(
+  (
+    select count(*)::integer
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'public_conversation_signals'
+      and column_name = 'person_identifier'
+  ),
+  0,
+  'Signals do not store a person identifier'
+);
+select is(
+  (
+    select count(*)::integer
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'public_conversation_signals'
+      and column_name = 'inferred_religious_belief'
+  ),
+  0,
+  'Signals do not store inferred religious belief'
+);
 
 insert into auth.users (
   id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
