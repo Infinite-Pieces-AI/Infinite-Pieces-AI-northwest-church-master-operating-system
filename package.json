@@ -2,7 +2,7 @@
   "name": "northwest-church-platform",
   "version": "0.2.0",
   "private": true,
-  "description": "Church-owned public website, member PWA, ministry administration console, and approved outreach tooling for Boston Church Lowell / Northwest.",
+  "description": "Church-owned public website, member PWA, Outreach Intelligence OS, ministry administration console, and approved outreach tooling for Boston Church Lowell / Northwest.",
   "license": "UNLICENSED",
   "packageManager": "pnpm@10.14.0",
   "engines": {
@@ -10,9 +10,11 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "dev": "turbo dev --parallel",
+    "dev": "turbo dev --parallel --filter=@church/public-web --filter=@church/church-hub --filter=@church/outreach-command",
+    "dev:all": "turbo dev --parallel",
     "dev:public": "pnpm --filter @church/public-web dev",
     "dev:hub": "pnpm --filter @church/church-hub dev",
+    "dev:outreach": "pnpm --filter @church/outreach-command dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
