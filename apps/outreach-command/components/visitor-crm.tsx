@@ -7,7 +7,7 @@ type StageFilter = "all" | "new" | "scheduled" | "study" | "online";
 
 export function VisitorCrm() {
   const [filter, setFilter] = useState<StageFilter>("all");
-  const [selectedId, setSelectedId] = useState(visitorRecords[0]?.id ?? "");
+  const [selectedId, setSelectedId] = useState<string>(visitorRecords[0]?.id ?? "");
   const [assigned, setAssigned] = useState<Record<string, string>>({});
 
   const records = useMemo(
