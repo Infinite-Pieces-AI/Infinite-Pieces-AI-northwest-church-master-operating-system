@@ -106,11 +106,7 @@ await runWorker("seo-intelligence", async (context) => {
               : 35,
           demandGrowth: Math.min(100, Math.round(Math.log10(row.impressions + 1) * 30)),
           rankingOpportunity:
-            averagePosition > 3 && averagePosition <= 20
-              ? 95
-              : averagePosition > 20
-                ? 70
-                : 35,
+            averagePosition > 3 && averagePosition <= 20 ? 95 : averagePosition > 20 ? 70 : 35,
           contentGap: row.page_path ? 50 : 95,
           conversionFit: /visit|church|service|bible study|online|zoom/.test(queryText) ? 90 : 55,
           freshness: 80,
