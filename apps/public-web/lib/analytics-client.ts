@@ -40,7 +40,11 @@ export function trackPublicEvent(
   void fetch("/api/public/events", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ event, anonymousSessionId: anonymousSessionId(), properties: sanitized }),
+    body: JSON.stringify({
+      event,
+      anonymousSessionId: anonymousSessionId(),
+      properties: sanitized,
+    }),
     keepalive: true,
   }).catch(() => undefined);
 }

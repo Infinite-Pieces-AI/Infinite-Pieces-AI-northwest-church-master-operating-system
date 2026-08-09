@@ -26,7 +26,12 @@ export function ContentPage({
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Home", item: siteUrl("/").toString() },
-          { "@type": "ListItem", position: 2, name: title, item: siteUrl(canonicalPath).toString() },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: title,
+            item: siteUrl(canonicalPath).toString(),
+          },
         ],
       }
     : null;

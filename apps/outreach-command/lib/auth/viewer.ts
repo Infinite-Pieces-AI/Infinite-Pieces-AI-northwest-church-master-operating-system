@@ -80,9 +80,13 @@ export async function requireOutreachViewer(): Promise<OutreachViewer> {
   }
   if (!viewer.demo) {
     const maximumAge = Math.max(300, Number(process.env.OUTREACH_SESSION_MAX_AGE_SECONDS ?? 3600));
-    const age = viewer.sessionIssuedAt ? Math.floor(Date.now() / 1000) - viewer.sessionIssuedAt : Number.POSITIVE_INFINITY;
+    const age = viewer.sessionIssuedAt
+      ? Math.floor(Date.now() / 1000) - viewer.sessionIssuedAt
+      : Number.POSITIVE_INFINITY;
     if (age > maximumAge) {
-      redirect(`${hubUrl}/login?next=${encodeURIComponent(`${outreachUrl}/overview`)}&reason=recent-session-required`);
+      redirect(
+        `${hubUrl}/login?next=${encodeURIComponent(`${outreachUrl}/overview`)}&reason=recent-session-required`,
+      );
     }
     const supabase = await createClient();
     await supabase.rpc("record_outreach_access", {

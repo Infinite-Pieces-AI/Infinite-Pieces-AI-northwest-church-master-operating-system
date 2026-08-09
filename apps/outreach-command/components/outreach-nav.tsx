@@ -18,5 +18,14 @@ const items = [
 
 export function OutreachNav() {
   const pathname = usePathname();
-  return <nav className="os-nav" aria-label="Outreach Intelligence navigation">{items.map(([label, href, icon]) => <Link className={pathname.startsWith(href) ? "active" : ""} href={href} key={href}><span aria-hidden="true">{icon}</span><strong>{label}</strong></Link>)}</nav>;
+  return (
+    <nav className="os-nav" aria-label="Outreach Intelligence navigation">
+      {items.map(([label, href, icon]) => (
+        <Link className={pathname.startsWith(href) ? "active" : ""} href={href} key={href}>
+          <span aria-hidden="true">{icon}</span>
+          <strong>{label}</strong>
+        </Link>
+      ))}
+    </nav>
+  );
 }

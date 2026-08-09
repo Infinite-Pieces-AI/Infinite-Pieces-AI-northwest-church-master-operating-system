@@ -361,7 +361,9 @@
   place-items: center;
   align-content: center;
   border-radius: 50%;
-  background: radial-gradient(circle, #0c2d43 58%, transparent 60%), conic-gradient(var(--gold) var(--path-progress), rgba(255,255,255,.1) 0);
+  background:
+    radial-gradient(circle, #0c2d43 58%, transparent 60%),
+    conic-gradient(var(--gold) var(--path-progress), rgba(255, 255, 255, 0.1) 0);
 }
 
 .pathway-progress-ring strong,

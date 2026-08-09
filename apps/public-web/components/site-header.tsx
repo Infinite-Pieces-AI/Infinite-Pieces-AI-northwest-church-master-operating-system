@@ -33,7 +33,10 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="header-actions guest-header-actions">
-          <Link className="member-utility-link" href={process.env.NEXT_PUBLIC_HUB_URL ?? "http://localhost:3001/login"}>
+          <Link
+            className="member-utility-link"
+            href={process.env.NEXT_PUBLIC_HUB_URL ?? "http://localhost:3001/login"}
+          >
             Member sign in
           </Link>
           <Link className="button button--outline button--compact" href="/ask-a-question">

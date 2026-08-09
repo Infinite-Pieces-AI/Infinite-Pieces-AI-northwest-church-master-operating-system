@@ -40,7 +40,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return paths.map((path) => ({
     url: siteUrl(path).toString(),
     lastModified: now,
-    changeFrequency: path === "/" || path === "/events" || path === "/sermons" ? "weekly" : "monthly",
+    changeFrequency:
+      path === "/" || path === "/events" || path === "/sermons" ? "weekly" : "monthly",
     priority: path === "/" ? 1 : path === "/plan-a-visit" || path === "/what-to-expect" ? 0.9 : 0.7,
   }));
 }

@@ -4,16 +4,149 @@ import { useMemo, useState } from "react";
 
 type Severity = "critical" | "high" | "medium" | "low";
 const syntheticFindings = [
-  { id: "finding-1", page: "/church-in-lowell", kind: "thin_content", severity: "high" as Severity, detail: "Local page needs firsthand visitor answers, current ministry facts, and substantive Lowell-specific value." },
-  { id: "finding-2", page: "/what-to-expect", kind: "missing_media", severity: "medium" as Severity, detail: "No approved entrance, parking, or first-Sunday visual evidence is attached yet." },
-  { id: "finding-3", page: "/online-bible-study", kind: "launch_gate", severity: "high" as Severity, detail: "The online-ministry offer requires leadership, safeguarding, scheduling, and Zoom workflow approval." },
-  { id: "finding-4", page: "/", kind: "structured_data_review", severity: "medium" as Severity, detail: "Church and Place structured data must be checked against the approved rented-venue representation." },
-  { id: "finding-5", page: "/sermons", kind: "transcript_coverage", severity: "low" as Severity, detail: "Published sermons should receive approved speaker, date, references, transcript, and related discussion metadata." },
+  {
+    id: "finding-1",
+    page: "/church-in-lowell",
+    kind: "thin_content",
+    severity: "high" as Severity,
+    detail:
+      "Local page needs firsthand visitor answers, current ministry facts, and substantive Lowell-specific value.",
+  },
+  {
+    id: "finding-2",
+    page: "/what-to-expect",
+    kind: "missing_media",
+    severity: "medium" as Severity,
+    detail: "No approved entrance, parking, or first-Sunday visual evidence is attached yet.",
+  },
+  {
+    id: "finding-3",
+    page: "/online-bible-study",
+    kind: "launch_gate",
+    severity: "high" as Severity,
+    detail:
+      "The online-ministry offer requires leadership, safeguarding, scheduling, and Zoom workflow approval.",
+  },
+  {
+    id: "finding-4",
+    page: "/",
+    kind: "structured_data_review",
+    severity: "medium" as Severity,
+    detail:
+      "Church and Place structured data must be checked against the approved rented-venue representation.",
+  },
+  {
+    id: "finding-5",
+    page: "/sermons",
+    kind: "transcript_coverage",
+    severity: "low" as Severity,
+    detail:
+      "Published sermons should receive approved speaker, date, references, transcript, and related discussion metadata.",
+  },
 ] as const;
 
 export function SiteQualityDashboard() {
   const [severity, setSeverity] = useState<"all" | Severity>("all");
-  const [message, setMessage] = useState("Synthetic audit loaded. The live first-party crawler has not run against a deployed church domain.");
-  const visible = useMemo(() => syntheticFindings.filter((item) => severity === "all" || item.severity === severity), [severity]);
-  return <><section className="scan-strip"><div><strong>First-party site quality crawler</strong><span>{message}</span></div><button className="secondary-button" type="button" onClick={() => setMessage("Synthetic crawl completed: metadata, canonical, headings, structured data, images, internal links, and stale-date rules evaluated without an external request.")}>Run synthetic crawl</button></section><div className="metric-grid"><article className="metric-card metric-card--rose"><span>Critical</span><strong>0</strong><p>No synthetic release blocker at critical severity</p></article><article className="metric-card metric-card--gold"><span>High</span><strong>2</strong><p>Content and launch-governance gaps</p></article><article className="metric-card metric-card--blue"><span>Pages checked</span><strong>31</strong><p>Illustrative current public inventory</p></article><article className="metric-card metric-card--green"><span>Private apps indexed</span><strong>0</strong><p>Hub and Outreach remain no-index</p></article></div><section className="panel"><div className="panel__header"><div><h2>Site findings</h2><p>Every finding needs a page, evidence, severity, rule, first-seen date, and accountable owner.</p></div></div><div className="search-toolbar">{(["all","critical","high","medium","low"] as const).map((value) => <button key={value} className={`filter-chip${severity === value ? " active" : ""}`} type="button" onClick={() => setSeverity(value)}>{value}</button>)}</div><div className="panel__body site-finding-list">{visible.map((item) => <article key={item.id}><span className={`status-pill status-pill--${item.severity === "critical" || item.severity === "high" ? "blocked" : "review"}`}>{item.severity}</span><div><strong>{item.page}</strong><small>{item.kind.replaceAll("_", " ")}</small><p>{item.detail}</p></div><button className="ghost-button" type="button">Assign review</button></article>)}</div></section><section className="section-grid" style={{ marginTop: 18 }}><div className="notice notice--green"><strong>Crawler scope:</strong> the church-owned public origin, sitemap URLs, same-origin links, visible metadata, structured data, images, and response status.</div><div className="notice notice--gold"><strong>Excluded:</strong> Church Hub, Outreach OS, private routes, form content, member data, prayer text, and any third-party site that has not been approved.</div></section></>;
+  const [message, setMessage] = useState(
+    "Synthetic audit loaded. The live first-party crawler has not run against a deployed church domain.",
+  );
+  const visible = useMemo(
+    () => syntheticFindings.filter((item) => severity === "all" || item.severity === severity),
+    [severity],
+  );
+  return (
+    <>
+      <section className="scan-strip">
+        <div>
+          <strong>First-party site quality crawler</strong>
+          <span>{message}</span>
+        </div>
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={() =>
+            setMessage(
+              "Synthetic crawl completed: metadata, canonical, headings, structured data, images, internal links, and stale-date rules evaluated without an external request.",
+            )
+          }
+        >
+          Run synthetic crawl
+        </button>
+      </section>
+      <div className="metric-grid">
+        <article className="metric-card metric-card--rose">
+          <span>Critical</span>
+          <strong>0</strong>
+          <p>No synthetic release blocker at critical severity</p>
+        </article>
+        <article className="metric-card metric-card--gold">
+          <span>High</span>
+          <strong>2</strong>
+          <p>Content and launch-governance gaps</p>
+        </article>
+        <article className="metric-card metric-card--blue">
+          <span>Pages checked</span>
+          <strong>31</strong>
+          <p>Illustrative current public inventory</p>
+        </article>
+        <article className="metric-card metric-card--green">
+          <span>Private apps indexed</span>
+          <strong>0</strong>
+          <p>Hub and Outreach remain no-index</p>
+        </article>
+      </div>
+      <section className="panel">
+        <div className="panel__header">
+          <div>
+            <h2>Site findings</h2>
+            <p>
+              Every finding needs a page, evidence, severity, rule, first-seen date, and accountable
+              owner.
+            </p>
+          </div>
+        </div>
+        <div className="search-toolbar">
+          {(["all", "critical", "high", "medium", "low"] as const).map((value) => (
+            <button
+              key={value}
+              className={`filter-chip${severity === value ? " active" : ""}`}
+              type="button"
+              onClick={() => setSeverity(value)}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+        <div className="panel__body site-finding-list">
+          {visible.map((item) => (
+            <article key={item.id}>
+              <span
+                className={`status-pill status-pill--${item.severity === "critical" || item.severity === "high" ? "blocked" : "review"}`}
+              >
+                {item.severity}
+              </span>
+              <div>
+                <strong>{item.page}</strong>
+                <small>{item.kind.replaceAll("_", " ")}</small>
+                <p>{item.detail}</p>
+              </div>
+              <button className="ghost-button" type="button">
+                Assign review
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="section-grid" style={{ marginTop: 18 }}>
+        <div className="notice notice--green">
+          <strong>Crawler scope:</strong> the church-owned public origin, sitemap URLs, same-origin
+          links, visible metadata, structured data, images, and response status.
+        </div>
+        <div className="notice notice--gold">
+          <strong>Excluded:</strong> Church Hub, Outreach OS, private routes, form content, member
+          data, prayer text, and any third-party site that has not been approved.
+        </div>
+      </section>
+    </>
+  );
 }

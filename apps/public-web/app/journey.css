@@ -62,9 +62,7 @@
   padding: clamp(24px, 4vw, 44px);
   border: 1px solid #d8e5eb;
   border-radius: 28px;
-  background:
-    radial-gradient(circle at 100% 0, rgba(32, 132, 176, 0.1), transparent 34%),
-    #fff;
+  background: radial-gradient(circle at 100% 0, rgba(32, 132, 176, 0.1), transparent 34%), #fff;
   box-shadow: 0 18px 60px rgba(7, 25, 43, 0.08);
 }
 

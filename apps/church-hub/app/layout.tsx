@@ -9,7 +9,8 @@ import "./hub-fellowship-live.css";
 
 export const metadata: Metadata = {
   title: { default: "Church Hub", template: "%s | Church Hub" },
-  description: "Invite-only Boston Church Lowell member hub for teaching, fellowship, service, groups, events, and family tools.",
+  description:
+    "Invite-only Boston Church Lowell member hub for teaching, fellowship, service, groups, events, and family tools.",
   robots: { index: false, follow: false, noarchive: true, nosnippet: true },
   applicationName: "Church Hub",
   manifest: "/manifest.webmanifest",

@@ -88,7 +88,9 @@ export function PrayerRequestForm() {
             )}
             <label className="check-row form-grid__full">
               <input type="checkbox" name="consentToContact" required />
-              <span>I agree that an authorized ministry leader may contact me about this request.</span>
+              <span>
+                I agree that an authorized ministry leader may contact me about this request.
+              </span>
             </label>
           </>
         ) : null}

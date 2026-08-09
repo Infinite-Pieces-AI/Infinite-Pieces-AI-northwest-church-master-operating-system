@@ -28,23 +28,31 @@ export default function LoginPage() {
         </div>
       </section>
       <section className="login-card">
-        <span className="brand-mark" aria-hidden="true">∞</span>
+        <span className="brand-mark" aria-hidden="true">
+          ∞
+        </span>
         <p className="eyebrow">Authorized leaders only</p>
         <h2>Open Outreach Intelligence OS</h2>
         <p>
-          Production access shares the Church Hub identity, requires an approved outreach role,
-          AAL2 multifactor authentication, and a recently issued secure session.
+          Production access shares the Church Hub identity, requires an approved outreach role, AAL2
+          multifactor authentication, and a recently issued secure session.
         </p>
         {demo ? (
-          <Link className="primary-button" href="/overview">Enter Demo Outreach OS →</Link>
+          <Link className="primary-button" href="/overview">
+            Enter Demo Outreach OS →
+          </Link>
         ) : (
-          <a className="primary-button" href={signInUrl}>Sign in through Church Hub →</a>
+          <a className="primary-button" href={signInUrl}>
+            Sign in through Church Hub →
+          </a>
         )}
         <div className="login-boundaries">
           <strong>Public intelligence, not private surveillance</strong>
           <span>No private-group monitoring or access-control bypass.</span>
           <span>No individual religious profiles or vulnerability scores.</span>
-          <span>No automatic public replies, publishing, meetings, ad audiences, or budget changes.</span>
+          <span>
+            No automatic public replies, publishing, meetings, ad audiences, or budget changes.
+          </span>
           <span>Every production access is logged for church governance.</span>
         </div>
       </section>

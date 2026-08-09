@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "Unsupported event." }, { status: 400 });
   }
   if (serverSubmissionEvents.has(event)) {
-    return NextResponse.json({ message: "Submission event is recorded by its form workflow." }, { status: 202 });
+    return NextResponse.json(
+      { message: "Submission event is recorded by its form workflow." },
+      { status: 202 },
+    );
   }
   const sessionId =
     typeof body?.anonymousSessionId === "string"

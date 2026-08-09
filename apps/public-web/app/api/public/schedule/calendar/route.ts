@@ -1,7 +1,11 @@
 import { getPublishedSchedule } from "@/lib/published-content";
 
 function escapeIcs(value: string): string {
-  return value.replaceAll("\\", "\\\\").replaceAll(";", "\\;").replaceAll(",", "\\,").replaceAll("\n", "\\n");
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll(";", "\\;")
+    .replaceAll(",", "\\,")
+    .replaceAll("\n", "\\n");
 }
 
 export function GET() {
@@ -9,7 +13,10 @@ export function GET() {
   const date = service.date.replaceAll("-", "");
   const time = `${service.localTime.replace(":", "")}00`;
   const location = `${service.location.name}, ${service.location.addressLine1}, ${service.location.city}, ${service.location.region} ${service.location.postalCode}`;
-  const generated = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  const generated = new Date()
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",

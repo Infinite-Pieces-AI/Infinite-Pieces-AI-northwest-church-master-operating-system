@@ -15,10 +15,26 @@ export default function LoginPage() {
       </p>
 
       <div className="member-login-value-grid" aria-label="Church Hub capabilities">
-        <article><span>✦</span><strong>Grow</strong><small>Weekly teaching and the whole-Bible journey</small></article>
-        <article><span>∞</span><strong>Connect</strong><small>Meals, walks, playdates, groups, and meetups</small></article>
-        <article><span>◇</span><strong>Serve</strong><small>Real needs, shifts, teams, and community partners</small></article>
-        <article><span>⌁</span><strong>Care</strong><small>Family tools, notifications, and approved support</small></article>
+        <article>
+          <span>✦</span>
+          <strong>Grow</strong>
+          <small>Weekly teaching and the whole-Bible journey</small>
+        </article>
+        <article>
+          <span>∞</span>
+          <strong>Connect</strong>
+          <small>Meals, walks, playdates, groups, and meetups</small>
+        </article>
+        <article>
+          <span>◇</span>
+          <strong>Serve</strong>
+          <small>Real needs, shifts, teams, and community partners</small>
+        </article>
+        <article>
+          <span>⌁</span>
+          <strong>Care</strong>
+          <small>Family tools, notifications, and approved support</small>
+        </article>
       </div>
 
       {demoEnabled ? (
@@ -30,15 +46,23 @@ export default function LoginPage() {
             Demo mode uses fictional data so you can explore the full app before Supabase is
             connected.
           </p>
-          <div className="auth-divider"><span>or use the secure member flow</span></div>
+          <div className="auth-divider">
+            <span>or use the secure member flow</span>
+          </div>
         </>
       ) : null}
 
       <LoginForm />
 
       <div className="auth-support-grid">
-        <Link href="/request-access"><strong>Request member access</strong><span>Known members and guardians are approved through a single-use invitation.</span></Link>
-        <a href="mailto:technology@example.invalid?subject=Church%20Hub%20account%20help"><strong>Account or email changed?</strong><span>Ask the church’s approved support owner for identity-safe help.</span></a>
+        <Link href="/request-access">
+          <strong>Request member access</strong>
+          <span>Known members and guardians are approved through a single-use invitation.</span>
+        </Link>
+        <a href="mailto:technology@example.invalid?subject=Church%20Hub%20account%20help">
+          <strong>Account or email changed?</strong>
+          <span>Ask the church’s approved support owner for identity-safe help.</span>
+        </a>
       </div>
       <p className="auth-fine-print">
         Passkeys and trusted-device approval are planned after the church-controlled production
