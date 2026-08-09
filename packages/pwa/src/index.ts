@@ -8,7 +8,7 @@ export const OFFLINE_CACHE_VERSION = "church-hub-offline-v2";
 export const offlineSafePaths = [
   "/api/offline/service-schedule",
   "/api/offline/weekly-lesson",
-  "/offline"
+  "/offline",
 ] as const;
 
 export type OfflineSafePath = (typeof offlineSafePaths)[number];
@@ -27,11 +27,10 @@ export function base64UrlToUint8Array(value: string): Uint8Array {
   return Uint8Array.from(decoded, (character: string) => character.charCodeAt(0));
 }
 
-
 export const defaultWebPushEndpointHosts = [
   "fcm.googleapis.com",
   "updates.push.services.mozilla.com",
-  "web.push.apple.com"
+  "web.push.apple.com",
 ] as const;
 
 export function parseAllowedPushHosts(value: string | undefined): string[] {
@@ -42,7 +41,10 @@ export function parseAllowedPushHosts(value: string | undefined): string[] {
   return configured.length ? [...new Set(configured)] : [...defaultWebPushEndpointHosts];
 }
 
-export function validatePushEndpoint(endpoint: string, allowedHosts: readonly string[] = defaultWebPushEndpointHosts): URL {
+export function validatePushEndpoint(
+  endpoint: string,
+  allowedHosts: readonly string[] = defaultWebPushEndpointHosts,
+): URL {
   let parsed: URL;
   try {
     parsed = new URL(endpoint);
@@ -79,7 +81,7 @@ export interface BrowserPushSubscription {
 
 export function normalizePushSubscription(
   value: unknown,
-  allowedHosts: readonly string[] = defaultWebPushEndpointHosts
+  allowedHosts: readonly string[] = defaultWebPushEndpointHosts,
 ): BrowserPushSubscription {
   if (!value || typeof value !== "object") throw new Error("Push subscription is missing");
   const candidate = value as {
@@ -91,21 +93,29 @@ export function normalizePushSubscription(
     throw new Error("Push subscription endpoint is missing");
   }
   validatePushEndpoint(candidate.endpoint, allowedHosts);
-  if (!candidate.keys || typeof candidate.keys.p256dh !== "string" || typeof candidate.keys.auth !== "string") {
+  if (
+    !candidate.keys ||
+    typeof candidate.keys.p256dh !== "string" ||
+    typeof candidate.keys.auth !== "string"
+  ) {
     throw new Error("Push subscription encryption keys are missing");
   }
-  if (candidate.keys.p256dh.length > 512 || candidate.keys.auth.length > 256 || candidate.endpoint.length > 2048) {
+  if (
+    candidate.keys.p256dh.length > 512 ||
+    candidate.keys.auth.length > 256 ||
+    candidate.endpoint.length > 2048
+  ) {
     throw new Error("Push subscription exceeds allowed limits");
   }
   return {
     endpoint: candidate.endpoint,
     expirationTime: typeof candidate.expirationTime === "number" ? candidate.expirationTime : null,
-    keys: { p256dh: candidate.keys.p256dh, auth: candidate.keys.auth }
+    keys: { p256dh: candidate.keys.p256dh, auth: candidate.keys.auth },
   };
 }
 
 export const offlineSafeResponseHeaders = {
   "Cache-Control": "private, max-age=0, must-revalidate",
   "X-Church-Offline-Safe": "true",
-  "X-Content-Type-Options": "nosniff"
+  "X-Content-Type-Options": "nosniff",
 } as const;

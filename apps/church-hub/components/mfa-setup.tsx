@@ -9,6 +9,11 @@ interface FactorState {
   status: "verified" | "unverified";
 }
 
+interface RuntimeTotpFactor {
+  id: string;
+  status: string;
+}
+
 export function MfaSetup({ nextPath }: { nextPath: string }) {
   const router = useRouter();
   const [factor, setFactor] = useState<FactorState | null>(null);
@@ -29,17 +34,19 @@ export function MfaSetup({ nextPath }: { nextPath: string }) {
           setMessage("MFA status could not be loaded.");
           return;
         }
-        const totpFactors = data.totp ?? [];
+        const totpFactors = (data.totp ?? []) as RuntimeTotpFactor[];
         const verified = totpFactors.find((item) => item.status === "verified");
-        const unverified = totpFactors.find((item) => item.status === "unverified");
+        const unverified = totpFactors.find((item) => item.status !== "verified");
         const selected = verified ?? unverified;
-        setFactor(selected ? { id: selected.id, status: selected.status } : null);
+        const selectedStatus: FactorState["status"] =
+          selected?.status === "verified" ? "verified" : "unverified";
+        setFactor(selected ? { id: selected.id, status: selectedStatus } : null);
         setMessage(
           verified
             ? "Enter the current six-digit code from your authenticator app."
             : unverified
               ? "Finish verifying the authenticator factor you already started."
-              : "Enroll an authenticator app before opening privileged administration."
+              : "Enroll an authenticator app before opening privileged administration.",
         );
       } catch {
         if (active) setMessage("MFA is not configured in this environment.");
@@ -57,7 +64,7 @@ export function MfaSetup({ nextPath }: { nextPath: string }) {
       const supabase = createClient();
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "Boston Church Lowell Hub"
+        friendlyName: "Boston Church Lowell Hub",
       });
       if (error) {
         setMessage(error.message);
@@ -85,7 +92,7 @@ export function MfaSetup({ nextPath }: { nextPath: string }) {
       const supabase = createClient();
       const { error } = await supabase.auth.mfa.challengeAndVerify({
         factorId: factor.id,
-        code
+        code,
       });
       if (error) {
         setMessage("The authenticator code was not accepted.");
@@ -105,8 +112,8 @@ export function MfaSetup({ nextPath }: { nextPath: string }) {
       <p className="hub-kicker">Privileged account protection</p>
       <h1>Verify multifactor authentication</h1>
       <p>
-        Ministers, content editors, moderators, safety administrators, technical administrators,
-        and super administrators must use an authenticator factor before privileged operations.
+        Ministers, content editors, moderators, safety administrators, technical administrators, and
+        super administrators must use an authenticator factor before privileged operations.
       </p>
 
       {!factor ? (

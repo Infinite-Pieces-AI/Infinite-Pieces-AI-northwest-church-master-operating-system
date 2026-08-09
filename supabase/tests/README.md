@@ -1,4 +1,3 @@
-
 # Database authorization tests
 
 These pgTAP tests validate schema invariants and representative Row Level Security boundaries.

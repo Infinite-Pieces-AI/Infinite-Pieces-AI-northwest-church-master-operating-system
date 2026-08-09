@@ -13,26 +13,26 @@
 
 ## Principal threats
 
-| Threat | Control |
-|---|---|
-| Shared invite code leaks | Random single-use email-bound token, hash at rest, expiration, revocation |
-| Membership/role oracle | Target-user authorization helpers accept self only; explicit other-user checks require service role |
-| Push endpoint SSRF | Approved provider-host allowlist at subscription and delivery boundaries |
-| Shared-device residue | Sign-out revokes push, unsubscribes browser, clears offline snapshots, and ends session |
-| Draft editor bypasses approval | Publication-state helper blocks content editors from modifying, deleting, or creating published rows |
-| IDOR/cross-group access | RLS helpers, self-only target checks, and automated tests |
-| Privileged account takeover | MFA/aal2 policies, dual recovery owners, session review |
-| Public-site key reads private data | Safe projections, no service key, default-deny RLS |
-| Child-media disclosure | Private bucket, exact path authorization, scope consent, scan/review, signed URLs |
-| Volunteer overreach | Time-limited roster projection instead of child-table access |
-| Teen/adult unsafe contact | No unrestricted direct messaging; supervised group channels |
-| Webhook forgery/replay | Provider verification adapter, receipt idempotency, payload hash |
-| Prompt injection/data exfiltration | Approved-document allowlist, prohibited domains, no service credentials, citations |
-| Social/advertising privacy leak | Separate outreach schema, aggregate analytics, human approval, forbidden fields |
-| Stale service information | Canonical occurrences/overrides and propagation tests |
-| Supply-chain compromise | Lockfile, dependency review, Dependabot, CodeQL, secret scanning |
-| Backup misconception | Separate database and storage backups with restore tests |
-| Insider misuse | Least privilege, separated admin roles, audit, periodic access review, offboarding |
+| Threat                             | Control                                                                                              |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Shared invite code leaks           | Random single-use email-bound token, hash at rest, expiration, revocation                            |
+| Membership/role oracle             | Target-user authorization helpers accept self only; explicit other-user checks require service role  |
+| Push endpoint SSRF                 | Approved provider-host allowlist at subscription and delivery boundaries                             |
+| Shared-device residue              | Sign-out revokes push, unsubscribes browser, clears offline snapshots, and ends session              |
+| Draft editor bypasses approval     | Publication-state helper blocks content editors from modifying, deleting, or creating published rows |
+| IDOR/cross-group access            | RLS helpers, self-only target checks, and automated tests                                            |
+| Privileged account takeover        | MFA/aal2 policies, dual recovery owners, session review                                              |
+| Public-site key reads private data | Safe projections, no service key, default-deny RLS                                                   |
+| Child-media disclosure             | Private bucket, exact path authorization, scope consent, scan/review, signed URLs                    |
+| Volunteer overreach                | Time-limited roster projection instead of child-table access                                         |
+| Teen/adult unsafe contact          | No unrestricted direct messaging; supervised group channels                                          |
+| Webhook forgery/replay             | Provider verification adapter, receipt idempotency, payload hash                                     |
+| Prompt injection/data exfiltration | Approved-document allowlist, prohibited domains, no service credentials, citations                   |
+| Social/advertising privacy leak    | Separate outreach schema, aggregate analytics, human approval, forbidden fields                      |
+| Stale service information          | Canonical occurrences/overrides and propagation tests                                                |
+| Supply-chain compromise            | Lockfile, dependency review, Dependabot, CodeQL, secret scanning                                     |
+| Backup misconception               | Separate database and storage backups with restore tests                                             |
+| Insider misuse                     | Least privilege, separated admin roles, audit, periodic access review, offboarding                   |
 
 ## Abuse cases
 

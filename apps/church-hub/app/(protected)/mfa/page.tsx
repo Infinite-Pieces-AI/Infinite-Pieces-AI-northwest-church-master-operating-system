@@ -8,7 +8,7 @@ function safeNextPath(value?: string): string {
 }
 
 export default async function MfaPage({
-  searchParams
+  searchParams,
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {

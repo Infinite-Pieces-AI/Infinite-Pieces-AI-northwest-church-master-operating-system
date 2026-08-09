@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("visitor can review service information and submit a synthetic visit request", async ({ page }) => {
+test("visitor can review service information and submit a synthetic visit request", async ({
+  page,
+}) => {
   await page.goto("/plan-a-visit");
   await expect(page.getByText(/Butler Middle School/i).first()).toBeVisible();
   await page.getByLabel(/first name/i).fill("Example");

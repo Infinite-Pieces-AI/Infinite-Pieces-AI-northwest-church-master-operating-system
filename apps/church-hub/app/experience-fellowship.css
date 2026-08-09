@@ -1,0 +1,555 @@
+/* Fellowship */
+
+.fellowship-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 30px;
+  min-height: 330px;
+  padding: 38px;
+  border-radius: 30px;
+  color: white;
+  background:
+    radial-gradient(circle at 84% 20%, rgba(52, 175, 212, 0.28), transparent 28%),
+    radial-gradient(circle at 12% 100%, rgba(239, 199, 94, 0.22), transparent 34%),
+    linear-gradient(145deg, #061827, #0c3350 55%, #176da8);
+  box-shadow: var(--shadow);
+}
+
+.fellowship-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image: radial-gradient(circle, white 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.fellowship-hero__copy,
+.fellowship-constellation {
+  position: relative;
+  z-index: 1;
+}
+
+.fellowship-hero h2 {
+  max-width: 760px;
+  margin: 8px 0 12px;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.45rem);
+  line-height: 1.03;
+}
+
+.fellowship-hero__copy > p:last-of-type {
+  max-width: 700px;
+  color: #c8dce8;
+  font-size: 1.04rem;
+}
+
+.fellowship-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.fellowship-stat-row div {
+  min-width: 145px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(8px);
+}
+
+.fellowship-stat-row strong,
+.fellowship-stat-row span {
+  display: block;
+}
+
+.fellowship-stat-row strong {
+  color: var(--gold2);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.fellowship-stat-row span {
+  margin-top: 4px;
+  color: #c7dbe7;
+  font-size: 0.73rem;
+}
+
+.fellowship-constellation {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+}
+
+.fellowship-constellation strong {
+  width: 124px;
+  height: 124px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(239, 199, 94, 0.45);
+  border-radius: 50%;
+  color: var(--gold);
+  background: rgba(3, 17, 30, 0.35);
+  box-shadow:
+    0 0 0 26px rgba(255, 255, 255, 0.035),
+    0 0 70px rgba(52, 175, 212, 0.28);
+  font-size: 5rem;
+  font-weight: 400;
+}
+
+.fellowship-constellation span {
+  position: absolute;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #d7e7ee;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.fellowship-constellation span:nth-child(1) {
+  top: 9%;
+  left: 34%;
+}
+.fellowship-constellation span:nth-child(2) {
+  top: 29%;
+  right: 2%;
+}
+.fellowship-constellation span:nth-child(3) {
+  bottom: 18%;
+  right: 7%;
+}
+.fellowship-constellation span:nth-child(4) {
+  bottom: 5%;
+  left: 24%;
+}
+.fellowship-constellation span:nth-child(5) {
+  top: 42%;
+  left: 0;
+}
+
+.fellowship-principles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.fellowship-principles article {
+  display: flex;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: white;
+}
+
+.fellowship-principles article > span {
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.fellowship-principles strong,
+.fellowship-principles p {
+  display: block;
+  margin: 0;
+}
+
+.fellowship-principles p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fellowship-board {
+  margin-top: 28px;
+}
+
+.fellowship-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chips button {
+  padding: 9px 13px;
+  color: var(--muted);
+  border-color: var(--border);
+  background: white;
+}
+
+.filter-chips button:hover,
+.filter-chips button.active {
+  color: white;
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+.fellowship-notice {
+  min-height: 1.4em;
+  margin: 14px 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.host-meetup-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+  gap: 28px;
+  margin: 18px 0 24px;
+  padding: 28px;
+  border: 1px solid #bad5e4;
+  border-radius: 24px;
+  background: radial-gradient(circle at 0 0, rgba(23, 109, 168, 0.09), transparent 40%), white;
+}
+
+.host-meetup-panel h2 {
+  margin: 6px 0;
+  font-family: Georgia, serif;
+  font-size: 2rem;
+}
+
+.host-meetup-panel > div > p:last-child {
+  color: var(--muted);
+}
+
+.host-meetup-form {
+  display: grid;
+  gap: 14px;
+}
+
+.host-meetup-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.host-meetup-form input,
+.host-meetup-form select,
+.host-meetup-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #bfd0d9;
+  border-radius: 11px;
+  color: var(--ink);
+  background: #fbfdfe;
+}
+
+.host-meetup-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.meetup-check-line {
+  display: flex !important;
+  grid-template-columns: none !important;
+  flex-direction: row;
+  align-items: center;
+}
+
+.meetup-check-line input {
+  width: 18px;
+  height: 18px;
+}
+
+.meetup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.meetup-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  background: white;
+  box-shadow: 0 8px 28px rgba(7, 25, 43, 0.055);
+}
+
+.meetup-card__glow {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  background: linear-gradient(90deg, var(--blue), var(--gold));
+}
+
+.meetup-card--prayer .meetup-card__glow {
+  background: linear-gradient(90deg, #6a68c7, #a9a7ef);
+}
+.meetup-card--families .meetup-card__glow {
+  background: linear-gradient(90deg, #e99e43, #f2d185);
+}
+.meetup-card--food .meetup-card__glow {
+  background: linear-gradient(90deg, #a9683e, #e4b48d);
+}
+.meetup-card--service .meetup-card__glow {
+  background: linear-gradient(90deg, #23825b, #83cfaa);
+}
+.meetup-card--sports .meetup-card__glow {
+  background: linear-gradient(90deg, #1e6aa4, #45c3d2);
+}
+.meetup-card--whole-church .meetup-card__glow {
+  background: linear-gradient(90deg, #07192b, #efc75e);
+}
+
+.meetup-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 22px 0;
+}
+
+.meetup-category {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.meetup-category > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--navy);
+  background: var(--gold2);
+  font-weight: 900;
+}
+
+.meetup-category small,
+.meetup-category strong {
+  display: block;
+}
+
+.meetup-category small {
+  color: var(--blue);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meetup-category strong {
+  font-size: 0.78rem;
+}
+
+.family-pill {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--green);
+  background: #e8f6ee;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.meetup-card__body {
+  flex: 1;
+  padding: 18px 22px;
+}
+
+.meetup-card__body h2 {
+  margin: 0 0 10px;
+  font-family: Georgia, serif;
+  font-size: 1.55rem;
+  line-height: 1.12;
+}
+
+.meetup-card__body > p {
+  color: var(--muted);
+}
+
+.meetup-details {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.meetup-details div {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 10px;
+}
+
+.meetup-details dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.meetup-details dd {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.location-reveal {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 11px;
+  color: #6a5610 !important;
+  background: #fff5cc;
+  font-size: 0.75rem;
+}
+
+.location-reveal--open {
+  color: #165b3c !important;
+  background: #e7f5ed;
+}
+
+.location-reveal span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  font-weight: 900;
+}
+
+.meetup-tags,
+.citation-row,
+.journey-reference-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.meetup-tags span,
+.citation-row span,
+.journey-reference-row span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--sky);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.meetup-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 17px 22px 21px;
+  border-top: 1px solid var(--border);
+  background: #fbfcfd;
+}
+
+.attendee-stack {
+  display: grid;
+  grid-template-columns: repeat(3, 24px) auto;
+  align-items: center;
+}
+
+.attendee-stack > span {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  margin-right: -5px;
+  border: 2px solid white;
+  border-radius: 50%;
+  color: var(--navy);
+  background: var(--gold2);
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.attendee-stack > span:nth-child(2) {
+  background: #d5e9f4;
+}
+.attendee-stack > span:nth-child(3) {
+  background: #dff0e5;
+}
+
+.attendee-stack strong,
+.attendee-stack small {
+  grid-column: 4;
+  display: block;
+  margin-left: 10px;
+}
+
+.attendee-stack strong {
+  font-size: 0.76rem;
+}
+
+.attendee-stack small {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.meetup-actions {
+  display: grid;
+  justify-items: stretch;
+  gap: 6px;
+}
+
+.meetup-chat-button {
+  padding: 0;
+  border: 0;
+  color: var(--blue);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.empty-meetups {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.empty-meetups > span {
+  color: var(--gold);
+  font-size: 4rem;
+}
+
+.fellowship-safety-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+  gap: 25px;
+  margin-top: 22px;
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--navy), #123f61);
+}
+
+.fellowship-safety-panel h2 {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+}
+
+.fellowship-safety-panel ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #c8dce7;
+}
+
+.fellowship-safety-panel li {
+  margin: 8px 0;
+}

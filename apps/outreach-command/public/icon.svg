@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Outreach Intelligence infinity mark">
+  <rect width="128" height="128" rx="30" fill="#06131f"/>
+  <path d="M22 64c12-24 30-24 42 0s30 24 42 0c-12-24-30-24-42 0S34 88 22 64Z" fill="none" stroke="#efc75e" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="4" fill="#54d6e8"/>
+</svg>

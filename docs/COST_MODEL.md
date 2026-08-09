@@ -2,12 +2,12 @@
 
 Hosting is not the main long-term cost. Engineering, content, safeguarding, moderation, support, training, security review, and maintenance dominate.
 
-| Stage | Planning range per month |
-|---|---:|
-| Prototype with fictional data | $50–$150 |
-| Public site + member MVP | $100–$400 |
-| Active community, media, AI, notifications | $300–$1,000 |
-| Multi-region/high-media operation | $1,000+ |
+| Stage                                      | Planning range per month |
+| ------------------------------------------ | -----------------------: |
+| Prototype with fictional data              |                 $50–$150 |
+| Public site + member MVP                   |                $100–$400 |
+| Active community, media, AI, notifications |              $300–$1,000 |
+| Multi-region/high-media operation          |                  $1,000+ |
 
 Track separately:
 

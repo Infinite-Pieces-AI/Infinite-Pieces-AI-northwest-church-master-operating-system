@@ -23,10 +23,10 @@ const demoViewer: Viewer = {
     "minister",
     "moderator",
     "safety_admin",
-    "technical_admin"
+    "technical_admin",
   ],
   aal: "aal2",
-  demo: true
+  demo: true,
 };
 
 /**
@@ -43,17 +43,15 @@ export function isDemoModeEnabled(): boolean {
 
 export async function getViewer(): Promise<Viewer | null> {
   if (isDemoModeEnabled()) return demoViewer;
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  ) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return null;
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-  const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
-  if (error || !userId) return null;
+  const claims = data?.claims;
+  const userId = typeof claims?.sub === "string" ? claims.sub : null;
+  if (error || !claims || !userId) return null;
 
   const [{ data: profile }, { data: assignments }] = await Promise.all([
     supabase.from("profiles").select("display_name,email").eq("id", userId).maybeSingle(),
@@ -61,7 +59,7 @@ export async function getViewer(): Promise<Viewer | null> {
       .from("role_assignments")
       .select("role:roles(key)")
       .eq("user_id", userId)
-      .is("revoked_at", null)
+      .is("revoked_at", null),
   ]);
 
   type RoleAssignmentRow = {
@@ -69,17 +67,17 @@ export async function getViewer(): Promise<Viewer | null> {
   };
   const roles = ((assignments ?? []) as RoleAssignmentRow[])
     .map((item): AppRole | undefined =>
-      Array.isArray(item.role) ? item.role[0]?.key : item.role?.key
+      Array.isArray(item.role) ? item.role[0]?.key : item.role?.key,
     )
     .filter((role: AppRole | undefined): role is AppRole => Boolean(role));
 
   return {
     id: userId,
     displayName: profile?.display_name ?? "Member",
-    email: profile?.email ?? String(data.claims.email ?? ""),
+    email: profile?.email ?? String(claims.email ?? ""),
     roles: roles.length ? roles : ["member"],
-    aal: data.claims.aal === "aal2" ? "aal2" : "aal1",
-    demo: false
+    aal: claims.aal === "aal2" ? "aal2" : "aal1",
+    demo: false,
   };
 }
 

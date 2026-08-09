@@ -1,4 +1,3 @@
-
 import { createClient } from "@supabase/supabase-js";
 
 function assertServerOnly(): void {
@@ -20,7 +19,7 @@ export function createAdminClient(environment: NodeJS.ProcessEnv = process.env) 
   // from a running local schema. This prevents a hand-written placeholder from
   // creating false confidence about database contracts.
   return createClient(url, secret, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
 }
 
@@ -31,6 +30,6 @@ export function createAnonymousServerClient(environment: NodeJS.ProcessEnv = pro
   if (!url || !publishableKey) throw new Error("Missing public Supabase configuration");
 
   return createClient(url, publishableKey, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
 }

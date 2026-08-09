@@ -11,7 +11,7 @@ export function ProtectedMediaFrame({
   src,
   alt,
   viewerMark,
-  expiresLabel
+  expiresLabel,
 }: {
   src: string;
   alt: string;
@@ -20,9 +20,19 @@ export function ProtectedMediaFrame({
 }) {
   const mark = viewerMark.trim().slice(0, 48) || "Authorized viewer";
   return (
-    <figure className="protected-media" onContextMenu={(event: { preventDefault(): void }) => event.preventDefault()}>
+    <figure
+      className="protected-media"
+      onContextMenu={(event: { preventDefault(): void }) => event.preventDefault()}
+    >
       <div className="protected-media__canvas">
-        <Image src={src} alt={alt} fill sizes="(max-width: 700px) 100vw, 600px" unoptimized draggable={false} />
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 700px) 100vw, 600px"
+          unoptimized
+          draggable={false}
+        />
         <div className="protected-media__watermark" aria-hidden="true">
           {Array.from({ length: 9 }, (_, index) => (
             <span key={index}>{mark}</span>
@@ -31,7 +41,9 @@ export function ProtectedMediaFrame({
       </div>
       <figcaption>
         <strong>Private, consent-scoped media</strong>
-        <span>{expiresLabel} · Redistribution controls are deterrents, not screenshot prevention.</span>
+        <span>
+          {expiresLabel} · Redistribution controls are deterrents, not screenshot prevention.
+        </span>
       </figcaption>
     </figure>
   );

@@ -1,4 +1,3 @@
-
 # Member PWA service worker boundary
 
 The production service worker is emitted from `public/sw.js`. It intentionally avoids caching API,

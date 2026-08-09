@@ -6,18 +6,18 @@ Deliver a home-screen-installable member experience that remains useful during p
 
 ## Offline classification
 
-| Data class | Offline behavior |
-|---|---|
-| Application shell, logo, structural CSS/JS | Precache permitted |
-| Public service schedule | Explicit offline snapshot permitted |
+| Data class                                              | Offline behavior                    |
+| ------------------------------------------------------- | ----------------------------------- |
+| Application shell, logo, structural CSS/JS              | Precache permitted                  |
+| Public service schedule                                 | Explicit offline snapshot permitted |
 | Approved weekly lesson summary and Scripture references | Explicit offline snapshot permitted |
-| Public fallback/offline page | Cache permitted |
-| This Week personalization | Network-only |
-| Community posts and messages | Network-only |
-| Prayer requests | Network-only |
-| Households, children, pickup, check-in status | Network-only |
-| Invitations, auth callbacks, sessions, MFA | Network-only |
-| Admin, moderation, safeguarding, audit | Network-only |
+| Public fallback/offline page                            | Cache permitted                     |
+| This Week personalization                               | Network-only                        |
+| Community posts and messages                            | Network-only                        |
+| Prayer requests                                         | Network-only                        |
+| Households, children, pickup, check-in status           | Network-only                        |
+| Invitations, auth callbacks, sessions, MFA              | Network-only                        |
+| Admin, moderation, safeguarding, audit                  | Network-only                        |
 
 The service worker recognizes offline-safe responses through narrow paths and `X-Church-Offline-Safe`. A future change that adds another offline path is a security-sensitive change requiring review.
 

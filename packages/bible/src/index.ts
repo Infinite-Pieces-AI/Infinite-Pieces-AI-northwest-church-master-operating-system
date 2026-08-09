@@ -33,7 +33,7 @@ export function parseScriptureReference(input: string): ScriptureReference {
     chapter: Number(chapter),
     ...(verseStart ? { verseStart: Number(verseStart) } : {}),
     ...(verseEnd ? { verseEnd: Number(verseEnd) } : {}),
-    display: normalized
+    display: normalized,
   };
 }
 
@@ -45,7 +45,7 @@ export class ReferenceOnlyBibleProvider implements BibleProvider {
       translationId,
       provider: "reference-only",
       text: "Licensed Bible text is not bundled. Configure an approved provider before displaying passage text.",
-      copyrightNotice: "Reference-only development response."
+      copyrightNotice: "Reference-only development response.",
     };
   }
 }

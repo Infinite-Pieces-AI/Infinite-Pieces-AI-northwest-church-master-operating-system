@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { hasPermission } from "@church/authorization";
@@ -23,19 +22,22 @@ export async function POST(request: Request) {
     return NextResponse.json({
       data: { id: parsed.data.lessonId, publicationStatus: "published", synthetic: true },
       audited: true,
-      demo: true
+      demo: true,
     });
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("publish_weekly_lesson", {
-    p_lesson_id: parsed.data.lessonId
+    p_lesson_id: parsed.data.lessonId,
   });
 
   if (error) {
     return NextResponse.json(
-      { message: "Publishing failed. Minister role, MFA, review state, and RLS/RPC policy are required." },
-      { status: 403 }
+      {
+        message:
+          "Publishing failed. Minister role, MFA, review state, and RLS/RPC policy are required.",
+      },
+      { status: 403 },
     );
   }
 

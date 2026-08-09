@@ -7,7 +7,7 @@ import {
   sanitizePresenceState,
   type PresenceActivity,
   type RealtimeTopicScope,
-  type SafePresenceState
+  type SafePresenceState,
 } from "@church/realtime";
 
 export interface PrivateChannelSession {
@@ -39,8 +39,8 @@ export async function openPrivateChannel(input: {
     config: {
       private: policy.private,
       presence: { key: input.profileId },
-      broadcast: { self: false, ack: true }
-    }
+      broadcast: { self: false, ack: true },
+    },
   });
 
   if (policy.exposePresence && input.onPresenceSync) {
@@ -69,13 +69,16 @@ export async function openPrivateChannel(input: {
         displayLabel: input.displayLabel,
         activity: currentActivity,
         clientInstanceId: input.clientInstanceId,
-        updatedAt: new Date().toISOString()
-      })
+        updatedAt: new Date().toISOString(),
+      }),
     );
   };
 
   await new Promise<void>((resolve, reject) => {
-    const timeout = globalThis.setTimeout(() => reject(new Error("Realtime subscription timed out")), 10_000);
+    const timeout = globalThis.setTimeout(
+      () => reject(new Error("Realtime subscription timed out")),
+      10_000,
+    );
     channel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
         globalThis.clearTimeout(timeout);
@@ -99,6 +102,6 @@ export async function openPrivateChannel(input: {
       } finally {
         await input.supabase.removeChannel(channel);
       }
-    }
+    },
   };
 }

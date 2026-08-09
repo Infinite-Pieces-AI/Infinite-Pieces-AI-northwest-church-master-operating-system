@@ -64,13 +64,13 @@ function formatService(startsAt: unknown) {
       timeZone: "America/New_York",
       weekday: "long",
       month: "long",
-      day: "numeric"
+      day: "numeric",
     }).format(parsed),
     time: new Intl.DateTimeFormat("en-US", {
       timeZone: "America/New_York",
       hour: "numeric",
-      minute: "2-digit"
-    }).format(parsed)
+      minute: "2-digit",
+    }).format(parsed),
   };
 }
 
@@ -83,7 +83,7 @@ function formatEventTime(startsAt: unknown): string {
     month: "short",
     day: "numeric",
     hour: "numeric",
-    minute: "2-digit"
+    minute: "2-digit",
   }).format(parsed);
 }
 
@@ -100,7 +100,7 @@ function normalizeRpcSnapshot(value: unknown): ThisWeekData | null {
     asText(service.address_line_2),
     [asText(service.city), asText(service.state_region), asText(service.postal_code)]
       .filter(Boolean)
-      .join(" ")
+      .join(" "),
   ]
     .filter(Boolean)
     .join(", ");
@@ -120,34 +120,34 @@ function normalizeRpcSnapshot(value: unknown): ThisWeekData | null {
       dateLabel: serviceTime.dateLabel,
       time: serviceTime.time,
       location: asText(service.location_name, "Location pending"),
-      address: address || "Open the current schedule for directions"
+      address: address || "Open the current schedule for directions",
     },
     lesson: {
       series: "Current teaching",
       title: asText(lesson.title, "Weekly lesson"),
       scripture,
-      summary: asText(lesson.summary, "The approved weekly lesson will appear here.")
+      summary: asText(lesson.summary, "The approved weekly lesson will appear here."),
     },
     scriptureOfWeek: {
       reference: asText(lesson.scriptureOfWeekReference, scripture),
-      note: "Open the licensed Bible provider to read the approved translation text."
+      note: "Open the licensed Bible provider to read the approved translation text.",
     },
     announcement: {
       title: asText(lesson.ministerAnnouncement) ? "Minister announcement" : "No new announcement",
-      body: asText(lesson.ministerAnnouncement, "Current approved announcements will appear here.")
+      body: asText(lesson.ministerAnnouncement, "Current approved announcements will appear here."),
     },
     events: events.slice(0, 8).map((event, index) => ({
       id: asText(event.id, `event-${index + 1}`),
       title: asText(event.title, "Church event"),
       when: formatEventTime(event.startsAt),
-      audience: "Approved audience"
+      audience: "Approved audience",
     })),
     groups: groups.map((group, index) => ({
       id: asText(group.id, `group-${index + 1}`),
       name: asText(group.name, "Assigned group"),
-      role: asText(group.kind, "Member")
+      role: asText(group.kind, "Member"),
     })),
-    kids: []
+    kids: [],
   };
 }
 
@@ -158,10 +158,10 @@ export async function loadThisWeekData(viewer: Viewer): Promise<ThisWeekData | n
     timeZone: "America/New_York",
     year: "numeric",
     month: "2-digit",
-    day: "2-digit"
+    day: "2-digit",
   }).format(new Date());
   const { data, error } = await supabase.rpc("get_my_this_week", {
-    p_reference_date: referenceDate
+    p_reference_date: referenceDate,
   });
   if (error || !data) return null;
   return normalizeRpcSnapshot(data);

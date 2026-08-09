@@ -5,7 +5,7 @@ const config = {
   trailingComma: "all",
   printWidth: 100,
   tabWidth: 2,
-  proseWrap: "preserve"
+  proseWrap: "preserve",
 };
 
 export default config;

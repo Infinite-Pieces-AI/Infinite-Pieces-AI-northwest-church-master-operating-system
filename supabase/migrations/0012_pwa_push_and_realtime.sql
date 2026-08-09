@@ -106,16 +106,24 @@ revoke all on function public.can_access_realtime_topic(text, uuid) from public;
 grant execute on function public.can_access_realtime_topic(text, uuid) to authenticated, service_role;
 
 -- Supabase Realtime uses policies on realtime.messages for private broadcast
--- and presence authorization. The DO block keeps local tooling resilient when
--- the managed realtime schema is not available during static analysis.
+-- and presence authorization. Managed Supabase owns this table, while some local
+-- bootstrap environments expose it without granting the migration role ownership.
+-- In that expected case, defer the managed-table policy installation rather than
+-- failing the application's own schema migration.
 do $$
 begin
-  if to_regclass('realtime.messages') is not null then
-    execute 'alter table realtime.messages enable row level security';
-    execute 'drop policy if exists church_realtime_receive on realtime.messages';
-    execute 'drop policy if exists church_realtime_send on realtime.messages';
-    execute 'create policy church_realtime_receive on realtime.messages for select to authenticated using (public.can_access_realtime_topic(realtime.topic()))';
-    execute 'create policy church_realtime_send on realtime.messages for insert to authenticated with check (public.can_access_realtime_topic(realtime.topic()))';
+  if to_regclass('realtime.messages') is not null
+    and to_regprocedure('realtime.topic()') is not null then
+    begin
+      execute 'alter table realtime.messages enable row level security';
+      execute 'drop policy if exists church_realtime_receive on realtime.messages';
+      execute 'drop policy if exists church_realtime_send on realtime.messages';
+      execute 'create policy church_realtime_receive on realtime.messages for select to authenticated using (public.can_access_realtime_topic(realtime.topic()))';
+      execute 'create policy church_realtime_send on realtime.messages for insert to authenticated with check (public.can_access_realtime_topic(realtime.topic()))';
+    exception
+      when insufficient_privilege or undefined_table or undefined_function then
+        raise notice 'Skipping managed Realtime policy bootstrap: %', sqlerrm;
+    end;
   end if;
 end $$;
 

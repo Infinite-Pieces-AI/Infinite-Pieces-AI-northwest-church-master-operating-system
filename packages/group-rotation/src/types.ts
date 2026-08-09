@@ -46,7 +46,7 @@ export const relationshipSignalSources = [
   "past_group",
   "event_coattendance",
   "explicit_connection",
-  "aggregate_interaction"
+  "aggregate_interaction",
 ] as const;
 
 export type RelationshipSignalSource = (typeof relationshipSignalSources)[number];

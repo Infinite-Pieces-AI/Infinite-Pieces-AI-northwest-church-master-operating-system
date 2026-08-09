@@ -1,1 +1,17 @@
-export default function AuthLayout({children}:{children:React.ReactNode}){return <main className="auth-shell"><div className="auth-shell__brand"><span aria-hidden="true">∞</span><p><strong>Church Hub</strong><small>Boston Church Lowell · Northwest</small></p></div>{children}<p className="auth-footer">Private, invitation-only member space · Not indexed by search engines</p></main>}
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="auth-shell">
+      <div className="auth-shell__brand">
+        <span aria-hidden="true">∞</span>
+        <p>
+          <strong>Church Hub</strong>
+          <small>Boston Church Lowell · Northwest</small>
+        </p>
+      </div>
+      {children}
+      <p className="auth-footer">
+        Private, invitation-only member space · Not indexed by search engines
+      </p>
+    </main>
+  );
+}

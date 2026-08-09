@@ -1,4 +1,3 @@
-
 export interface PlanningCenterClientOptions {
   appId: string;
   secret: string;
@@ -36,7 +35,7 @@ export class PlanningCenterClient {
 
     const response = await this.fetchImpl(url, {
       headers: { Authorization: this.authorization, Accept: "application/json" },
-      signal: AbortSignal.timeout(10_000)
+      signal: AbortSignal.timeout(10_000),
     });
     if (!response.ok) throw new Error(`Planning Center request failed: ${response.status}`);
     return (await response.json()) as T;

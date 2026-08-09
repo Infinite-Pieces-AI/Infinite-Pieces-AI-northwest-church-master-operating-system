@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { hasPermission, type Permission } from "@church/authorization";
@@ -13,52 +12,60 @@ const tools: ReadonlyArray<{
 }> = [
   {
     title: "Content",
-    description: "Draft, review, schedule, and publish weekly lessons, events, service overrides, and announcements.",
+    description:
+      "Draft, review, schedule, and publish weekly lessons, events, service overrides, and announcements.",
     slug: "content",
-    permission: "content.draft"
+    permission: "content.draft",
   },
   {
     title: "Access",
-    description: "Review applicants, verify identity, issue single-use invitations, and audit role assignments.",
+    description:
+      "Review applicants, verify identity, issue single-use invitations, and audit role assignments.",
     slug: "access",
-    permission: "access.approve"
+    permission: "access.approve",
   },
   {
     title: "Groups",
-    description: "Manage ministries, family groups, rotation cycles, constraints, proposals, and leader approval.",
+    description:
+      "Manage ministries, family groups, rotation cycles, constraints, proposals, and leader approval.",
     slug: "groups",
-    permission: "group.manage_assigned"
+    permission: "group.manage_assigned",
   },
   {
     title: "Kids Kingdom",
-    description: "View integration health, consent review, private media queues, safeguarding controls, and fallback readiness.",
+    description:
+      "View integration health, consent review, private media queues, safeguarding controls, and fallback readiness.",
     slug: "kids",
-    permission: "safeguarding.review"
+    permission: "safeguarding.review",
   },
   {
     title: "Moderation",
-    description: "Review reports, preserve evidence, apply proportionate actions, and escalate safety concerns.",
+    description:
+      "Review reports, preserve evidence, apply proportionate actions, and escalate safety concerns.",
     slug: "moderation",
-    permission: "moderation.review"
+    permission: "moderation.review",
   },
   {
     title: "Outreach Studio",
-    description: "Review search performance, draft content, campaigns, visitor CRM, and human publication gates.",
+    description:
+      "Review search performance, draft content, campaigns, visitor CRM, and human publication gates.",
     slug: "outreach",
-    permission: "outreach.manage"
+    permission: "outreach.manage",
   },
   {
     title: "Governance",
-    description: "Audit events, access reviews, retention, incidents, backups, and production release gates.",
+    description:
+      "Audit events, access reviews, retention, incidents, backups, and production release gates.",
     slug: "governance",
-    permission: "audit.read"
+    permission: "audit.read",
   },
   {
     title: "System Health",
-    description: "Environment, integrations, job queues, errors, and restore-test status without private content access.",
+    description:
+      "Environment, integrations, job queues, errors, and restore-test status without private content access.",
     slug: "system",
-    permission: "system.health.read"
-  }
+    permission: "system.health.read",
+  },
 ];
 
 export default async function AdminPage() {

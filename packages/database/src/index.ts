@@ -15,5 +15,7 @@ export interface PublicScheduleRecord {
 }
 
 export function isSupabaseConfigured(environment: NodeJS.ProcessEnv = process.env): boolean {
-  return Boolean(environment.NEXT_PUBLIC_SUPABASE_URL && environment.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+  return Boolean(
+    environment.NEXT_PUBLIC_SUPABASE_URL && environment.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  );
 }

@@ -11,7 +11,7 @@ import type {
   RotationInput,
   RotationProposal,
   RotationWeights,
-  ScoreBreakdown
+  ScoreBreakdown,
 } from "./types";
 
 export type * from "./types";
@@ -23,7 +23,7 @@ const defaultWeights: RotationWeights = {
   newcomerClustering: 8,
   lifeStageConcentration: 2,
   existingRelationshipConcentration: 6,
-  isolatedHouseholdSupport: 10
+  isolatedHouseholdSupport: 10,
 };
 
 interface MutableGroup {
@@ -85,14 +85,16 @@ function canBelongToGroup(household: HouseholdUnit, definition: RotationGroup): 
 }
 
 function isFeasible(household: HouseholdUnit, group: MutableGroup): boolean {
-  return canBelongToGroup(household, group.definition) &&
-    group.memberCount + household.memberCount <= group.definition.maximumMembers;
+  return (
+    canBelongToGroup(household, group.definition) &&
+    group.memberCount + household.memberCount <= group.definition.maximumMembers
+  );
 }
 
 function historyPenalty(
   household: HouseholdUnit,
   group: MutableGroup,
-  history: readonly PairingHistoryEntry[]
+  history: readonly PairingHistoryEntry[],
 ): number {
   const groupIds = new Set(group.households.map((item) => item.id));
   return history.reduce((penalty, entry) => {
@@ -106,7 +108,7 @@ function historyPenalty(
 function relationshipFamiliarity(
   household: HouseholdUnit,
   group: MutableGroup,
-  signals: readonly RelationshipSignal[]
+  signals: readonly RelationshipSignal[],
 ): number {
   const groupIds = new Set(group.households.map((item) => item.id));
   return signals.reduce((score, signal) => {
@@ -130,16 +132,21 @@ function candidateScore(
   allGroups: readonly MutableGroup[],
   history: readonly PairingHistoryEntry[],
   relationships: readonly RelationshipSignal[],
-  weights: RotationWeights
+  weights: RotationWeights,
 ): number {
   const projected = group.memberCount + household.memberCount;
   const target = (group.definition.minimumMembers + group.definition.maximumMembers) / 2;
   const repeat = historyPenalty(household, group, history) * weights.repeatedPairing;
-  const familiarity = relationshipFamiliarity(household, group, relationships) * weights.existingRelationshipConcentration;
-  const support = isolatedSupportPenalty(household, group.definition) * weights.isolatedHouseholdSupport;
+  const familiarity =
+    relationshipFamiliarity(household, group, relationships) *
+    weights.existingRelationshipConcentration;
+  const support =
+    isolatedSupportPenalty(household, group.definition) * weights.isolatedHouseholdSupport;
   const imbalance = Math.abs(projected - target) * weights.capacityImbalance;
-  const travel = haversineKilometres(household.location, group.definition.location) * weights.travelDistance;
-  const newcomerCount = group.households.filter((item) => item.isNewcomer).length + (household.isNewcomer ? 1 : 0);
+  const travel =
+    haversineKilometres(household.location, group.definition.location) * weights.travelDistance;
+  const newcomerCount =
+    group.households.filter((item) => item.isNewcomer).length + (household.isNewcomer ? 1 : 0);
   const newcomer = Math.max(0, newcomerCount - 1) * weights.newcomerClustering;
   const sameStage = household.lifeStage
     ? group.households.filter((item) => item.lifeStage === household.lifeStage).length
@@ -153,7 +160,10 @@ function candidateScore(
 
 function averageUtilization(groups: readonly MutableGroup[]): number {
   if (!groups.length) return 0;
-  return groups.reduce((sum, group) => sum + group.memberCount / group.definition.maximumMembers, 0) / groups.length;
+  return (
+    groups.reduce((sum, group) => sum + group.memberCount / group.definition.maximumMembers, 0) /
+    groups.length
+  );
 }
 
 function validateInput(input: RotationInput): ConstraintIssue[] {
@@ -162,64 +172,116 @@ function validateInput(input: RotationInput): ConstraintIssue[] {
   const groupIds = new Set<string>();
   for (const household of input.households) {
     if (householdIds.has(household.id)) {
-      issues.push({ code: "DUPLICATE_HOUSEHOLD", householdId: household.id, message: `Household ${household.id} appears more than once.` });
+      issues.push({
+        code: "DUPLICATE_HOUSEHOLD",
+        householdId: household.id,
+        message: `Household ${household.id} appears more than once.`,
+      });
     }
     householdIds.add(household.id);
   }
   for (const group of input.groups) {
     if (groupIds.has(group.id)) {
-      issues.push({ code: "DUPLICATE_GROUP", groupId: group.id, message: `Group ${group.id} appears more than once.` });
+      issues.push({
+        code: "DUPLICATE_GROUP",
+        groupId: group.id,
+        message: `Group ${group.id} appears more than once.`,
+      });
     }
     groupIds.add(group.id);
   }
   for (const household of input.households) {
     if (household.requiredGroupId && !groupIds.has(household.requiredGroupId)) {
-      issues.push({ code: "UNKNOWN_REQUIRED_GROUP", householdId: household.id, message: `Required group ${household.requiredGroupId} does not exist.` });
+      issues.push({
+        code: "UNKNOWN_REQUIRED_GROUP",
+        householdId: household.id,
+        message: `Required group ${household.requiredGroupId} does not exist.`,
+      });
     }
-    if (household.connectionDegree !== undefined && (household.connectionDegree < 0 || household.connectionDegree > 1)) {
-      issues.push({ code: "INVALID_RELATIONSHIP_SIGNAL", householdId: household.id, message: `Household ${household.id} connectionDegree must be between 0 and 1.` });
+    if (
+      household.connectionDegree !== undefined &&
+      (household.connectionDegree < 0 || household.connectionDegree > 1)
+    ) {
+      issues.push({
+        code: "INVALID_RELATIONSHIP_SIGNAL",
+        householdId: household.id,
+        message: `Household ${household.id} connectionDegree must be between 0 and 1.`,
+      });
     }
   }
   for (const signal of input.relationshipSignals ?? []) {
     if (!householdIds.has(signal.householdAId) || !householdIds.has(signal.householdBId)) {
-      issues.push({ code: "UNKNOWN_RELATIONSHIP_HOUSEHOLD", message: "A relationship signal references a household outside this rotation input." });
+      issues.push({
+        code: "UNKNOWN_RELATIONSHIP_HOUSEHOLD",
+        message: "A relationship signal references a household outside this rotation input.",
+      });
     }
-    if (signal.householdAId === signal.householdBId || signal.familiarity < 0 || signal.familiarity > 1) {
-      issues.push({ code: "INVALID_RELATIONSHIP_SIGNAL", householdId: signal.householdAId, message: "Relationship familiarity must be between 0 and 1 and connect two different households." });
+    if (
+      signal.householdAId === signal.householdBId ||
+      signal.familiarity < 0 ||
+      signal.familiarity > 1
+    ) {
+      issues.push({
+        code: "INVALID_RELATIONSHIP_SIGNAL",
+        householdId: signal.householdAId,
+        message:
+          "Relationship familiarity must be between 0 and 1 and connect two different households.",
+      });
     }
   }
   const people = input.households.reduce((sum, household) => sum + household.memberCount, 0);
   const capacity = input.groups.reduce((sum, group) => sum + group.maximumMembers, 0);
   if (people > capacity) {
-    issues.push({ code: "TOTAL_CAPACITY_EXCEEDED", message: `${people} people cannot fit within total group capacity of ${capacity}.` });
+    issues.push({
+      code: "TOTAL_CAPACITY_EXCEEDED",
+      message: `${people} people cannot fit within total group capacity of ${capacity}.`,
+    });
   }
   const leaderAssignments = new Map<string, string>();
   for (const group of input.groups) {
     for (const leaderId of group.leaderHouseholdIds) {
       if (!householdIds.has(leaderId)) {
-        issues.push({ code: "LEADER_NOT_FOUND", groupId: group.id, householdId: leaderId, message: `Leader household ${leaderId} was not supplied.` });
+        issues.push({
+          code: "LEADER_NOT_FOUND",
+          groupId: group.id,
+          householdId: leaderId,
+          message: `Leader household ${leaderId} was not supplied.`,
+        });
       }
       const existing = leaderAssignments.get(leaderId);
       if (existing && existing !== group.id) {
-        issues.push({ code: "LEADER_CONFLICT", groupId: group.id, householdId: leaderId, message: `Leader household ${leaderId} is assigned to more than one group.` });
+        issues.push({
+          code: "LEADER_CONFLICT",
+          groupId: group.id,
+          householdId: leaderId,
+          message: `Leader household ${leaderId} is assigned to more than one group.`,
+        });
       }
       leaderAssignments.set(leaderId, group.id);
       const household = input.households.find((item) => item.id === leaderId);
       if (household?.requiredGroupId && household.requiredGroupId !== group.id) {
-        issues.push({ code: "REQUIRED_GROUP_CONFLICT", groupId: group.id, householdId: leaderId, message: `Leader household ${leaderId} requires another group.` });
+        issues.push({
+          code: "REQUIRED_GROUP_CONFLICT",
+          groupId: group.id,
+          householdId: leaderId,
+          message: `Leader household ${leaderId} requires another group.`,
+        });
       }
     }
   }
   return issues;
 }
 
-function makeFingerprint(input: RotationInput, assignments: readonly HouseholdAssignment[]): string {
+function makeFingerprint(
+  input: RotationInput,
+  assignments: readonly HouseholdAssignment[],
+): string {
   const canonical = JSON.stringify({
     cycleId: input.cycleId,
     seed: input.seed,
     assignments: [...assignments]
       .map(({ householdId, groupId }) => ({ householdId, groupId }))
-      .sort((a, b) => a.householdId.localeCompare(b.householdId))
+      .sort((a, b) => a.householdId.localeCompare(b.householdId)),
   });
   return createHash("sha256").update(canonical).digest("hex");
 }
@@ -228,7 +290,7 @@ function calculateScore(
   groups: readonly MutableGroup[],
   history: readonly PairingHistoryEntry[],
   relationships: readonly RelationshipSignal[],
-  weights: RotationWeights
+  weights: RotationWeights,
 ): ScoreBreakdown {
   let repeatedPairing = 0;
   let travelDistance = 0;
@@ -248,7 +310,7 @@ function calculateScore(
         const match = history.find(
           (entry) =>
             (entry.householdAId === household.id && entry.householdBId === peer.id) ||
-            (entry.householdAId === peer.id && entry.householdBId === household.id)
+            (entry.householdAId === peer.id && entry.householdBId === household.id),
         );
         if (match) repeatedPairing += 1 / (match.cyclesAgo + 1);
         for (const signal of relationships) {
@@ -259,10 +321,14 @@ function calculateScore(
         }
       }
     }
-    newcomerClustering += Math.max(0, group.households.filter((item) => item.isNewcomer).length - 1);
+    newcomerClustering += Math.max(
+      0,
+      group.households.filter((item) => item.isNewcomer).length - 1,
+    );
     const stages = new Map<string, number>();
     for (const household of group.households) {
-      if (household.lifeStage) stages.set(household.lifeStage, (stages.get(household.lifeStage) ?? 0) + 1);
+      if (household.lifeStage)
+        stages.set(household.lifeStage, (stages.get(household.lifeStage) ?? 0) + 1);
     }
     for (const count of stages.values()) lifeStageConcentration += Math.max(0, count - 2);
   }
@@ -275,8 +341,9 @@ function calculateScore(
     travelDistance: travelDistance * weights.travelDistance,
     newcomerClustering: newcomerClustering * weights.newcomerClustering,
     lifeStageConcentration: lifeStageConcentration * weights.lifeStageConcentration,
-    existingRelationshipConcentration: existingRelationshipConcentration * weights.existingRelationshipConcentration,
-    isolatedHouseholdSupport: isolatedHouseholdSupport * weights.isolatedHouseholdSupport
+    existingRelationshipConcentration:
+      existingRelationshipConcentration * weights.existingRelationshipConcentration,
+    isolatedHouseholdSupport: isolatedHouseholdSupport * weights.isolatedHouseholdSupport,
   };
   return { ...weighted, total: Object.values(weighted).reduce((sum, value) => sum + value, 0) };
 }
@@ -293,39 +360,75 @@ function refineByPairwiseSwaps(input: {
   let acceptedSwaps = 0;
   let completedPasses = 0;
   const movedHouseholdIds = new Set<string>();
-  const orderedGroups = [...input.groups].sort((a, b) => stableHash(`${input.seed}:${a.definition.id}`) - stableHash(`${input.seed}:${b.definition.id}`));
+  const orderedGroups = [...input.groups].sort(
+    (a, b) =>
+      stableHash(`${input.seed}:${a.definition.id}`) -
+      stableHash(`${input.seed}:${b.definition.id}`),
+  );
 
   for (let pass = 0; pass < input.passes; pass += 1) {
     let improved = false;
     completedPasses += 1;
     for (let firstGroupIndex = 0; firstGroupIndex < orderedGroups.length; firstGroupIndex += 1) {
-      for (let secondGroupIndex = firstGroupIndex + 1; secondGroupIndex < orderedGroups.length; secondGroupIndex += 1) {
+      for (
+        let secondGroupIndex = firstGroupIndex + 1;
+        secondGroupIndex < orderedGroups.length;
+        secondGroupIndex += 1
+      ) {
         const firstGroup = orderedGroups[firstGroupIndex];
         const secondGroup = orderedGroups[secondGroupIndex];
         if (!firstGroup || !secondGroup) continue;
         const firstCandidates = [...firstGroup.households]
           .filter((household) => !input.frozenHouseholdIds.has(household.id))
-          .sort((a, b) => stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`));
+          .sort(
+            (a, b) => stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`),
+          );
         const secondCandidates = [...secondGroup.households]
           .filter((household) => !input.frozenHouseholdIds.has(household.id))
-          .sort((a, b) => stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`));
+          .sort(
+            (a, b) => stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`),
+          );
 
         for (const firstHousehold of firstCandidates) {
           for (const secondHousehold of secondCandidates) {
-            if (!canBelongToGroup(firstHousehold, secondGroup.definition) || !canBelongToGroup(secondHousehold, firstGroup.definition)) continue;
-            const nextFirstCount = firstGroup.memberCount - firstHousehold.memberCount + secondHousehold.memberCount;
-            const nextSecondCount = secondGroup.memberCount - secondHousehold.memberCount + firstHousehold.memberCount;
-            if (nextFirstCount > firstGroup.definition.maximumMembers || nextSecondCount > secondGroup.definition.maximumMembers) continue;
+            if (
+              !canBelongToGroup(firstHousehold, secondGroup.definition) ||
+              !canBelongToGroup(secondHousehold, firstGroup.definition)
+            )
+              continue;
+            const nextFirstCount =
+              firstGroup.memberCount - firstHousehold.memberCount + secondHousehold.memberCount;
+            const nextSecondCount =
+              secondGroup.memberCount - secondHousehold.memberCount + firstHousehold.memberCount;
+            if (
+              nextFirstCount > firstGroup.definition.maximumMembers ||
+              nextSecondCount > secondGroup.definition.maximumMembers
+            )
+              continue;
 
-            const before = calculateScore(input.groups, input.history, input.relationships, input.weights).total;
-            const firstIndex = firstGroup.households.findIndex((item) => item.id === firstHousehold.id);
-            const secondIndex = secondGroup.households.findIndex((item) => item.id === secondHousehold.id);
+            const before = calculateScore(
+              input.groups,
+              input.history,
+              input.relationships,
+              input.weights,
+            ).total;
+            const firstIndex = firstGroup.households.findIndex(
+              (item) => item.id === firstHousehold.id,
+            );
+            const secondIndex = secondGroup.households.findIndex(
+              (item) => item.id === secondHousehold.id,
+            );
             if (firstIndex < 0 || secondIndex < 0) continue;
             firstGroup.households[firstIndex] = secondHousehold;
             secondGroup.households[secondIndex] = firstHousehold;
             firstGroup.memberCount = nextFirstCount;
             secondGroup.memberCount = nextSecondCount;
-            const after = calculateScore(input.groups, input.history, input.relationships, input.weights).total;
+            const after = calculateScore(
+              input.groups,
+              input.history,
+              input.relationships,
+              input.weights,
+            ).total;
             if (after + 0.000001 < before) {
               acceptedSwaps += 1;
               improved = true;
@@ -334,8 +437,10 @@ function refineByPairwiseSwaps(input: {
             } else {
               firstGroup.households[firstIndex] = firstHousehold;
               secondGroup.households[secondIndex] = secondHousehold;
-              firstGroup.memberCount = firstGroup.memberCount - secondHousehold.memberCount + firstHousehold.memberCount;
-              secondGroup.memberCount = secondGroup.memberCount - firstHousehold.memberCount + secondHousehold.memberCount;
+              firstGroup.memberCount =
+                firstGroup.memberCount - secondHousehold.memberCount + firstHousehold.memberCount;
+              secondGroup.memberCount =
+                secondGroup.memberCount - firstHousehold.memberCount + secondHousehold.memberCount;
             }
           }
         }
@@ -355,7 +460,11 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
   const relationships = input.relationshipSignals ?? [];
   const requestedPasses = Math.max(0, Math.min(20, input.refinementPasses ?? 4));
   const issues = validateInput(input);
-  const groups: MutableGroup[] = input.groups.map((definition) => ({ definition, households: [], memberCount: 0 }));
+  const groups: MutableGroup[] = input.groups.map((definition) => ({
+    definition,
+    households: [],
+    memberCount: 0,
+  }));
   const assigned = new Set<string>();
   const reasonMap = new Map<string, string[]>();
   const random = createRandom(`${input.cycleId}:${input.seed}`);
@@ -371,20 +480,30 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
     for (const leaderId of group.definition.leaderHouseholdIds) {
       const household = input.households.find((item) => item.id === leaderId);
       if (!household || assigned.has(household.id)) continue;
-      if (isFeasible(household, group)) assign(household, group, ["Required approved leadership coverage"]);
-      else issues.push({ code: "NO_FEASIBLE_GROUP", householdId: household.id, groupId: group.definition.id, message: `Leader household ${household.id} does not satisfy the hard constraints for ${group.definition.name}.` });
+      if (isFeasible(household, group))
+        assign(household, group, ["Required approved leadership coverage"]);
+      else
+        issues.push({
+          code: "NO_FEASIBLE_GROUP",
+          householdId: household.id,
+          groupId: group.definition.id,
+          message: `Leader household ${household.id} does not satisfy the hard constraints for ${group.definition.name}.`,
+        });
     }
   }
 
-  for (const household of input.households.filter((item) => item.requiredGroupId && !assigned.has(item.id))) {
+  for (const household of input.households.filter(
+    (item) => item.requiredGroupId && !assigned.has(item.id),
+  )) {
     const group = groups.find((item) => item.definition.id === household.requiredGroupId);
-    if (group && isFeasible(household, group)) assign(household, group, ["Leadership-approved required group"]);
+    if (group && isFeasible(household, group))
+      assign(household, group, ["Leadership-approved required group"]);
     else {
       issues.push({
         code: "NO_FEASIBLE_GROUP",
         householdId: household.id,
         ...(household.requiredGroupId ? { groupId: household.requiredGroupId } : {}),
-        message: `Household ${household.id} cannot be placed in its required group without violating a hard constraint.`
+        message: `Household ${household.id} cannot be placed in its required group without violating a hard constraint.`,
       });
     }
   }
@@ -392,30 +511,54 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
   const unassigned = input.households
     .filter((item) => !assigned.has(item.id))
     .sort((a, b) => {
-      const difficultyA = (a.forbiddenGroupIds?.length ?? 0) + (a.accessibilityNeeds?.length ?? 0) + a.memberCount;
-      const difficultyB = (b.forbiddenGroupIds?.length ?? 0) + (b.accessibilityNeeds?.length ?? 0) + b.memberCount;
-      return difficultyB - difficultyA || stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`);
+      const difficultyA =
+        (a.forbiddenGroupIds?.length ?? 0) + (a.accessibilityNeeds?.length ?? 0) + a.memberCount;
+      const difficultyB =
+        (b.forbiddenGroupIds?.length ?? 0) + (b.accessibilityNeeds?.length ?? 0) + b.memberCount;
+      return (
+        difficultyB - difficultyA ||
+        stableHash(`${input.seed}:${a.id}`) - stableHash(`${input.seed}:${b.id}`)
+      );
     });
 
   for (const household of unassigned) {
     const candidates = groups
       .filter((group) => isFeasible(household, group))
-      .map((group) => ({ group, score: candidateScore(household, group, groups, input.pairingHistory, relationships, weights), tie: random() }))
+      .map((group) => ({
+        group,
+        score: candidateScore(
+          household,
+          group,
+          groups,
+          input.pairingHistory,
+          relationships,
+          weights,
+        ),
+        tie: random(),
+      }))
       .sort((a, b) => a.score - b.score || a.tie - b.tie);
     const selected = candidates[0];
     if (!selected) {
-      issues.push({ code: "NO_FEASIBLE_GROUP", householdId: household.id, message: `No group can accept household ${household.id} without violating a hard constraint.` });
+      issues.push({
+        code: "NO_FEASIBLE_GROUP",
+        householdId: household.id,
+        message: `No group can accept household ${household.id} without violating a hard constraint.`,
+      });
       continue;
     }
     const reasons = ["Hard constraints satisfied", "Lowest available weighted penalty"];
-    if (historyPenalty(household, selected.group, input.pairingHistory) === 0) reasons.push("No recent repeated household pairing in selected group");
-    if (relationshipFamiliarity(household, selected.group, relationships) === 0) reasons.push("Supports new household connections from approved aggregate signals");
+    if (historyPenalty(household, selected.group, input.pairingHistory) === 0)
+      reasons.push("No recent repeated household pairing in selected group");
+    if (relationshipFamiliarity(household, selected.group, relationships) === 0)
+      reasons.push("Supports new household connections from approved aggregate signals");
     assign(household, selected.group, reasons);
   }
 
   const frozenHouseholdIds = new Set<string>([
     ...input.groups.flatMap((group) => group.leaderHouseholdIds),
-    ...input.households.filter((household) => household.requiredGroupId).map((household) => household.id)
+    ...input.households
+      .filter((household) => household.requiredGroupId)
+      .map((household) => household.id),
   ]);
   const refinement = refineByPairwiseSwaps({
     groups,
@@ -424,20 +567,27 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
     weights,
     frozenHouseholdIds,
     passes: requestedPasses,
-    seed: `${input.cycleId}:${input.seed}:refinement`
+    seed: `${input.cycleId}:${input.seed}:refinement`,
   });
   for (const householdId of refinement.movedHouseholdIds) {
-    reasonMap.set(householdId, [...(reasonMap.get(householdId) ?? []), "Deterministic pairwise refinement improved novelty or balance"]);
+    reasonMap.set(householdId, [
+      ...(reasonMap.get(householdId) ?? []),
+      "Deterministic pairwise refinement improved novelty or balance",
+    ]);
   }
 
   const warnings: string[] = [];
   for (const group of groups) {
     if (group.memberCount < group.definition.minimumMembers) {
-      warnings.push(`${group.definition.name} has ${group.memberCount} members, below its preferred minimum of ${group.definition.minimumMembers}.`);
+      warnings.push(
+        `${group.definition.name} has ${group.memberCount} members, below its preferred minimum of ${group.definition.minimumMembers}.`,
+      );
     }
   }
   if (relationships.some((signal) => signal.source === "aggregate_interaction")) {
-    warnings.push("Aggregate interaction signals were used. Leadership should verify that only content-free, governance-approved metadata was supplied.");
+    warnings.push(
+      "Aggregate interaction signals were used. Leadership should verify that only content-free, governance-approved metadata was supplied.",
+    );
   }
 
   const summaries: GroupSummary[] = groups.map((group) => ({
@@ -445,18 +595,21 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
     householdIds: group.households.map((item) => item.id),
     memberCount: group.memberCount,
     minimumMembers: group.definition.minimumMembers,
-    maximumMembers: group.definition.maximumMembers
+    maximumMembers: group.definition.maximumMembers,
   }));
   const assignments: HouseholdAssignment[] = groups.flatMap((group) =>
     group.households.map((household) => ({
       householdId: household.id,
       groupId: group.definition.id,
       memberCount: household.memberCount,
-      privateReasons: reasonMap.get(household.id) ?? ["Hard constraints satisfied"]
-    }))
+      privateReasons: reasonMap.get(household.id) ?? ["Hard constraints satisfied"],
+    })),
   );
-  const unassignedHouseholdIds = input.households.filter((item) => !assigned.has(item.id)).map((item) => item.id);
-  const fatal = issues.some((issue) => issue.code !== "NO_FEASIBLE_GROUP") || unassignedHouseholdIds.length > 0;
+  const unassignedHouseholdIds = input.households
+    .filter((item) => !assigned.has(item.id))
+    .map((item) => item.id);
+  const fatal =
+    issues.some((issue) => issue.code !== "NO_FEASIBLE_GROUP") || unassignedHouseholdIds.length > 0;
   return {
     cycleId: input.cycleId,
     seed: input.seed,
@@ -471,14 +624,17 @@ export function generateRotationProposal(input: RotationInput): RotationProposal
       strategy: "deterministic-greedy-plus-pairwise-refinement",
       requestedPasses,
       completedPasses: refinement.completedPasses,
-      acceptedSwaps: refinement.acceptedSwaps
+      acceptedSwaps: refinement.acceptedSwaps,
     },
     generatedAt: new Date().toISOString(),
-    fingerprint: makeFingerprint(input, assignments)
+    fingerprint: makeFingerprint(input, assignments),
   };
 }
 
-export function compareProposals(previous: RotationProposal, next: RotationProposal): {
+export function compareProposals(
+  previous: RotationProposal,
+  next: RotationProposal,
+): {
   movedHouseholdIds: string[];
   unchangedHouseholdIds: string[];
 } {
@@ -486,7 +642,8 @@ export function compareProposals(previous: RotationProposal, next: RotationPropo
   const movedHouseholdIds: string[] = [];
   const unchangedHouseholdIds: string[] = [];
   for (const assignment of next.assignments) {
-    if (previousMap.get(assignment.householdId) === assignment.groupId) unchangedHouseholdIds.push(assignment.householdId);
+    if (previousMap.get(assignment.householdId) === assignment.groupId)
+      unchangedHouseholdIds.push(assignment.householdId);
     else movedHouseholdIds.push(assignment.householdId);
   }
   return { movedHouseholdIds, unchangedHouseholdIds };

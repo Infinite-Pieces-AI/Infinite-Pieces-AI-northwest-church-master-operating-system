@@ -6,20 +6,20 @@ This record explains how the additional “Architectural Blueprint and Logistics
 
 ## Integrated directly
 
-| Additional blueprint capability | Master operating-system implementation |
-|---|---|
-| One Turborepo/Vercel monorepo | One private workspace containing two Next.js applications, server workers, shared packages, Supabase migrations, tests, and governance documentation. |
-| Public Next.js acquisition site | Canonical schedule, Plan a Visit, ministry pages, public events, sermons, local discovery, JSON-LD, aggregate telemetry, and protected revalidation. |
-| Invite-only internal PWA | Single-use email-bound invitations, Supabase Auth, MFA for privileged roles, installable member hub, privacy-aware service worker, and web push. |
-| PostgreSQL Row Level Security | Database-enforced access for channels, groups, households, guardians, children, media, administrators, push subscriptions, and realtime topics. |
-| WebSocket chat and presence | Private Supabase Realtime topics with server/database authorization and a sparse presence allowlist. |
-| Weekly Bible and minister-plan tabs | Published lessons, Scripture references, approved resources, minister announcements, discussion prompts, and licensed-provider boundaries. |
-| Fellowship novelty algorithm | Deterministic household-level proposal engine using history and content-free relationship signals, with local-swap refinement and leader approval. |
-| Kids Kingdom kiosk and labels | Provider-neutral kiosk, signed short-lived credential, print-job, and release-evidence contracts integrated behind the existing ChMS and safety gates. |
-| AI curriculum and creative support | Approved-source weekly curriculum and image-prompt drafts with citations, theological/communications review, and no automatic publication. |
+| Additional blueprint capability          | Master operating-system implementation                                                                                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| One Turborepo/Vercel monorepo            | One private workspace containing two Next.js applications, server workers, shared packages, Supabase migrations, tests, and governance documentation.                    |
+| Public Next.js acquisition site          | Canonical schedule, Plan a Visit, ministry pages, public events, sermons, local discovery, JSON-LD, aggregate telemetry, and protected revalidation.                     |
+| Invite-only internal PWA                 | Single-use email-bound invitations, Supabase Auth, MFA for privileged roles, installable member hub, privacy-aware service worker, and web push.                         |
+| PostgreSQL Row Level Security            | Database-enforced access for channels, groups, households, guardians, children, media, administrators, push subscriptions, and realtime topics.                          |
+| WebSocket chat and presence              | Private Supabase Realtime topics with server/database authorization and a sparse presence allowlist.                                                                     |
+| Weekly Bible and minister-plan tabs      | Published lessons, Scripture references, approved resources, minister announcements, discussion prompts, and licensed-provider boundaries.                               |
+| Fellowship novelty algorithm             | Deterministic household-level proposal engine using history and content-free relationship signals, with local-swap refinement and leader approval.                       |
+| Kids Kingdom kiosk and labels            | Provider-neutral kiosk, signed short-lived credential, print-job, and release-evidence contracts integrated behind the existing ChMS and safety gates.                   |
+| AI curriculum and creative support       | Approved-source weekly curriculum and image-prompt drafts with citations, theological/communications review, and no automatic publication.                               |
 | Search-intent and local outreach tooling | Aggregate Search Console opportunity scoring, original people-first briefs, local-profile readiness, campaign controls, Ad Grants evaluation, and voluntary visitor CRM. |
-| Push notifications | VAPID-ready user-owned subscriptions, generic lock-screen payloads, safe delivery worker, and endpoint revocation. |
-| Staging and production control | Preview/staging deployments plus a protected manual production-promotion workflow for the two Vercel projects. |
+| Push notifications                       | VAPID-ready user-owned subscriptions, generic lock-screen payloads, safe delivery worker, and endpoint revocation.                                                       |
+| Staging and production control           | Preview/staging deployments plus a protected manual production-promotion workflow for the two Vercel projects.                                                           |
 
 ## Deliberate safety and correctness adaptations
 

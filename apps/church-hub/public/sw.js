@@ -1,10 +1,7 @@
 const SHELL_CACHE = "church-hub-shell-v2";
 const OFFLINE_CACHE = "church-hub-offline-v2";
 const SHELL = ["/icon.svg", "/offline"];
-const OFFLINE_SAFE_PATHS = new Set([
-  "/api/offline/service-schedule",
-  "/api/offline/weekly-lesson"
-]);
+const OFFLINE_SAFE_PATHS = new Set(["/api/offline/service-schedule", "/api/offline/weekly-lesson"]);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(SHELL_CACHE).then((cache) => cache.addAll(SHELL)));
@@ -19,10 +16,10 @@ self.addEventListener("activate", (event) => {
         Promise.all(
           keys
             .filter((key) => ![SHELL_CACHE, OFFLINE_CACHE].includes(key))
-            .map((key) => caches.delete(key))
-        )
+            .map((key) => caches.delete(key)),
+        ),
       )
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -42,7 +39,7 @@ async function fetchAndCacheOfflineSafe(request) {
 function offlineUnavailableResponse() {
   return new Response(JSON.stringify({ error: "Offline snapshot unavailable" }), {
     status: 503,
-    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }
 
@@ -57,7 +54,7 @@ self.addEventListener("fetch", (event) => {
       caches
         .open(OFFLINE_CACHE)
         .then((cache) => cache.match(event.request))
-        .then(async (cached) => cached || (await network) || offlineUnavailableResponse())
+        .then(async (cached) => cached || (await network) || offlineUnavailableResponse()),
     );
     return;
   }
@@ -74,7 +71,11 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request, { cache: "no-store", credentials: "include" }).catch(() => caches.match("/offline")));
+    event.respondWith(
+      fetch(event.request, { cache: "no-store", credentials: "include" }).catch(() =>
+        caches.match("/offline"),
+      ),
+    );
     return;
   }
 
@@ -90,14 +91,15 @@ self.addEventListener("push", (event) => {
     url: "/this-week",
     tag: "church-hub-update",
     icon: "/icon.svg",
-    badge: "/icon.svg"
+    badge: "/icon.svg",
   };
   try {
     if (event.data) payload = { ...payload, ...event.data.json() };
   } catch {
     // Keep the generic privacy-safe fallback.
   }
-  const url = typeof payload.url === "string" && payload.url.startsWith("/") ? payload.url : "/this-week";
+  const url =
+    typeof payload.url === "string" && payload.url.startsWith("/") ? payload.url : "/this-week";
   event.waitUntil(
     self.registration.showNotification(String(payload.title).slice(0, 80), {
       body: String(payload.body).slice(0, 180),
@@ -105,8 +107,8 @@ self.addEventListener("push", (event) => {
       icon: payload.icon || "/icon.svg",
       badge: payload.badge || "/icon.svg",
       data: { url },
-      renotify: false
-    })
+      renotify: false,
+    }),
   );
 });
 
@@ -115,13 +117,15 @@ self.addEventListener("notificationclick", (event) => {
   const target = event.notification.data?.url || "/this-week";
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-      const existing = clients.find((client) => new URL(client.url).origin === self.location.origin);
+      const existing = clients.find(
+        (client) => new URL(client.url).origin === self.location.origin,
+      );
       if (existing) {
         existing.navigate(target);
         return existing.focus();
       }
       return self.clients.openWindow(target);
-    })
+    }),
   );
 });
 

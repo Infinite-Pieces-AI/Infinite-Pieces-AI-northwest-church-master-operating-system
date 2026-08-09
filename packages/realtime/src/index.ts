@@ -38,7 +38,8 @@ export function sanitizePresenceState(input: SafePresenceState): SafePresenceSta
   if (!identifierPattern.test(input.profileId) || !identifierPattern.test(input.clientInstanceId)) {
     throw new Error("Presence identifiers are invalid");
   }
-  if (!allowedPresenceActivities.includes(input.activity)) throw new Error("Presence activity is invalid");
+  if (!allowedPresenceActivities.includes(input.activity))
+    throw new Error("Presence activity is invalid");
   const displayLabel = input.displayLabel.trim().slice(0, 80);
   if (!displayLabel) throw new Error("Presence display label is required");
   const updatedAt = new Date(input.updatedAt);
@@ -58,6 +59,6 @@ export function policyForScope(scope: RealtimeTopicScope): RealtimeChannelPolicy
     private: true,
     requireDatabaseAuthorization: true,
     exposePresence: scope !== "kids-class",
-    allowAdultToTeenDirectMessage: false
+    allowAdultToTeenDirectMessage: false,
   };
 }

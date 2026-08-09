@@ -6,7 +6,7 @@ import { getViewer } from "@/lib/auth/viewer";
 const channelIdSchema = z.string().uuid();
 const messageSchema = z.object({
   body: z.string().trim().min(1).max(5000),
-  clientId: z.string().uuid()
+  clientId: z.string().uuid(),
 });
 
 type RouteContext = { params: Promise<{ channelId: string }> };
@@ -42,7 +42,10 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   const [parsedChannelId, parsedBody] = await Promise.all([
     params.then(({ channelId }) => channelIdSchema.safeParse(channelId)),
-    request.json().catch(() => null).then((body) => messageSchema.safeParse(body))
+    request
+      .json()
+      .catch(() => null)
+      .then((body) => messageSchema.safeParse(body)),
   ]);
 
   if (!parsedChannelId.success || !parsedBody.success) {
@@ -56,10 +59,10 @@ export async function POST(request: Request, { params }: RouteContext) {
           id: parsedBody.data.clientId,
           client_id: parsedBody.data.clientId,
           body: parsedBody.data.body,
-          synthetic: true
-        }
+          synthetic: true,
+        },
       },
-      { status: 201 }
+      { status: 201 },
     );
   }
 
@@ -70,7 +73,7 @@ export async function POST(request: Request, { params }: RouteContext) {
       channel_id: parsedChannelId.data,
       author_id: viewer.id,
       body: parsedBody.data.body,
-      client_id: parsedBody.data.clientId
+      client_id: parsedBody.data.clientId,
     })
     .select("id,client_id,body,created_at,author_id")
     .single();
@@ -91,8 +94,5 @@ export async function POST(request: Request, { params }: RouteContext) {
     }
   }
 
-  return NextResponse.json(
-    { message: "Not permitted to post in this channel" },
-    { status: 403 }
-  );
+  return NextResponse.json({ message: "Not permitted to post in this channel" }, { status: 403 });
 }

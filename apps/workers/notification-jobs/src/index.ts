@@ -1,11 +1,16 @@
 import { sanitizePushPayload, type PushNotificationPayload } from "@church/notifications";
-import { claimOutboxEvents, completeOutboxEvent, failOutboxEvent, runWorker } from "@church/worker-runtime";
+import {
+  claimOutboxEvents,
+  completeOutboxEvent,
+  failOutboxEvent,
+  runWorker,
+} from "@church/worker-runtime";
 
 const supported = [
   "weekly_lesson.published",
   "service_occurrence.updated",
   "member.approved",
-  "group_cycle.approved"
+  "group_cycle.approved",
 ] as const;
 
 function pushPayloadFor(eventType: string): PushNotificationPayload {
@@ -16,7 +21,7 @@ function pushPayloadFor(eventType: string): PushNotificationPayload {
         body: "Open Church Hub for the approved time, location, and directions.",
         url: "/this-week",
         topic: "service_schedule",
-        tag: "service-schedule"
+        tag: "service-schedule",
       });
     case "weekly_lesson.published":
       return sanitizePushPayload({
@@ -24,7 +29,7 @@ function pushPayloadFor(eventType: string): PushNotificationPayload {
         body: "Open the approved lesson, Scripture references, and discussion questions.",
         url: "/bible",
         topic: "weekly_lesson",
-        tag: "weekly-lesson"
+        tag: "weekly-lesson",
       });
     case "group_cycle.approved":
       return sanitizePushPayload({
@@ -32,7 +37,7 @@ function pushPayloadFor(eventType: string): PushNotificationPayload {
         body: "Sign in to view the leadership-approved assignment.",
         url: "/community",
         topic: "assigned_group",
-        tag: "group-cycle"
+        tag: "group-cycle",
       });
     default:
       return sanitizePushPayload({
@@ -40,7 +45,7 @@ function pushPayloadFor(eventType: string): PushNotificationPayload {
         body: "Open the member hub for the latest approved update.",
         url: "/this-week",
         topic: "weekly_digest",
-        tag: "church-hub-update"
+        tag: "church-hub-update",
       });
   }
 }
@@ -50,7 +55,8 @@ await runWorker("notification-jobs", async (context) => {
   let created = 0;
   for (const event of events) {
     try {
-      const audience = typeof event.payload.audience === "string" ? event.payload.audience : "assigned-members";
+      const audience =
+        typeof event.payload.audience === "string" ? event.payload.audience : "assigned-members";
       const profileIds = Array.isArray(event.payload.profileIds)
         ? event.payload.profileIds.filter((value): value is string => typeof value === "string")
         : [];
@@ -59,7 +65,7 @@ await runWorker("notification-jobs", async (context) => {
           eventId: event.id,
           eventType: event.event_type,
           audience,
-          webPushRecipients: profileIds.length
+          webPushRecipients: profileIds.length,
         });
       } else {
         const jobs = [
@@ -69,7 +75,7 @@ await runWorker("notification-jobs", async (context) => {
             audience_key: audience,
             template_key: event.event_type,
             payload: event.payload,
-            status: "pending"
+            status: "pending",
           },
           {
             source_event_id: event.id,
@@ -77,7 +83,7 @@ await runWorker("notification-jobs", async (context) => {
             audience_key: audience,
             template_key: event.event_type,
             payload: event.payload,
-            status: "pending"
+            status: "pending",
           },
           ...profileIds.map((profileId) => ({
             source_event_id: event.id,
@@ -85,8 +91,8 @@ await runWorker("notification-jobs", async (context) => {
             channel: "web_push",
             template_key: event.event_type,
             payload: pushPayloadFor(event.event_type),
-            status: "pending"
-          }))
+            status: "pending",
+          })),
         ];
         const { error } = await context.supabase.from("notification_jobs").insert(jobs);
         if (error) throw error;
@@ -94,7 +100,11 @@ await runWorker("notification-jobs", async (context) => {
       await completeOutboxEvent(context, event.id);
       created += 1;
     } catch (error) {
-      await failOutboxEvent(context, event.id, error instanceof Error ? error.message : "Notification job creation failed");
+      await failOutboxEvent(
+        context,
+        event.id,
+        error instanceof Error ? error.message : "Notification job creation failed",
+      );
     }
   }
   return { claimed: events.length, created };

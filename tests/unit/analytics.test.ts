@@ -9,12 +9,12 @@ describe("public analytics", () => {
       email: "person@example.invalid",
       prayer: "private text",
       child_id: "secret",
-      religious_belief: "inferred"
+      religious_belief: "inferred",
     });
 
     expect(result).toEqual({
       path: "/plan-a-visit",
-      campaign: "welcome-series"
+      campaign: "welcome-series",
     });
   });
 });

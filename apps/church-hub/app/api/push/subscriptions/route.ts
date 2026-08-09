@@ -33,15 +33,16 @@ export async function POST(request: Request) {
   try {
     subscription = normalizePushSubscription(
       body.subscription,
-      parseAllowedPushHosts(process.env.WEB_PUSH_ALLOWED_HOSTS)
+      parseAllowedPushHosts(process.env.WEB_PUSH_ALLOWED_HOSTS),
     );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Invalid push subscription" },
-      { status: 400 }
+      { status: 400 },
     );
   }
-  const deviceLabel = typeof body.deviceLabel === "string" ? body.deviceLabel.trim().slice(0, 80) : null;
+  const deviceLabel =
+    typeof body.deviceLabel === "string" ? body.deviceLabel.trim().slice(0, 80) : null;
   if (viewer.demo) return NextResponse.json({ enabled: true, demo: true });
 
   const supabase = await createClient();
@@ -52,15 +53,18 @@ export async function POST(request: Request) {
       endpoint_hash: endpointHash(subscription.endpoint),
       p256dh_key: subscription.keys.p256dh,
       auth_key: subscription.keys.auth,
-      expiration_time: subscription.expirationTime ? new Date(subscription.expirationTime).toISOString() : null,
+      expiration_time: subscription.expirationTime
+        ? new Date(subscription.expirationTime).toISOString()
+        : null,
       device_label: deviceLabel,
       permission_status: "granted",
       revoked_at: null,
-      failure_count: 0
+      failure_count: 0,
     },
-    { onConflict: "profile_id,endpoint_hash" }
+    { onConflict: "profile_id,endpoint_hash" },
   );
-  if (error) return NextResponse.json({ error: "Unable to save push subscription" }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: "Unable to save push subscription" }, { status: 500 });
   return NextResponse.json({ enabled: true });
 }
 
@@ -78,6 +82,7 @@ export async function DELETE(request: Request) {
     .update({ permission_status: "revoked", revoked_at: new Date().toISOString() })
     .eq("profile_id", viewer.id)
     .eq("endpoint_hash", endpointHash(body.endpoint));
-  if (error) return NextResponse.json({ error: "Unable to revoke push subscription" }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: "Unable to revoke push subscription" }, { status: 500 });
   return NextResponse.json({ enabled: false });
 }

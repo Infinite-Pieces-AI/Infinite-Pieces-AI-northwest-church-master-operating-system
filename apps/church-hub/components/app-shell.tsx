@@ -7,10 +7,13 @@ import { ServiceWorkerRegistration } from "./service-worker-registration";
 
 const sideItems = [
   ["This Week", "/this-week", "⌂"],
-  ["Bible", "/bible", "✦"],
+  ["Bible Journey", "/bible", "✦"],
+  ["Fellowship", "/fellowship", "∞"],
+  ["Serve", "/service", "◇"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
-  ["Family", "/family", "⌁"]
+  ["Connection Path", "/connection-path", "↗"],
+  ["Family", "/family", "⌁"],
 ] as const;
 
 const adminPermissions: readonly Permission[] = [
@@ -21,13 +24,13 @@ const adminPermissions: readonly Permission[] = [
   "moderation.review",
   "outreach.manage",
   "audit.read",
-  "system.health.read"
+  "system.health.read",
 ];
 
 export function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
-  const canAdmin = adminPermissions.some((permission) =>
-    hasPermission(viewer.roles, permission)
-  );
+  const canAdmin = adminPermissions.some((permission) => hasPermission(viewer.roles, permission));
+  const canOutreach = hasPermission(viewer.roles, "outreach.manage");
+  const outreachUrl = process.env.NEXT_PUBLIC_OUTREACH_URL ?? "http://localhost:3002";
 
   return (
     <div className="hub-shell">
@@ -51,11 +54,18 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
               Ministry Admin
             </Link>
           ) : null}
+          {canOutreach ? (
+            <a href={outreachUrl}>
+              <span aria-hidden="true">⌕</span>
+              Outreach OS ↗
+            </a>
+          ) : null}
         </nav>
         <div className="sidebar-safety">
-          <strong>Private member space</strong>
+          <strong>Belonging with boundaries</strong>
           <span>
-            Do not copy child, prayer, counseling, or private-group information into public tools.
+            Use public meeting places for open invitations. Keep child, prayer, counseling,
+            safeguarding, and private-group information inside approved workflows.
           </span>
         </div>
       </aside>
@@ -63,7 +73,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         <header className="hub-topbar">
           <div>
             <p>Boston Church Lowell</p>
-            <span>Calm, useful, and member-first</span>
+            <span>Discover · Join · Serve · Follow Jesus together</span>
           </div>
           <div className="viewer-chip">
             <span>{viewer.displayName.slice(0, 1)}</span>
@@ -78,8 +88,8 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         </header>
         {viewer.demo ? (
           <div className="demo-banner">
-            <strong>Demo mode:</strong> all people, children, groups, and activity shown here are
-            synthetic. Production builds block demo mode.
+            <strong>Demo mode:</strong> all people, children, groups, locations, service projects,
+            and activity shown here are synthetic. Production builds block demo mode.
           </div>
         ) : null}
         <main className="hub-content">{children}</main>

@@ -1,5 +1,31 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-const schema=z.object({email:z.string().trim().email().max(254)});
-export async function POST(request:Request){const body:unknown=await request.json().catch(()=>null);const parsed=schema.safeParse(body);const generic="If an approved account exists, a secure sign-in link will be sent.";if(!parsed.success)return NextResponse.json({message:generic},{status:202});const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;if(!url||!key)return NextResponse.json({message:"Authentication is not configured in this starter environment."},{status:503});const supabase=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});await supabase.auth.signInWithOtp({email:parsed.data.email,options:{shouldCreateUser:false,emailRedirectTo:new URL("/auth/callback",process.env.NEXT_PUBLIC_HUB_URL??"http://localhost:3001").toString()}});return NextResponse.json({message:generic},{status:202})}
+const schema = z.object({ email: z.string().trim().email().max(254) });
+export async function POST(request: Request) {
+  const body: unknown = await request.json().catch(() => null);
+  const parsed = schema.safeParse(body);
+  const generic = "If an approved account exists, a secure sign-in link will be sent.";
+  if (!parsed.success) return NextResponse.json({ message: generic }, { status: 202 });
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key)
+    return NextResponse.json(
+      { message: "Authentication is not configured in this starter environment." },
+      { status: 503 },
+    );
+  const supabase = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+  await supabase.auth.signInWithOtp({
+    email: parsed.data.email,
+    options: {
+      shouldCreateUser: false,
+      emailRedirectTo: new URL(
+        "/auth/callback",
+        process.env.NEXT_PUBLIC_HUB_URL ?? "http://localhost:3001",
+      ).toString(),
+    },
+  });
+  return NextResponse.json({ message: generic }, { status: 202 });
+}

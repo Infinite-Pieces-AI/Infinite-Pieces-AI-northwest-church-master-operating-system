@@ -6,10 +6,10 @@ Create the GitHub organization, Vercel team, Supabase organization, domain/DNS, 
 
 ## Vercel projects
 
-| Project | Root directory | Public exposure |
-|---|---|---|
-| Public website | `apps/public-web` | Indexed public domain |
-| Church hub | `apps/church-hub` | Authenticated subdomain, `noindex` |
+| Project        | Root directory    | Public exposure                    |
+| -------------- | ----------------- | ---------------------------------- |
+| Public website | `apps/public-web` | Indexed public domain              |
+| Church hub     | `apps/church-hub` | Authenticated subdomain, `noindex` |
 
 The two projects share one repository but deploy independently. Pull requests create previews. The `staging` branch may deploy automatically for integrated testing. Automatic `main` deployments are disabled in the checked-in Vercel configuration.
 

@@ -1,4 +1,3 @@
-
 import { describe, expect, it } from "vitest";
 import { assertAiRequestAllowed, buildBibleCompanionSystemPrompt } from "@church/ai";
 
@@ -6,8 +5,8 @@ describe("AI guardrails", () => {
   it("rejects prohibited private data classes", () => {
     expect(() =>
       assertAiRequestAllowed({
-        requestedDataClasses: ["published_weekly_lesson", "child_record"]
-      })
+        requestedDataClasses: ["published_weekly_lesson", "child_record"],
+      }),
     ).toThrow(/prohibited/i);
   });
 

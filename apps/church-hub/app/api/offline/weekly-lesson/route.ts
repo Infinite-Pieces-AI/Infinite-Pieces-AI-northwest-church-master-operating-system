@@ -12,7 +12,7 @@ export async function GET() {
   if (!snapshot) {
     return NextResponse.json(
       { error: "The approved weekly lesson is temporarily unavailable." },
-      { status: 503 }
+      { status: 503 },
     );
   }
   return NextResponse.json(
@@ -23,10 +23,11 @@ export async function GET() {
         series: snapshot.lesson.series,
         title: snapshot.lesson.title,
         scriptureReference: snapshot.lesson.scripture,
-        summary: snapshot.lesson.summary
+        summary: snapshot.lesson.summary,
       },
-      notice: "Licensed Bible text is not cached by this endpoint. Open the approved provider when online."
+      notice:
+        "Licensed Bible text is not cached by this endpoint. Open the approved provider when online.",
     },
-    { headers: offlineSafeResponseHeaders }
+    { headers: offlineSafeResponseHeaders },
   );
 }

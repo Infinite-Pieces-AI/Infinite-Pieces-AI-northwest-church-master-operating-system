@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  resolveNextService,
-  type Location,
-  type ServiceTemplate
-} from "@church/church-content";
+import { resolveNextService, type Location, type ServiceTemplate } from "@church/church-content";
 
 const location: Location = {
   id: "loc",
@@ -14,7 +10,7 @@ const location: Location = {
   postalCode: "01852",
   country: "US",
   directionsUrl: "https://maps.example.invalid/butler-middle-school",
-  accessibilityNotes: ["Confirm current entrance and accessibility details before publication."]
+  accessibilityNotes: ["Confirm current entrance and accessibility details before publication."],
 };
 
 const template: ServiceTemplate = {
@@ -24,7 +20,7 @@ const template: ServiceTemplate = {
   localTime: "10:00",
   timezone: "America/New_York",
   title: "Sunday Worship",
-  status: "published"
+  status: "published",
 };
 
 describe("canonical schedule", () => {
@@ -40,9 +36,9 @@ describe("canonical schedule", () => {
           kind: "small_groups",
           title: "Small Groups Sunday",
           publicMessage: "Small groups meet locally.",
-          status: "published"
-        }
-      ]
+          status: "published",
+        },
+      ],
     });
 
     expect(result.status).toBe("small_groups");
@@ -56,7 +52,7 @@ describe("canonical schedule", () => {
       now: new Date("2026-08-17T00:00:00Z"),
       template,
       locations: [location],
-      overrides: []
+      overrides: [],
     });
 
     expect(result.date).toBe("2026-08-23");

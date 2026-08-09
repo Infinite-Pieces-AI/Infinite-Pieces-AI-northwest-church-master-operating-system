@@ -1,4 +1,3 @@
-
 # Public content boundary
 
 This directory is reserved for source-controlled, non-sensitive public content such as approved

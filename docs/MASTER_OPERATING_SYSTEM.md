@@ -94,17 +94,17 @@ The workers remain in the monorepo until scale, runtime duration, vendor ownersh
 
 The additional proposal contained ambitious ideas that are valuable only when implemented within stricter boundaries. The master architecture adopts them as follows:
 
-| Proposed idea | Master implementation |
-|---|---|
-| Cache recent posts and lessons for weak connectivity | Cache only explicitly approved, non-personalized schedule and lesson snapshots. Chats, households, children, prayer, auth, and personalized APIs remain network-only. |
-| Real-time presence for all social areas | Use private RLS-authorized topics and sparse presence. Kids-class presence is disabled by policy; no cross-channel tracking. |
-| Interaction-based graph partitioning | Use content-free, leadership-attested aggregate relationship signals, pairing history, newcomer support, and local-swap refinement. Never inspect message text, prayer, child, or counseling data. |
-| Custom QR child check-in and release | Build provider-neutral kiosk and label adapters, but keep Planning Center/current ChMS as the early system of record. A QR credential is not release authority. |
-| Prevent child-photo downloading | Use consent scope, private storage, signed expiry, audit, takedown, and visible viewer watermarks. State honestly that screenshots cannot be prevented. |
-| Automatically create local SEO pages from trends | Generate people-first content briefs only. Approved facts, substantive sections, communications review, and no mass programmatic publishing are mandatory. |
-| Automatically generate Bible curriculum and creative | Generate drafts from approved source documents; require ministerial/communications approval and citations before use. |
-| Find people searching for God | Observe aggregate search demand and invite voluntary contact. Never identify, infer, or target an individual based on religious beliefs or private spiritual activity. |
-| Main branch as staging through branch tricks | Use previews/staging plus a protected manual production-promotion workflow with church-owned environment approvals. |
+| Proposed idea                                        | Master implementation                                                                                                                                                                              |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cache recent posts and lessons for weak connectivity | Cache only explicitly approved, non-personalized schedule and lesson snapshots. Chats, households, children, prayer, auth, and personalized APIs remain network-only.                              |
+| Real-time presence for all social areas              | Use private RLS-authorized topics and sparse presence. Kids-class presence is disabled by policy; no cross-channel tracking.                                                                       |
+| Interaction-based graph partitioning                 | Use content-free, leadership-attested aggregate relationship signals, pairing history, newcomer support, and local-swap refinement. Never inspect message text, prayer, child, or counseling data. |
+| Custom QR child check-in and release                 | Build provider-neutral kiosk and label adapters, but keep Planning Center/current ChMS as the early system of record. A QR credential is not release authority.                                    |
+| Prevent child-photo downloading                      | Use consent scope, private storage, signed expiry, audit, takedown, and visible viewer watermarks. State honestly that screenshots cannot be prevented.                                            |
+| Automatically create local SEO pages from trends     | Generate people-first content briefs only. Approved facts, substantive sections, communications review, and no mass programmatic publishing are mandatory.                                         |
+| Automatically generate Bible curriculum and creative | Generate drafts from approved source documents; require ministerial/communications approval and citations before use.                                                                              |
+| Find people searching for God                        | Observe aggregate search demand and invite voluntary contact. Never identify, infer, or target an individual based on religious beliefs or private spiritual activity.                             |
+| Main branch as staging through branch tricks         | Use previews/staging plus a protected manual production-promotion workflow with church-owned environment approvals.                                                                                |
 
 ## Core data domains
 
