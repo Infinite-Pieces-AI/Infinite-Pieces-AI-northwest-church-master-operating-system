@@ -86,11 +86,12 @@ await runWorker("seo-intelligence", async (context) => {
         .limit(5000);
       if (error) throw error;
       const assessments = ((data ?? []) as SnapshotRow[]).map((row) => {
+        const averagePosition = Number(row.average_position ?? 0);
         const simple = scoreSearchOpportunity({
           query: row.query,
           impressions: row.impressions,
           clicks: row.clicks,
-          averagePosition: Number(row.average_position ?? 0),
+          averagePosition,
           locality,
           ...(row.page_path ? { existingPage: row.page_path } : {}),
         });
@@ -105,9 +106,9 @@ await runWorker("seo-intelligence", async (context) => {
               : 35,
           demandGrowth: Math.min(100, Math.round(Math.log10(row.impressions + 1) * 30)),
           rankingOpportunity:
-            row.average_position && row.average_position > 3 && row.average_position <= 20
+            averagePosition > 3 && averagePosition <= 20
               ? 95
-              : row.average_position > 20
+              : averagePosition > 20
                 ? 70
                 : 35,
           contentGap: row.page_path ? 50 : 95,
