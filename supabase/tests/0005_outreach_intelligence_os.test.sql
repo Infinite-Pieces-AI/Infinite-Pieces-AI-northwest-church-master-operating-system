@@ -1,6 +1,6 @@
 begin;
 
-select plan(18);
+select plan(19);
 
 select has_table('public', 'outreach_source_connectors', 'Outreach source connector table exists');
 select has_table('public', 'public_conversation_signals', 'Public conversation signal table exists');
