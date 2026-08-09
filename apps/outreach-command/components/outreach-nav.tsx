@@ -4,8 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
+  ["Morning Brief", "/overview", "☼"],
   ["Command Radar", "/radar", "⌁"],
   ["Search Intelligence", "/search-intelligence", "⌕"],
+  ["Site Quality", "/site-quality", "✓"],
   ["Growth", "/growth", "↗"],
   ["Content Command", "/content-command", "✦"],
   ["Local Presence", "/local-presence", "◎"],

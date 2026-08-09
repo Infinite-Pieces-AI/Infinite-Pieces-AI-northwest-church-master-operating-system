@@ -6,15 +6,17 @@ import { submitVisitRequest } from "@/lib/public-submissions";
 export async function POST(request: NextRequest) {
   const key = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const limit = checkLocalRateLimit(`visit:${key}`, { limit: 5, windowMs: 15 * 60 * 1000 });
-  if (!limit.allowed)
+  if (!limit.allowed) {
     return NextResponse.json(
       { message: "Too many requests. Please try again later." },
       { status: 429, headers: { "retry-after": String(limit.retryAfterSeconds) } },
     );
+  }
   const body: unknown = await request.json().catch(() => null);
   const parsed = visitRequestSchema.safeParse(body);
-  if (!parsed.success || parsed.data.website)
+  if (!parsed.success || parsed.data.website) {
     return NextResponse.json({ message: "Please check the form and try again." }, { status: 400 });
+  }
   try {
     const result = await submitVisitRequest(parsed.data);
     return NextResponse.json(
@@ -22,8 +24,8 @@ export async function POST(request: NextRequest) {
         id: result.id,
         message:
           result.mode === "demo"
-            ? "Starter/demo mode accepted this request without storing personal data. Connect Supabase before production."
-            : "Thank you. An authorized volunteer will follow up using the information you provided.",
+            ? "Demo mode accepted this request without storing personal information."
+            : "Thank you. An authorized welcome volunteer will follow up using the contact method you selected.",
       },
       { status: 202 },
     );

@@ -9,6 +9,8 @@ export interface Location {
   postalCode: string;
   country: string;
   directionsUrl: string;
+  parkingInstructions?: string;
+  entranceInstructions?: string;
   accessibilityNotes: string[];
 }
 

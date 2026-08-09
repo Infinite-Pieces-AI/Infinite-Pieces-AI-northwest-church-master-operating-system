@@ -1,8 +1,12 @@
 import { ConnectionConcierge } from "@/components/connection-concierge";
 import { FellowshipBoard } from "@/components/fellowship-board";
 import { PageHeading } from "@/components/page-heading";
+import { requireViewer } from "@/lib/auth/viewer";
+import { loadFellowshipMeetups } from "@/lib/fellowship";
 
-export default function FellowshipPage() {
+export default async function FellowshipPage() {
+  const viewer = await requireViewer();
+  const meetups = await loadFellowshipMeetups(viewer).catch(() => []);
   return (
     <>
       <PageHeading
@@ -10,7 +14,6 @@ export default function FellowshipPage() {
         title="Fellowship"
         description="Member-created prayer walks, playdates, meals, service, sports, outings, and open invitations—without needing someone’s phone number first."
       />
-
       <section className="fellowship-hero">
         <div className="fellowship-hero__copy">
           <p className="hub-kicker">Belonging made visible</p>
@@ -21,16 +24,16 @@ export default function FellowshipPage() {
           </p>
           <div className="fellowship-stat-row">
             <div>
-              <strong>6</strong>
+              <strong>{meetups.length}</strong>
               <span>open invitations</span>
             </div>
             <div>
-              <strong>91</strong>
-              <span>synthetic joins this week</span>
+              <strong>3</strong>
+              <span>response choices</span>
             </div>
             <div>
-              <strong>5</strong>
-              <span>ways to connect today</span>
+              <strong>1</strong>
+              <span>participant-only thread</span>
             </div>
           </div>
         </div>
@@ -43,53 +46,55 @@ export default function FellowshipPage() {
           <strong>∞</strong>
         </div>
       </section>
-
       <ConnectionConcierge />
-
       <section className="fellowship-principles">
         <article>
-          <span aria-hidden="true">01</span>
+          <span>01</span>
           <div>
             <strong>Low pressure</strong>
             <p>Come late, leave early, bring children, or simply observe before joining.</p>
           </div>
         </article>
         <article>
-          <span aria-hidden="true">02</span>
+          <span>02</span>
           <div>
             <strong>Member safe</strong>
             <p>
-              General public locations are visible; sensitive meeting details unlock only to
-              approved participants.
+              General public locations are visible; exact instructions unlock through authorized
+              RSVP states.
             </p>
           </div>
         </article>
         <article>
-          <span aria-hidden="true">03</span>
+          <span>03</span>
           <div>
             <strong>No phone-number barrier</strong>
-            <p>Members can discover and join through the Hub, then use a meetup-specific thread.</p>
+            <p>
+              Discover, respond, coordinate, and receive updates through a purpose-specific meetup
+              thread.
+            </p>
           </div>
         </article>
         <article>
-          <span aria-hidden="true">04</span>
+          <span>04</span>
           <div>
-            <strong>Ordinary life counts</strong>
-            <p>Connection does not require a formal event, a large group, or weeks of planning.</p>
+            <strong>Practical clarity</strong>
+            <p>
+              Hosts can state capacity, accessibility, cost, food, transportation, recurrence, and
+              weather plans.
+            </p>
           </div>
         </article>
       </section>
-
-      <FellowshipBoard />
-
+      <FellowshipBoard initialMeetups={meetups} demo={viewer.demo} />
       <section className="hub-panel fellowship-safety-panel">
         <div>
           <p className="hub-kicker">Connection with boundaries</p>
           <h2>Designed to reduce isolation without turning people into location data.</h2>
         </div>
         <ul>
-          <li>Public invitations use public or general meeting places, not home addresses.</li>
-          <li>Exact meeting instructions can be limited to approved attendees.</li>
+          <li>Open invitations use public or general meeting places, not home addresses.</li>
+          <li>Exact instructions and virtual links remain in a separate protected record.</li>
           <li>Children do not create meetups or appear in searchable attendance lists.</li>
           <li>Teen gatherings remain group-based and leader-visible.</li>
           <li>Moderators can pause, report, or remove unsafe invitations.</li>

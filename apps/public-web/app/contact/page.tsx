@@ -1,23 +1,51 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { ContentPage } from "@/components/content-page";
-export default function ContactPage() {
+
+export const metadata: Metadata = {
+  title: "Contact and Next Steps",
+  description:
+    "Choose a Sunday visit request, general question, or private prayer request without mixing these different purposes.",
+  alternates: { canonical: "/contact" },
+};
+
+export default function Page() {
   return (
     <ContentPage
-      eyebrow="Contact and prayer"
-      title="Start a conversation"
-      intro="Choose what you would like help with and share only the information necessary for that request."
-      ctaLabel="Plan a Sunday visit"
+      eyebrow="Choose the right pathway"
+      title="How can the church help?"
+      intro="Visits, general questions, and prayer are intentionally separated so each request receives the right privacy and follow-up workflow."
+      canonicalPath="/contact"
     >
-      <h2>Contact workflow</h2>
-      <p>
-        The production form should route to a trained owner, record consent, support opt-out, avoid
-        advertising pixels, and keep prayer details out of public analytics.
-      </p>
-      <h2>Immediate or safeguarding concerns</h2>
-      <p>
-        This website is not an emergency service. The final page must list church-approved emergency
-        and safeguarding instructions. An in-app report never replaces emergency services or legally
-        required reporting.
-      </p>
+      <div className="guide-grid contact-path-grid">
+        <article>
+          <span className="path-icon">01</span>
+          <h2>Plan a Sunday visit</h2>
+          <p>
+            See directions and practical details without a form, or ask a welcome volunteer to help
+            you prepare.
+          </p>
+          <Link href="/plan-a-visit">Plan a visit →</Link>
+        </article>
+        <article>
+          <span className="path-icon">02</span>
+          <h2>Ask a general question</h2>
+          <p>
+            Ask about beliefs, Bible study, families, accessibility, online participation, or a
+            first visit.
+          </p>
+          <Link href="/ask-a-question">Ask a question →</Link>
+        </article>
+        <article>
+          <span className="path-icon">03</span>
+          <h2>Request prayer privately</h2>
+          <p>
+            Use a restricted prayer workflow that is separate from public marketing analytics and
+            visitor CRM data.
+          </p>
+          <Link href="/request-prayer">Request prayer →</Link>
+        </article>
+      </div>
     </ContentPage>
   );
 }

@@ -9,8 +9,10 @@ const sideItems = [
   ["This Week", "/this-week", "⌂"],
   ["Bible Journey", "/bible", "✦"],
   ["Fellowship", "/fellowship", "∞"],
+  ["Serve", "/service", "◇"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
+  ["Connection Path", "/connection-path", "↗"],
   ["Family", "/family", "⌁"],
 ] as const;
 
@@ -27,6 +29,8 @@ const adminPermissions: readonly Permission[] = [
 
 export function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
   const canAdmin = adminPermissions.some((permission) => hasPermission(viewer.roles, permission));
+  const canOutreach = hasPermission(viewer.roles, "outreach.manage");
+  const outreachUrl = process.env.NEXT_PUBLIC_OUTREACH_URL ?? "http://localhost:3002";
 
   return (
     <div className="hub-shell">
@@ -50,6 +54,12 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
               Ministry Admin
             </Link>
           ) : null}
+          {canOutreach ? (
+            <a href={outreachUrl}>
+              <span aria-hidden="true">⌕</span>
+              Outreach OS ↗
+            </a>
+          ) : null}
         </nav>
         <div className="sidebar-safety">
           <strong>Belonging with boundaries</strong>
@@ -63,7 +73,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         <header className="hub-topbar">
           <div>
             <p>Boston Church Lowell</p>
-            <span>Belong · Grow · Follow Jesus together</span>
+            <span>Discover · Join · Serve · Follow Jesus together</span>
           </div>
           <div className="viewer-chip">
             <span>{viewer.displayName.slice(0, 1)}</span>
@@ -78,8 +88,8 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         </header>
         {viewer.demo ? (
           <div className="demo-banner">
-            <strong>Demo mode:</strong> all people, children, groups, locations, and activity shown
-            here are synthetic. Production builds block demo mode.
+            <strong>Demo mode:</strong> all people, children, groups, locations, service projects,
+            and activity shown here are synthetic. Production builds block demo mode.
           </div>
         ) : null}
         <main className="hub-content">{children}</main>

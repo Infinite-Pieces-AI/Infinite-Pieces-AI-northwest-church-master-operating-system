@@ -12,11 +12,14 @@ export function OutreachShell({
 }) {
   const publicUrl = process.env.NEXT_PUBLIC_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const hubUrl = process.env.NEXT_PUBLIC_CHURCH_HUB_URL ?? "http://localhost:3001";
+  const environment = viewer.demo
+    ? "Demo environment"
+    : (process.env.VERCEL_ENV ?? "Production environment");
 
   return (
     <div className="os-shell">
       <aside className="os-sidebar">
-        <Link className="os-brand" href="/radar">
+        <Link className="os-brand" href="/overview">
           <span aria-hidden="true">∞</span>
           <div>
             <strong>Outreach Intelligence</strong>
@@ -31,8 +34,8 @@ export function OutreachShell({
           <div>
             <strong>Public-source boundary</strong>
             <p>
-              Aggregate search data and publicly available discussions only. No private-group
-              crawling or individual religious profiling.
+              Aggregate search data and approved public discussions only. No private-group crawling,
+              searcher identity, or individual religious profiling.
             </p>
           </div>
         </div>
@@ -42,11 +45,11 @@ export function OutreachShell({
           <div className="topbar-status">
             <span>
               <i className="status-dot status-dot--demo" />
-              Demo intelligence
+              {environment}
             </span>
             <span>
               <i className="status-dot status-dot--safe" />
-              Human approval required
+              AAL2 · human approval required
             </span>
           </div>
           <div className="topbar-actions">
@@ -63,8 +66,8 @@ export function OutreachShell({
         </header>
         {viewer.demo ? (
           <div className="demo-rail">
-            <strong>Synthetic demo:</strong> opportunities, traffic, people, rankings, sources, and
-            campaign results shown here are fictional until approved integrations are connected.
+            <strong>Synthetic demo:</strong> opportunities, traffic, people, rankings, source
+            results, and campaign outcomes are fictional until approved integrations are connected.
           </div>
         ) : null}
         <main className="os-content">{children}</main>

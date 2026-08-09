@@ -7,9 +7,13 @@ import {
 
 interface VisibilityResult {
   prompt?: unknown;
+  providerName?: unknown;
   churchMentioned?: unknown;
   factsAccurate?: unknown;
   coverageScore?: unknown;
+  confidenceScore?: unknown;
+  citedPagePath?: unknown;
+  otherOrganizations?: unknown;
   evidenceUrls?: unknown;
   evidenceExcerpt?: unknown;
   contentGap?: unknown;
@@ -25,6 +29,11 @@ function allowedProxy(rawUrl: string, allowedHosts: string): URL {
     throw new Error("AI visibility proxy must use HTTPS and an explicitly allowed host");
   }
   return url;
+}
+
+function score(value: unknown): number {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, Math.min(100, Math.round(number))) : 0;
 }
 
 await runWorker("ai-visibility-monitor", async (context) => {
@@ -51,14 +60,15 @@ await runWorker("ai-visibility-monitor", async (context) => {
         continue;
       }
       const proxy = allowedProxy(endpoint, allowedHosts);
+      const providerKey =
+        typeof event.payload.provider_key === "string"
+          ? event.payload.provider_key
+          : "approved-proxy";
       if (!context.dryRun) {
         const { data, error } = await context.supabase
           .from("ai_visibility_runs")
           .insert({
-            provider_key:
-              typeof event.payload.provider_key === "string"
-                ? event.payload.provider_key
-                : "approved-proxy",
+            provider_key: providerKey,
             locality:
               typeof event.payload.locality === "string"
                 ? event.payload.locality.slice(0, 160)
@@ -78,7 +88,13 @@ await runWorker("ai-visibility-monitor", async (context) => {
       const response = await fetch(proxy, {
         method: "POST",
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-        body: JSON.stringify({ prompts, publicSourcesOnly: true, noPersonalization: true }),
+        body: JSON.stringify({
+          prompts,
+          publicSourcesOnly: true,
+          noPersonalization: true,
+          returnCitations: true,
+          returnOtherOrganizations: true,
+        }),
         signal: AbortSignal.timeout(30_000),
       });
       if (!response.ok) throw new Error(`AI visibility proxy returned ${response.status}`);
@@ -93,17 +109,31 @@ await runWorker("ai-visibility-monitor", async (context) => {
               )
               .slice(0, 10)
           : [];
+        const organizations = Array.isArray(result.otherOrganizations)
+          ? result.otherOrganizations
+              .filter((item): item is string => typeof item === "string")
+              .map((item) => item.slice(0, 160))
+              .slice(0, 20)
+          : [];
+        const citedPath =
+          typeof result.citedPagePath === "string" && result.citedPagePath.startsWith("/")
+            ? result.citedPagePath.slice(0, 500)
+            : null;
         return [
           {
             run_id: runId,
             prompt,
+            provider_name:
+              typeof result.providerName === "string"
+                ? result.providerName.slice(0, 120)
+                : providerKey,
             church_mentioned:
               typeof result.churchMentioned === "boolean" ? result.churchMentioned : null,
             facts_accurate: typeof result.factsAccurate === "boolean" ? result.factsAccurate : null,
-            coverage_score: Math.max(
-              0,
-              Math.min(100, Math.round(Number(result.coverageScore ?? 0))),
-            ),
+            coverage_score: score(result.coverageScore),
+            confidence_score: score(result.confidenceScore),
+            cited_page_path: citedPath,
+            other_organizations: organizations,
             public_evidence_urls: urls,
             evidence_excerpt:
               typeof result.evidenceExcerpt === "string"
