@@ -77,7 +77,7 @@ export function VisitForm() {
           <input name="childrenAges" maxLength={200} placeholder="Example: 4, 7, 12" />
         </label>
         <label className="form-grid__full">
-          <span>How can we help?</span>
+          <span>Next step</span>
           <select name="requestedNextStep" defaultValue="plan_visit">
             <option value="plan_visit">Plan a Sunday visit</option>
             <option value="bible_study">Learn about a Bible study</option>
