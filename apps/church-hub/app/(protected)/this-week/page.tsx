@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ConnectionConcierge } from "@/components/connection-concierge";
+import { ConnectionPathway } from "@/components/connection-pathway";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { fellowshipMeetups } from "@/lib/demo-data";
@@ -32,11 +33,14 @@ export default async function ThisWeekPage() {
       <PageHeading
         eyebrow="Your week with God and people"
         title="This Week"
-        description="See what is happening, take the next step in Scripture, and find a place to belong before isolation becomes the default."
+        description="See what is happening, take the next step in Scripture, and move toward a real conversation, gathering, or act of service without turning the app into an endless feed."
         actions={
           <div className="heading-actions">
             <Link className="hub-button hub-button--primary" href="/fellowship">
               Find fellowship
+            </Link>
+            <Link className="hub-button hub-button--secondary" href="/service">
+              Find service
             </Link>
             <Link className="hub-button hub-button--secondary" href="/notifications">
               Notifications
@@ -57,8 +61,8 @@ export default async function ThisWeekPage() {
             {d.service.address}
           </span>
           <p className="week-hero__promise">
-            Come worship, then stay connected through open lunch tables, prayer walks, groups, and
-            member-created invitations.
+            Come worship, then stay connected through open lunch tables, prayer walks, groups,
+            member-created invitations, and approved service opportunities.
           </p>
           <div className="row-actions">
             <a
@@ -72,12 +76,11 @@ export default async function ThisWeekPage() {
             </Link>
           </div>
         </div>
-        <div className="week-hero__mark" aria-hidden="true">
-          ∞
-        </div>
+        <div className="week-hero__mark" aria-hidden="true">∞</div>
       </section>
 
       <ConnectionConcierge compact />
+      <ConnectionPathway />
 
       <div className="dashboard-grid">
         <section className="hub-panel hub-panel--span2 lesson-feature-panel">
@@ -90,11 +93,7 @@ export default async function ThisWeekPage() {
           </div>
           <p>{d.lesson.summary}</p>
           <div className="lesson-feature-steps">
-            <span>Read</span>
-            <span>Notice</span>
-            <span>Pray</span>
-            <span>Practice</span>
-            <span>Share</span>
+            <span>Read</span><span>Notice</span><span>Pray</span><span>Practice</span><span>Share</span>
           </div>
           <div className="row-actions">
             <Link className="hub-button hub-button--primary" href="/bible">
@@ -129,17 +128,23 @@ export default async function ThisWeekPage() {
                 </span>
                 <div>
                   <strong>{meetup.title}</strong>
-                  <small>
-                    {meetup.dateLabel} · {meetup.timeLabel}
-                  </small>
-                  <span>
-                    {meetup.locationName} · {meetup.attendeeCount} joining
-                  </span>
+                  <small>{meetup.dateLabel} · {meetup.timeLabel}</small>
+                  <span>{meetup.locationName} · {meetup.attendeeCount} joining</span>
                 </div>
                 <b>Join</b>
               </Link>
             ))}
           </div>
+        </section>
+
+        <section className="hub-panel service-preview-card">
+          <p className="hub-kicker">Serve together</p>
+          <h2>See the need before signing up.</h2>
+          <p>
+            Service Marketplace shows the approved need, partner, time, role, accessibility,
+            supplies, transportation, and safeguarding information.
+          </p>
+          <Link href="/service">Open Service Marketplace →</Link>
         </section>
 
         <section className="hub-panel minister-card">
@@ -151,75 +156,50 @@ export default async function ThisWeekPage() {
 
         <section className="hub-panel hub-panel--span2">
           <div className="panel-heading">
-            <div>
-              <p className="hub-kicker">Coming up</p>
-              <h2>My events</h2>
-            </div>
+            <div><p className="hub-kicker">Coming up</p><h2>My events</h2></div>
             <Link href="/events">See all</Link>
           </div>
           {d.events.length ? (
             <div className="compact-list">
               {d.events.map((event) => (
                 <article key={event.id}>
-                  <span className="list-icon" aria-hidden="true">
-                    □
-                  </span>
+                  <span className="list-icon" aria-hidden="true">□</span>
                   <div>
                     <strong>{event.title}</strong>
-                    <small>
-                      {event.when} · {event.audience}
-                    </small>
+                    <small>{event.when} · {event.audience}</small>
                   </div>
                   <button aria-label={`Respond to ${event.title}`}>Respond</button>
                 </article>
               ))}
             </div>
-          ) : (
-            <p>No approved upcoming events are currently assigned.</p>
-          )}
+          ) : <p>No approved upcoming events are currently assigned.</p>}
         </section>
 
         <section className="hub-panel">
-          <p className="hub-kicker">My community</p>
-          <h2>Assigned groups</h2>
+          <p className="hub-kicker">My community</p><h2>Assigned groups</h2>
           {d.groups.length ? (
             <div className="compact-list">
               {d.groups.map((group) => (
                 <Link href="/community" key={group.id}>
-                  <span className="list-icon" aria-hidden="true">
-                    ◌
-                  </span>
-                  <div>
-                    <strong>{group.name}</strong>
-                    <small>{group.role}</small>
-                  </div>
+                  <span className="list-icon" aria-hidden="true">◌</span>
+                  <div><strong>{group.name}</strong><small>{group.role}</small></div>
                   {group.unread ? <span className="unread">{group.unread}</span> : null}
                 </Link>
               ))}
             </div>
-          ) : (
-            <p>No active group assignment is available.</p>
-          )}
+          ) : <p>No active group assignment is available.</p>}
         </section>
 
         <section className="hub-panel">
-          <p className="hub-kicker">Kids Kingdom</p>
-          <h2>Household status</h2>
+          <p className="hub-kicker">Kids Kingdom</p><h2>Household status</h2>
           {d.kids.length ? (
             d.kids.map((child) => (
               <div className="child-summary" key={child.id}>
                 <span aria-hidden="true">S</span>
-                <div>
-                  <strong>{child.displayName}</strong>
-                  <small>
-                    {child.className} · {child.status}
-                  </small>
-                </div>
+                <div><strong>{child.displayName}</strong><small>{child.className} · {child.status}</small></div>
               </div>
             ))
-          ) : (
-            <p>Open family tools for guardian-managed class and check-in status.</p>
-          )}
+          ) : <p>Open family tools for guardian-managed class and check-in status.</p>}
           <Link href="/family">Open family tools →</Link>
         </section>
       </div>
