@@ -2,8 +2,10 @@ begin;
 
 -- -----------------------------------------------------------------------------
 -- Consent-first public pathways
--- Separates visit planning, general questions, and prayer so pastoral content can
--- never drift into advertising or the general visitor CRM.
+-- Separates visit planning, general questions, and public prayer so pastoral
+-- content can never drift into advertising or the general visitor CRM. The
+-- existing prayer_requests table remains the authenticated member prayer domain;
+-- public_prayer_requests is the separate anonymous/public intake boundary.
 -- -----------------------------------------------------------------------------
 
 alter table public.visit_requests alter column email drop not null;
@@ -44,7 +46,7 @@ create table public.public_questions (
 );
 create index public_questions_status_created_idx on public.public_questions(status, created_at desc);
 
-create table public.prayer_requests (
+create table public.public_prayer_requests (
   id uuid primary key default extensions.gen_random_uuid(),
   first_name text check (first_name is null or char_length(first_name) between 1 and 80),
   prayer_text text not null check (char_length(prayer_text) between 3 and 2500),
@@ -72,8 +74,11 @@ create table public.prayer_requests (
     )
   )
 );
-create index prayer_requests_status_created_idx on public.prayer_requests(status, created_at desc);
-create index prayer_requests_retention_idx on public.prayer_requests(retention_until) where status <> 'deleted';
+create index public_prayer_requests_status_created_idx
+  on public.public_prayer_requests(status, created_at desc);
+create index public_prayer_requests_retention_idx
+  on public.public_prayer_requests(retention_until)
+  where status <> 'deleted';
 
 create table public.ministry_journey_events (
   id uuid primary key default extensions.gen_random_uuid(),
@@ -91,13 +96,14 @@ create table public.ministry_journey_events (
   occurred_at timestamptz not null default timezone('utc', now()),
   check (jsonb_typeof(properties) = 'object')
 );
-create index ministry_journey_events_stage_time_idx on public.ministry_journey_events(stage, occurred_at desc);
+create index ministry_journey_events_stage_time_idx
+  on public.ministry_journey_events(stage, occurred_at desc);
 
 create trigger public_questions_set_updated_at
   before update on public.public_questions
   for each row execute function public.set_updated_at();
-create trigger prayer_requests_set_updated_at
-  before update on public.prayer_requests
+create trigger public_prayer_requests_set_updated_at
+  before update on public.public_prayer_requests
   for each row execute function public.set_updated_at();
 
 alter table public.conversion_events drop constraint if exists conversion_events_event_name_check;
@@ -217,7 +223,11 @@ begin
     else 'question_submitted'
   end;
   insert into public.conversion_events(event_name, source_path, properties)
-  values (conversion_name, left(coalesce(p_source_path, '/ask-a-question'), 500), jsonb_build_object('topic', p_topic));
+  values (
+    conversion_name,
+    left(coalesce(p_source_path, '/ask-a-question'), 500),
+    jsonb_build_object('topic', p_topic)
+  );
   insert into public.ministry_journey_events(stage, public_question_id, source_path, pathway)
   values (
     'follow_up_requested', question_id, left(coalesce(p_source_path, '/ask-a-question'), 500),
@@ -261,7 +271,7 @@ begin
     raise exception 'Phone is required';
   end if;
 
-  insert into public.prayer_requests(
+  insert into public.public_prayer_requests(
     first_name, prayer_text, response_requested, contact_method, email, phone,
     consent_to_contact, source_path, source_ip_hash
   ) values (
@@ -275,7 +285,7 @@ begin
 
   insert into public.audit_events(actor_type, action, resource_type, resource_id, metadata)
   values (
-    'anonymous', 'prayer_request.received', 'prayer_request', request_id,
+    'anonymous', 'public_prayer_request.received', 'public_prayer_request', request_id,
     jsonb_build_object('response_requested', p_response_requested)
   );
   return request_id;
@@ -310,14 +320,18 @@ begin
     - 'spiritual_vulnerability';
   if pg_column_size(cleaned) > 4096 then raise exception 'Properties too large'; end if;
   insert into public.conversion_events(event_name, anonymous_session_id, source_path, properties)
-  values (p_event_name, left(p_anonymous_session_id, 128), left(coalesce(p_source_path, '/'), 500), cleaned)
-  returning id into event_id;
+  values (
+    p_event_name,
+    left(p_anonymous_session_id, 128),
+    left(coalesce(p_source_path, '/'), 500),
+    cleaned
+  ) returning id into event_id;
   return event_id;
 end;
 $$;
 
 alter table public.public_questions enable row level security;
-alter table public.prayer_requests enable row level security;
+alter table public.public_prayer_requests enable row level security;
 alter table public.ministry_journey_events enable row level security;
 
 create policy public_questions_minister_read
@@ -328,11 +342,11 @@ create policy public_questions_minister_update
   using (public.is_privileged_actor(array['minister','super_admin']))
   with check (public.is_privileged_actor(array['minister','super_admin']));
 
-create policy prayer_requests_restricted_read
-  on public.prayer_requests for select to authenticated
+create policy public_prayer_requests_restricted_read
+  on public.public_prayer_requests for select to authenticated
   using (public.is_privileged_actor(array['minister','safety_admin','super_admin']));
-create policy prayer_requests_restricted_update
-  on public.prayer_requests for update to authenticated
+create policy public_prayer_requests_restricted_update
+  on public.public_prayer_requests for update to authenticated
   using (public.is_privileged_actor(array['minister','safety_admin','super_admin']))
   with check (public.is_privileged_actor(array['minister','safety_admin','super_admin']));
 
@@ -341,13 +355,13 @@ create policy ministry_journey_events_outreach_read
   using (public.is_privileged_actor(array['minister','super_admin']));
 
 revoke all on table public.public_questions from anon;
-revoke all on table public.prayer_requests from anon;
+revoke all on table public.public_prayer_requests from anon;
 revoke all on table public.ministry_journey_events from anon;
 grant select, update on table public.public_questions to authenticated;
-grant select, update on table public.prayer_requests to authenticated;
+grant select, update on table public.public_prayer_requests to authenticated;
 grant select on table public.ministry_journey_events to authenticated;
 grant all on table public.public_questions to service_role;
-grant all on table public.prayer_requests to service_role;
+grant all on table public.public_prayer_requests to service_role;
 grant all on table public.ministry_journey_events to service_role;
 
 grant execute on function public.submit_plan_visit_request(text,text,text,text,text,integer,boolean,text,boolean,text,text,text) to anon, authenticated;
@@ -356,8 +370,8 @@ grant execute on function public.submit_prayer_request(text,text,boolean,text,te
 
 comment on table public.public_questions is
   'Consented public questions. General questions remain separate from prayer and private pastoral workflows.';
-comment on table public.prayer_requests is
-  'Restricted prayer workflow. Prayer text is excluded from public analytics, advertising, and general Outreach CRM records.';
+comment on table public.public_prayer_requests is
+  'Restricted public prayer intake. Prayer text is excluded from public analytics, advertising, general Outreach CRM, and the authenticated member prayer-request domain.';
 comment on table public.ministry_journey_events is
   'Privacy-minimized journey stages connecting public discovery to voluntary follow-up, Hub activation, fellowship, and service.';
 
