@@ -3,7 +3,7 @@ export function MetricCard({
   value,
   detail,
   trend,
-  tone = "blue"
+  tone = "blue",
 }: {
   label: string;
   value: string;

@@ -11,7 +11,11 @@ export default function LoginPage() {
     <main className="login-shell">
       <section className="login-visual">
         <div className="login-orbit" aria-hidden="true">
-          <span>SEO</span><span>PUBLIC WEB</span><span>AIO</span><span>CRM</span><span>LOCAL</span>
+          <span>SEO</span>
+          <span>PUBLIC WEB</span>
+          <span>AIO</span>
+          <span>CRM</span>
+          <span>LOCAL</span>
           <strong>∞</strong>
         </div>
         <div>
@@ -19,12 +23,15 @@ export default function LoginPage() {
           <h1>Outreach Intelligence OS</h1>
           <p>
             Understand public questions, strengthen local discovery, measure voluntary visitor
-            journeys, and prepare respectful human outreach without profiling private spiritual lives.
+            journeys, and prepare respectful human outreach without profiling private spiritual
+            lives.
           </p>
         </div>
       </section>
       <section className="login-card">
-        <span className="brand-mark" aria-hidden="true">∞</span>
+        <span className="brand-mark" aria-hidden="true">
+          ∞
+        </span>
         <p className="eyebrow">Authorized leaders only</p>
         <h2>Open the command center</h2>
         <p>
@@ -32,9 +39,13 @@ export default function LoginPage() {
           the Church Hub.
         </p>
         {demo ? (
-          <Link className="primary-button" href="/radar">Enter Demo Outreach OS →</Link>
+          <Link className="primary-button" href="/radar">
+            Enter Demo Outreach OS →
+          </Link>
         ) : (
-          <a className="primary-button" href={signInUrl}>Sign in through Church Hub →</a>
+          <a className="primary-button" href={signInUrl}>
+            Sign in through Church Hub →
+          </a>
         )}
         <div className="login-boundaries">
           <strong>Public intelligence, not private surveillance</strong>

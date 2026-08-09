@@ -34,7 +34,7 @@ export async function createClient() {
         } catch {
           // Cookie refresh is completed by the shared auth entry point when needed.
         }
-      }
-    }
+      },
+    },
   });
 }

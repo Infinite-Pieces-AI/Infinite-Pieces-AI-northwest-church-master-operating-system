@@ -7,7 +7,10 @@ import {
 
 function allowedProxy(rawUrl: string, allowedHosts: string): URL {
   const url = new URL(rawUrl);
-  const hosts = allowedHosts.split(",").map((value) => value.trim()).filter(Boolean);
+  const hosts = allowedHosts
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
   if (url.protocol !== "https:" || !hosts.includes(url.hostname)) {
     throw new Error("Content-generation proxy must use HTTPS and an explicitly allowed host");
   }
@@ -26,7 +29,9 @@ await runWorker("content-generation", async (context) => {
       if (!actionId) throw new Error("Content generation requires an action_id");
       const { data: action, error } = await context.supabase
         .from("public_conversation_actions")
-        .select("id,action_type,status,draft_text,signal_id,requires_human_review,publish_automatically")
+        .select(
+          "id,action_type,status,draft_text,signal_id,requires_human_review,publish_automatically",
+        )
         .eq("id", actionId)
         .maybeSingle();
       if (error) throw error;
@@ -70,7 +75,11 @@ await runWorker("content-generation", async (context) => {
       drafted += 1;
       await completeOutboxEvent(context, event.id);
     } catch (error) {
-      await failOutboxEvent(context, event.id, error instanceof Error ? error.message : "Content generation failed");
+      await failOutboxEvent(
+        context,
+        event.id,
+        error instanceof Error ? error.message : "Content generation failed",
+      );
     }
   }
   return { claimed: events.length, drafted };

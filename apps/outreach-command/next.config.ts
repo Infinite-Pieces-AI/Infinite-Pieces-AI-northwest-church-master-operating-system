@@ -16,7 +16,7 @@ const productionCsp = [
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "manifest-src 'self'",
-  "upgrade-insecure-requests"
+  "upgrade-insecure-requests",
 ].join("; ");
 
 const nextConfig: NextConfig = {
@@ -32,17 +32,17 @@ const nextConfig: NextConfig = {
       { key: "X-Frame-Options", value: "DENY" },
       {
         key: "Permissions-Policy",
-        value: "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+        value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
       },
       { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
       { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
-      { key: "Cache-Control", value: "private, no-store" }
+      { key: "Cache-Control", value: "private, no-store" },
     ];
     if (process.env.NODE_ENV === "production") {
       headers.push({ key: "Content-Security-Policy", value: productionCsp });
     }
     return [{ source: "/(.*)", headers }];
-  }
+  },
 };
 
 export default nextConfig;

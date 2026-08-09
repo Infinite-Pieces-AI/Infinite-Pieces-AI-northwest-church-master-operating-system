@@ -11,7 +11,7 @@ const items = [
   ["Local Presence", "/local-presence", "◎"],
   ["Campaigns", "/campaigns", "◫"],
   ["Visitor CRM", "/visitor-crm", "◇"],
-  ["Source Control", "/source-control", "⚙"]
+  ["Source Control", "/source-control", "⚙"],
 ] as const;
 
 export function OutreachNav() {

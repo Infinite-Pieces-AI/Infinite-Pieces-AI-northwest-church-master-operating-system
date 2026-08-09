@@ -21,7 +21,10 @@ await runWorker("seo-intelligence", async (context) => {
   for (const event of events) {
     try {
       const minimumImpressions = Math.max(1, Number(event.payload.minimum_impressions ?? 25));
-      const locality = typeof event.payload.locality === "string" ? event.payload.locality.slice(0, 160) : "Lowell, Massachusetts";
+      const locality =
+        typeof event.payload.locality === "string"
+          ? event.payload.locality.slice(0, 160)
+          : "Lowell, Massachusetts";
       const { data, error } = await context.supabase
         .from("search_performance_snapshots")
         .select("snapshot_date,query,page_path,clicks,impressions,average_position")
@@ -61,7 +64,11 @@ await runWorker("seo-intelligence", async (context) => {
       context.log("seo.opportunities_scored", { eventId: event.id, count: opportunities.length });
       await completeOutboxEvent(context, event.id);
     } catch (error) {
-      await failOutboxEvent(context, event.id, error instanceof Error ? error.message : "SEO analysis failed");
+      await failOutboxEvent(
+        context,
+        event.id,
+        error instanceof Error ? error.message : "SEO analysis failed",
+      );
     }
   }
   return { claimed: events.length, scored: scoredCount };

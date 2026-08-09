@@ -109,10 +109,18 @@ export function evaluateReadiness(items: readonly ReadinessItem[]): {
 }
 
 export const googleBusinessProfileReadinessTemplate: readonly ReadinessItem[] = [
-  { key: "identity", label: "Official church name approved by central leadership", complete: false },
+  {
+    key: "identity",
+    label: "Official church name approved by central leadership",
+    complete: false,
+  },
   { key: "venue", label: "Accurate rented-facility representation and evidence", complete: false },
   { key: "hours", label: "Service hours match actual staffed hours", complete: false },
-  { key: "signage", label: "On-site directional signage and welcome desk documented", complete: false },
+  {
+    key: "signage",
+    label: "On-site directional signage and welcome desk documented",
+    complete: false,
+  },
   { key: "category", label: "Primary category reviewed for accuracy", complete: false },
   { key: "ownership", label: "Church-controlled recovery owners assigned", complete: false },
 ];
@@ -234,7 +242,8 @@ export function assertPublicSourceAllowed(input: {
   if (parsed.protocol !== "https:") throw new Error("Public-source ingestion requires HTTPS");
   if (!input.publiclyAccessible || input.privateGroup)
     throw new Error("Private, closed, or membership-only sources are prohibited");
-  if (input.requiresBypass) throw new Error("Access-control, paywall, or anti-bot bypass is prohibited");
+  if (input.requiresBypass)
+    throw new Error("Access-control, paywall, or anti-bot bypass is prohibited");
   if (input.containsRestrictedData)
     throw new Error("Restricted pastoral, child, counseling, or member data is prohibited");
 }
@@ -273,7 +282,11 @@ export function assertNoIndividualReligiousProfile(input: {
   inferredBeliefs?: readonly string[];
   privateSearchHistory?: readonly string[];
 }): void {
-  if (input.personIdentifier || input.inferredBeliefs?.length || input.privateSearchHistory?.length) {
+  if (
+    input.personIdentifier ||
+    input.inferredBeliefs?.length ||
+    input.privateSearchHistory?.length
+  ) {
     throw new Error("Individual religious profiling and private-search dossiers are prohibited");
   }
 }

@@ -33,7 +33,9 @@ export function RadarWorkspace() {
   const [minimumPriority, setMinimumPriority] = useState(0);
   const [selectedId, setSelectedId] = useState(publicOpportunities[0]?.id ?? "");
   const [dispositions, setDispositions] = useState<Record<string, Disposition>>({});
-  const [responseDraft, setResponseDraft] = useState<ReturnType<typeof buildRespectfulResponseDraft> | null>(null);
+  const [responseDraft, setResponseDraft] = useState<ReturnType<
+    typeof buildRespectfulResponseDraft
+  > | null>(null);
   const [scanMessage, setScanMessage] = useState(
     "Synthetic signal set loaded. Approved source connectors are still disabled.",
   );
@@ -98,7 +100,9 @@ export function RadarWorkspace() {
           <div className="panel__header">
             <div>
               <h2>Opportunity stream</h2>
-              <p>{visibleOpportunities.length} public conversation signals match the current view.</p>
+              <p>
+                {visibleOpportunities.length} public conversation signals match the current view.
+              </p>
             </div>
           </div>
           <div className="radar-toolbar">
@@ -153,10 +157,14 @@ export function RadarWorkspace() {
                   </span>
                   <span>
                     <h3>{opportunity.title}</h3>
-                    <p>{opportunity.sourceLabel} · {opportunity.publishedLabel}</p>
+                    <p>
+                      {opportunity.sourceLabel} · {opportunity.publishedLabel}
+                    </p>
                     <span className="opportunity-meta">
                       <span className="tag">{opportunity.locality}</span>
-                      <span className={`status-pill status-pill--${disposition === "dismissed" ? "disabled" : disposition === "new" ? "demo" : "ready"}`}>
+                      <span
+                        className={`status-pill status-pill--${disposition === "dismissed" ? "disabled" : disposition === "new" ? "demo" : "ready"}`}
+                      >
                         {disposition}
                       </span>
                     </span>
@@ -168,7 +176,10 @@ export function RadarWorkspace() {
               <div className="empty-state">
                 <span aria-hidden="true">⌕</span>
                 <h3>No signals match this view.</h3>
-                <p>Adjust the text, source, or priority filters. A real connector would remain subject to its approved allowlist.</p>
+                <p>
+                  Adjust the text, source, or priority filters. A real connector would remain
+                  subject to its approved allowlist.
+                </p>
               </div>
             ) : null}
           </div>
@@ -180,14 +191,23 @@ export function RadarWorkspace() {
               <div className="opportunity-detail__hero">
                 <div className="opportunity-meta">
                   <span className="status-pill status-pill--demo">PUBLIC · SYNTHETIC</span>
-                  {selected.themes.map((theme) => <span className="tag" key={theme}>{theme}</span>)}
+                  {selected.themes.map((theme) => (
+                    <span className="tag" key={theme}>
+                      {theme}
+                    </span>
+                  ))}
                 </div>
                 <h2>{selected.title}</h2>
-                <p>{selected.sourceLabel} · {selected.locality} · {selected.publishedLabel}</p>
+                <p>
+                  {selected.sourceLabel} · {selected.locality} · {selected.publishedLabel}
+                </p>
                 <blockquote>“{selected.excerpt}”</blockquote>
                 <div className="score-matrix">
                   {scoreLabels.map(([key, label]) => (
-                    <div className={`score-cell${key === "riskSensitivity" ? " score-cell--risk" : ""}`} key={key}>
+                    <div
+                      className={`score-cell${key === "riskSensitivity" ? " score-cell--risk" : ""}`}
+                      key={key}
+                    >
                       <strong>{selected.scores[key]}</strong>
                       <span>{label}</span>
                     </div>
@@ -202,7 +222,11 @@ export function RadarWorkspace() {
 
               <div className="action-list" aria-label="Recommended actions">
                 {selected.suggestedActions.map((action, index) => (
-                  <button key={action} type="button" onClick={() => setScanMessage(`Queued for human review: ${action}`)}>
+                  <button
+                    key={action}
+                    type="button"
+                    onClick={() => setScanMessage(`Queued for human review: ${action}`)}
+                  >
                     <span>{index + 1}</span>
                     {action}
                   </button>
@@ -218,20 +242,36 @@ export function RadarWorkspace() {
               ) : null}
 
               <div className="detail-actions">
-                <button className="primary-button" type="button" onClick={() => draftResponse(selected)}>
+                <button
+                  className="primary-button"
+                  type="button"
+                  onClick={() => draftResponse(selected)}
+                >
                   Draft respectful response
                 </button>
-                <button className="secondary-button" type="button" onClick={() => setDisposition(selected.id, "saved")}>
+                <button
+                  className="secondary-button"
+                  type="button"
+                  onClick={() => setDisposition(selected.id, "saved")}
+                >
                   Save opportunity
                 </button>
                 <button
                   className="ghost-button"
                   type="button"
-                  onClick={() => setScanMessage("Synthetic source link withheld because this demo does not represent a real public post.")}
+                  onClick={() =>
+                    setScanMessage(
+                      "Synthetic source link withheld because this demo does not represent a real public post.",
+                    )
+                  }
                 >
                   Open public source
                 </button>
-                <button className="ghost-button" type="button" onClick={() => setDisposition(selected.id, "dismissed")}>
+                <button
+                  className="ghost-button"
+                  type="button"
+                  onClick={() => setDisposition(selected.id, "dismissed")}
+                >
                   Dismiss
                 </button>
               </div>

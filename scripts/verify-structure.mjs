@@ -73,7 +73,9 @@ const required = [
 
 const missing = required.filter((entry) => !existsSync(resolve(process.cwd(), entry)));
 if (missing.length > 0) {
-  console.error(`Missing required project files:\n${missing.map((item) => `- ${item}`).join("\n")}`);
+  console.error(
+    `Missing required project files:\n${missing.map((item) => `- ${item}`).join("\n")}`,
+  );
   process.exit(1);
 }
 

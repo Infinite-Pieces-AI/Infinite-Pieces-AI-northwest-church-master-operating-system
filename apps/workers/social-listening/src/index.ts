@@ -8,7 +8,10 @@ import {
 
 function allowedProxy(rawUrl: string, allowedHosts: string): URL {
   const url = new URL(rawUrl);
-  const hosts = allowedHosts.split(",").map((value) => value.trim()).filter(Boolean);
+  const hosts = allowedHosts
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
   if (url.protocol !== "https:" || !hosts.includes(url.hostname)) {
     throw new Error("Social-listening proxy must use HTTPS and an explicitly allowed host");
   }
@@ -27,7 +30,8 @@ await runWorker("social-listening", async (context) => {
         await completeOutboxEvent(context, event.id);
         continue;
       }
-      const sourceUrl = typeof event.payload.source_url === "string" ? event.payload.source_url : "";
+      const sourceUrl =
+        typeof event.payload.source_url === "string" ? event.payload.source_url : "";
       assertPublicSourceAllowed({
         url: sourceUrl,
         publiclyAccessible: event.payload.publicly_accessible === true,
@@ -39,17 +43,29 @@ await runWorker("social-listening", async (context) => {
       const response = await fetch(proxy, {
         method: "POST",
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-        body: JSON.stringify({ sourceUrl, publicOnly: true, includeDirectMessages: false, includePrivateGroups: false }),
+        body: JSON.stringify({
+          sourceUrl,
+          publicOnly: true,
+          includeDirectMessages: false,
+          includePrivateGroups: false,
+        }),
         signal: AbortSignal.timeout(15_000),
       });
       if (!response.ok) throw new Error(`Social-listening proxy returned ${response.status}`);
       const payload = (await response.json()) as { publicItems?: unknown[] };
-      context.log("social_listening.public_items_received", { eventId: event.id, count: Math.min(payload.publicItems?.length ?? 0, 100) });
+      context.log("social_listening.public_items_received", {
+        eventId: event.id,
+        count: Math.min(payload.publicItems?.length ?? 0, 100),
+      });
       // Provider-specific public rows are normalized by the public-web-listening ingestion path.
       // This worker never stores direct messages, hidden groups, follower lists, or person dossiers.
       await completeOutboxEvent(context, event.id);
     } catch (error) {
-      await failOutboxEvent(context, event.id, error instanceof Error ? error.message : "Social listening failed");
+      await failOutboxEvent(
+        context,
+        event.id,
+        error instanceof Error ? error.message : "Social listening failed",
+      );
     }
   }
   return { claimed: events.length };

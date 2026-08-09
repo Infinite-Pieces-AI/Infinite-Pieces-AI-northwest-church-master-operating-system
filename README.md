@@ -103,11 +103,11 @@ pnpm test:e2e
 
 Create three Vercel projects from this repository:
 
-| Project | Root directory | Suggested domain |
-| --- | --- | --- |
-| Public website | `apps/public-web` | approved canonical Boston Church Lowell path/subdomain |
-| Member hub | `apps/church-hub` | approved authenticated hub subdomain |
-| Outreach Intelligence OS | `apps/outreach-command` | private authorized outreach subdomain |
+| Project                  | Root directory          | Suggested domain                                       |
+| ------------------------ | ----------------------- | ------------------------------------------------------ |
+| Public website           | `apps/public-web`       | approved canonical Boston Church Lowell path/subdomain |
+| Member hub               | `apps/church-hub`       | approved authenticated hub subdomain                   |
+| Outreach Intelligence OS | `apps/outreach-command` | private authorized outreach subdomain                  |
 
 The Outreach project must be no-index, authenticated, protected by role and MFA, and separated from public analytics pixels.
 

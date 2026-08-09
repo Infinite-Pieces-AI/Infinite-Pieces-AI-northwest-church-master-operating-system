@@ -38,7 +38,10 @@ interface ProxyRow {
 
 function allowedProxy(rawUrl: string, allowedHosts: string): URL {
   const url = new URL(rawUrl);
-  const hosts = allowedHosts.split(",").map((value) => value.trim()).filter(Boolean);
+  const hosts = allowedHosts
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
   if (url.protocol !== "https:" || !hosts.includes(url.hostname)) {
     throw new Error("Public-listening proxy must use HTTPS and an explicitly allowed host");
   }
@@ -118,29 +121,34 @@ await runWorker("public-web-listening", async (context) => {
         });
         const scores = scorePublicConversationOpportunity(signal);
         const fingerprint = createHash("sha256").update(signal.publicUrl).digest("hex");
-        return [{
-          connector_id: typeof event.payload.connector_id === "string" ? event.payload.connector_id : null,
-          source_kind: signal.sourceKind,
-          source_label: signal.sourceLabel,
-          source_url: signal.publicUrl,
-          source_fingerprint: fingerprint,
-          title: signal.title,
-          excerpt: signal.excerpt,
-          published_at: signal.publishedAt || null,
-          locality: signal.locality,
-          themes: Array.isArray(row.themes) ? row.themes.filter((item): item is string => typeof item === "string").slice(0, 20) : [],
-          explicit_church_request: signal.explicitChurchRequest,
-          local_relevance: scores.localRelevance,
-          church_intent: scores.churchIntent,
-          family_relevance: scores.familyRelevance,
-          online_ministry_intent: scores.onlineMinistryIntent,
-          freshness: scores.freshness,
-          reply_opportunity: scores.replyOpportunity,
-          content_opportunity: scores.contentOpportunity,
-          search_opportunity: scores.searchOpportunity,
-          risk_sensitivity: scores.riskSensitivity,
-          priority_score: scores.priority,
-        }];
+        return [
+          {
+            connector_id:
+              typeof event.payload.connector_id === "string" ? event.payload.connector_id : null,
+            source_kind: signal.sourceKind,
+            source_label: signal.sourceLabel,
+            source_url: signal.publicUrl,
+            source_fingerprint: fingerprint,
+            title: signal.title,
+            excerpt: signal.excerpt,
+            published_at: signal.publishedAt || null,
+            locality: signal.locality,
+            themes: Array.isArray(row.themes)
+              ? row.themes.filter((item): item is string => typeof item === "string").slice(0, 20)
+              : [],
+            explicit_church_request: signal.explicitChurchRequest,
+            local_relevance: scores.localRelevance,
+            church_intent: scores.churchIntent,
+            family_relevance: scores.familyRelevance,
+            online_ministry_intent: scores.onlineMinistryIntent,
+            freshness: scores.freshness,
+            reply_opportunity: scores.replyOpportunity,
+            content_opportunity: scores.contentOpportunity,
+            search_opportunity: scores.searchOpportunity,
+            risk_sensitivity: scores.riskSensitivity,
+            priority_score: scores.priority,
+          },
+        ];
       });
 
       context.log("public_listening.rows_validated", { eventId: event.id, count: rows.length });
@@ -153,7 +161,11 @@ await runWorker("public-web-listening", async (context) => {
       imported += rows.length;
       await completeOutboxEvent(context, event.id);
     } catch (error) {
-      await failOutboxEvent(context, event.id, error instanceof Error ? error.message : "Public listening failed");
+      await failOutboxEvent(
+        context,
+        event.id,
+        error instanceof Error ? error.message : "Public listening failed",
+      );
     }
   }
   return { claimed: events.length, imported };

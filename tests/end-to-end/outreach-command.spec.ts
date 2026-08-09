@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("authorized demo operator can navigate the standalone Outreach Intelligence OS", async ({ page }) => {
+test("authorized demo operator can navigate the standalone Outreach Intelligence OS", async ({
+  page,
+}) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Outreach Intelligence OS" })).toBeVisible();
   await page.getByRole("link", { name: /Enter Demo Outreach OS/ }).click();

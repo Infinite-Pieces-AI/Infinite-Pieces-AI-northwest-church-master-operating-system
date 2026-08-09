@@ -4,15 +4,16 @@ import "./features.css";
 
 export const metadata: Metadata = {
   title: { default: "Outreach Intelligence OS", template: "%s | Outreach Intelligence OS" },
-  description: "Private Boston Church Lowell public-discovery, SEO, AIO, campaign, and visitor intelligence workspace.",
+  description:
+    "Private Boston Church Lowell public-discovery, SEO, AIO, campaign, and visitor intelligence workspace.",
   robots: { index: false, follow: false, noarchive: true, nosnippet: true },
-  applicationName: "Outreach Intelligence OS"
+  applicationName: "Outreach Intelligence OS",
 };
 
 export const viewport: Viewport = {
   themeColor: "#06131f",
   width: "device-width",
-  initialScale: 1
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

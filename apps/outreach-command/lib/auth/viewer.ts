@@ -17,7 +17,7 @@ const demoViewer: OutreachViewer = {
   email: "outreach.leader@example.invalid",
   roles: ["minister", "technical_admin"],
   aal: "aal2",
-  demo: true
+  demo: true,
 };
 
 export function isOutreachDemoModeEnabled(): boolean {
@@ -44,12 +44,14 @@ async function getOutreachViewer(): Promise<OutreachViewer | null> {
       .from("role_assignments")
       .select("role:roles(key)")
       .eq("user_id", userId)
-      .is("revoked_at", null)
+      .is("revoked_at", null),
   ]);
 
   type RoleAssignmentRow = { role: { key?: AppRole } | Array<{ key?: AppRole }> | null };
   const roles = ((assignments ?? []) as RoleAssignmentRow[])
-    .map((item): AppRole | undefined => Array.isArray(item.role) ? item.role[0]?.key : item.role?.key)
+    .map((item): AppRole | undefined =>
+      Array.isArray(item.role) ? item.role[0]?.key : item.role?.key,
+    )
     .filter((role: AppRole | undefined): role is AppRole => Boolean(role));
 
   return {
@@ -58,7 +60,7 @@ async function getOutreachViewer(): Promise<OutreachViewer | null> {
     email: profile?.email ?? String(claims.email ?? ""),
     roles,
     aal: claims.aal === "aal2" ? "aal2" : "aal1",
-    demo: false
+    demo: false,
   };
 }
 

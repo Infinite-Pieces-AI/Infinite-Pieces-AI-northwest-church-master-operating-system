@@ -4,7 +4,7 @@ export function PageHeading({
   eyebrow,
   title,
   description,
-  actions
+  actions,
 }: {
   eyebrow: string;
   title: string;
