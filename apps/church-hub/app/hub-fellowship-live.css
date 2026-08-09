@@ -1,0 +1,16 @@
+.host-meetup-panel--expanded { grid-template-columns: minmax(230px,.55fr) minmax(0,1.45fr); }
+.meetup-practical-note { margin: 8px 0; padding: 9px 11px; border-radius: 10px; color: #526a78 !important; background: #f3f8fa; font-size: .74rem; }
+.fellowship-thread-layout { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.fellowship-chat-card { grid-column: 1 / -1; }
+.private-instruction-box { margin-bottom: 16px; padding: 17px; border: 1px solid #b9d8c8; border-radius: 14px; background: #edf8f2; }
+.private-instruction-box strong,.private-instruction-box p { display:block; }
+.private-instruction-box p { color:#48675a; }
+.thread-messages { display:grid; gap:10px; max-height:430px; overflow-y:auto; margin:16px 0; }
+.thread-messages article { padding:13px; border:1px solid var(--border); border-radius:13px; background:#fbfdfe; }
+.thread-messages strong,.thread-messages p,.thread-messages small { display:block; margin:0; }
+.thread-messages p { margin:5px 0; }
+.thread-messages small { color:var(--muted); }
+.thread-composer { display:grid; gap:11px; }
+.thread-composer label { display:grid; gap:6px; font-weight:800; }
+.thread-composer textarea { width:100%; padding:11px; border:1px solid #bfd0d9; border-radius:11px; }
+@media (max-width:900px) { .host-meetup-panel--expanded,.fellowship-thread-layout { grid-template-columns:1fr; } .fellowship-chat-card { grid-column:auto; } }
