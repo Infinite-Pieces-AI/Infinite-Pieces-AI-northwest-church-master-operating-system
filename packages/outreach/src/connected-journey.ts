@@ -225,9 +225,9 @@ export function assertContextualCampaignPlan(input: {
 export interface SiteQualityFindingInput {
   pageUrl: string;
   statusCode: number;
-  title?: string;
-  description?: string;
-  canonical?: string;
+  title?: string | undefined;
+  description?: string | undefined;
+  canonical?: string | undefined;
   links?: readonly { href: string; statusCode?: number; redirectCount?: number }[];
   images?: readonly { src: string; alt?: string; width?: number; height?: number }[];
   structuredDataTypes?: readonly string[];
