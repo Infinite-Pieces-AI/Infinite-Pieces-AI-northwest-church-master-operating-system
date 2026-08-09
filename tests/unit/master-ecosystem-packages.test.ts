@@ -24,11 +24,11 @@ describe("master ecosystem packages", () => {
 
   it("normalizes push subscriptions and VAPID public keys", () => {
     const subscription = normalizePushSubscription({
-      endpoint: "https://push.example.test/subscription/1",
+      endpoint: "https://fcm.googleapis.com/fcm/send/synthetic-subscription-1",
       expirationTime: null,
       keys: { p256dh: "abc", auth: "def" },
     });
-    expect(subscription.endpoint).toContain("push.example.test");
+    expect(subscription.endpoint).toContain("fcm.googleapis.com");
     expect(base64UrlToUint8Array("AQAB").length).toBeGreaterThan(0);
   });
 
