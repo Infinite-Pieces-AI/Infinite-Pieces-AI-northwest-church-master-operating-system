@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createHash } from "node:crypto";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type {
   AccessRequestInput,
   PrayerRequestInput,
@@ -13,6 +14,136 @@ function client() {
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
   });
+}
+
+export function publicSubmissionDemoEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "false") return false;
+  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "true") return true;
+  return process.env.NODE_ENV !== "production";
+}
+
+export function getPublicSubmissionAdminClient(): SupabaseClient | null {
+  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceRoleKey) return null;
+  return createClient(url, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+  });
+}
+
+export function normalizeOptionalText(value: unknown, maximumLength: number): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value
+    .trim()
+    .replace(/\u0000/g, "")
+    .slice(0, maximumLength);
+  return normalized || null;
+}
+
+export function normalizeRequiredText(value: unknown, maximumLength: number): string {
+  const normalized = normalizeOptionalText(value, maximumLength);
+  if (!normalized) throw new Error("Complete the required information before sending.");
+  return normalized;
+}
+
+export function normalizeEmail(value: unknown): string | null {
+  const normalized = normalizeOptionalText(value, 254)?.toLowerCase() ?? null;
+  if (!normalized) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+    throw new Error("Enter a valid email address.");
+  }
+  return normalized;
+}
+
+export function normalizePhone(value: unknown): string | null {
+  const normalized = normalizeOptionalText(value, 40);
+  if (!normalized) return null;
+  const digits = normalized.replace(/\D/g, "");
+  if (digits.length < 7 || digits.length > 15) throw new Error("Enter a valid phone number.");
+  return normalized;
+}
+
+export function normalizeBoolean(value: unknown): boolean {
+  return value === true || value === 1 || value === "1" || value === "true" || value === "on";
+}
+
+export function honeypotClear(value: unknown): boolean {
+  return normalizeOptionalText(value, 200) === null;
+}
+
+function allowedPublicOrigins(): Set<string> {
+  const values = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NEXT_PUBLIC_PUBLIC_SITE_URL,
+    process.env.PUBLIC_SITE_URL,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+    process.env.NODE_ENV !== "production" ? "http://localhost:3000" : undefined,
+    process.env.NODE_ENV !== "production" ? "http://127.0.0.1:3000" : undefined,
+  ];
+  const origins = new Set<string>();
+  for (const value of values) {
+    if (!value) continue;
+    try {
+      origins.add(new URL(value).origin);
+    } catch {
+      // Ignore malformed optional configuration rather than trusting it.
+    }
+  }
+  return origins;
+}
+
+export function originAllowed(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return allowedPublicOrigins().has(new URL(origin).origin);
+  } catch {
+    return false;
+  }
+}
+
+export function requestFingerprint(request: Request): string {
+  const forwardedFor = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const address = forwardedFor ?? request.headers.get("cf-connecting-ip") ?? "unknown";
+  const userAgent = request.headers.get("user-agent") ?? "unknown";
+  const pepper =
+    process.env.PUBLIC_FORM_FINGERPRINT_PEPPER ?? process.env.WEBHOOK_SIGNING_SECRET ?? "";
+  if (!pepper && process.env.NODE_ENV === "production") {
+    throw new Error("The public form security configuration is incomplete.");
+  }
+  return createHash("sha256")
+    .update(`${pepper || "local-development"}:${address}:${userAgent}`)
+    .digest("hex");
+}
+
+export async function enforceSubmissionRateLimit(input: {
+  client: SupabaseClient;
+  fingerprint: string;
+  table: string;
+  maximum: number;
+  windowMinutes: number;
+}): Promise<void> {
+  const since = new Date(Date.now() - input.windowMinutes * 60_000).toISOString();
+  const { count, error } = await input.client
+    .from(input.table)
+    .select("id", { count: "exact", head: true })
+    .eq("request_fingerprint", input.fingerprint)
+    .gte("created_at", since);
+  if (error) throw new Error("The request could not be checked safely. Please try again shortly.");
+  if ((count ?? 0) >= input.maximum) {
+    throw new Error("Please wait before sending another request.");
+  }
+}
+
+export function demoSubmissionResponse(): Response {
+  return Response.json(
+    {
+      message:
+        "Demo mode received the request using fictional preview data. Nothing was stored or sent.",
+      demo: true,
+    },
+    { status: 201 },
+  );
 }
 
 export async function submitVisitRequest(input: VisitRequestInput) {

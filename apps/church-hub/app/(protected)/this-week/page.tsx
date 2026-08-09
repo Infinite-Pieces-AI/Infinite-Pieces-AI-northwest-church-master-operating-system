@@ -1,13 +1,18 @@
 import Link from "next/link";
 import { ConnectionConcierge } from "@/components/connection-concierge";
+import { ConnectionPathway } from "@/components/connection-pathway";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { fellowshipMeetups } from "@/lib/demo-data";
+import { loadConnectionPathway } from "@/lib/connection-pathway";
 import { loadThisWeekData } from "@/lib/this-week";
 
 export default async function ThisWeekPage() {
   const viewer = await requireViewer();
-  const d = await loadThisWeekData(viewer);
+  const [d, connectionPathway] = await Promise.all([
+    loadThisWeekData(viewer),
+    loadConnectionPathway(viewer),
+  ]);
   if (!d) {
     return (
       <>
@@ -32,11 +37,14 @@ export default async function ThisWeekPage() {
       <PageHeading
         eyebrow="Your week with God and people"
         title="This Week"
-        description="See what is happening, take the next step in Scripture, and find a place to belong before isolation becomes the default."
+        description="See what is happening, take the next step in Scripture, and move toward a real conversation, gathering, or act of service without turning the app into an endless feed."
         actions={
           <div className="heading-actions">
             <Link className="hub-button hub-button--primary" href="/fellowship">
               Find fellowship
+            </Link>
+            <Link className="hub-button hub-button--secondary" href="/service">
+              Find service
             </Link>
             <Link className="hub-button hub-button--secondary" href="/notifications">
               Notifications
@@ -57,8 +65,8 @@ export default async function ThisWeekPage() {
             {d.service.address}
           </span>
           <p className="week-hero__promise">
-            Come worship, then stay connected through open lunch tables, prayer walks, groups, and
-            member-created invitations.
+            Come worship, then stay connected through open lunch tables, prayer walks, groups,
+            member-created invitations, and approved service opportunities.
           </p>
           <div className="row-actions">
             <a
@@ -78,6 +86,7 @@ export default async function ThisWeekPage() {
       </section>
 
       <ConnectionConcierge compact />
+      <ConnectionPathway initial={connectionPathway} demo={viewer.demo} />
 
       <div className="dashboard-grid">
         <section className="hub-panel hub-panel--span2 lesson-feature-panel">
@@ -140,6 +149,16 @@ export default async function ThisWeekPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        <section className="hub-panel service-preview-card">
+          <p className="hub-kicker">Serve together</p>
+          <h2>See the need before signing up.</h2>
+          <p>
+            Service Marketplace shows the approved need, partner, time, role, accessibility,
+            supplies, transportation, and safeguarding information.
+          </p>
+          <Link href="/service">Open Service Marketplace →</Link>
         </section>
 
         <section className="hub-panel minister-card">
