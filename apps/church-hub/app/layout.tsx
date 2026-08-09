@@ -4,10 +4,11 @@ import "./experience-core.css";
 import "./experience-fellowship.css";
 import "./experience-bible.css";
 import "./experience-responsive.css";
+import "./hub-journey.css";
 
 export const metadata: Metadata = {
   title: { default: "Church Hub", template: "%s | Church Hub" },
-  description: "Invite-only Boston Church Lowell member hub",
+  description: "Invite-only Boston Church Lowell member hub for teaching, fellowship, service, groups, events, and family tools.",
   robots: { index: false, follow: false, noarchive: true, nosnippet: true },
   applicationName: "Church Hub",
   manifest: "/manifest.webmanifest",

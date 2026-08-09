@@ -1,0 +1,485 @@
+.auth-card--member-welcome {
+  max-width: 680px;
+}
+
+.member-login-value-grid,
+.auth-support-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.member-login-value-grid article,
+.auth-support-grid a {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.045);
+  text-decoration: none;
+}
+
+.member-login-value-grid span,
+.member-login-value-grid strong,
+.member-login-value-grid small,
+.auth-support-grid strong,
+.auth-support-grid span {
+  display: block;
+}
+
+.member-login-value-grid > article > span {
+  color: var(--gold);
+  font-size: 1.4rem;
+}
+
+.member-login-value-grid small,
+.auth-support-grid span {
+  margin-top: 4px;
+  color: #9eb5c2;
+  line-height: 1.45;
+}
+
+.concierge-paused,
+.concierge-controls,
+.preference-summary {
+  position: relative;
+  z-index: 1;
+}
+
+.concierge-paused {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  background: rgba(3, 17, 30, 0.3);
+}
+
+.concierge-paused strong,
+.concierge-paused span {
+  display: block;
+}
+
+.concierge-paused span {
+  margin-top: 3px;
+  color: #b8ced9;
+}
+
+.recommendation-reason {
+  display: block;
+  margin-top: 9px;
+  color: #efcf77;
+  font-size: 0.7rem;
+}
+
+.concierge-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.concierge-controls button,
+.pathway-text-button {
+  padding: 0;
+  border: 0;
+  color: #c4d9e3;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.preference-summary {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.preference-summary strong,
+.preference-summary span {
+  display: block;
+}
+
+.preference-summary span {
+  color: var(--gold2);
+}
+
+.preference-summary p {
+  margin-bottom: 0;
+  color: #b8ced9;
+  font-size: 0.72rem;
+}
+
+.service-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(180px, 0.6fr);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 32px;
+  border-radius: 28px;
+  color: white;
+  background: linear-gradient(135deg, #07192b, #0e4c68);
+  box-shadow: var(--shadow);
+}
+
+.service-hero h2 {
+  max-width: 800px;
+  margin: 6px 0;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.service-hero p:last-child {
+  color: #c6d9e3;
+}
+
+.service-hero__mark {
+  color: var(--gold);
+  font-size: 9rem;
+  text-align: center;
+}
+
+.service-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-filter-row button {
+  padding: 9px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  background: white;
+  cursor: pointer;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.service-filter-row button.active,
+.service-filter-row button:hover {
+  color: white;
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+.service-notice {
+  min-height: 1.4em;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.service-market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.service-opportunity-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 10px 35px rgba(7, 25, 43, 0.06);
+}
+
+.service-opportunity-card header,
+.service-opportunity-card footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px;
+}
+
+.service-opportunity-card header {
+  border-bottom: 1px solid var(--border);
+}
+
+.service-opportunity-card h2 {
+  margin: 4px 0 0;
+  font-family: Georgia, serif;
+}
+
+.service-family-badge,
+.service-standard-badge {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.service-family-badge {
+  color: #155c3c;
+  background: #e6f5ed;
+}
+
+.service-standard-badge {
+  color: #765a05;
+  background: #fff4c8;
+}
+
+.service-impact {
+  padding: 18px 20px;
+  background: #f7fbfc;
+}
+
+.service-impact strong,
+.service-impact p {
+  display: block;
+  margin: 0;
+}
+
+.service-impact strong {
+  color: var(--blue);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.service-impact p {
+  margin: 4px 0 13px;
+  color: var(--muted);
+}
+
+.service-detail-list {
+  display: grid;
+  gap: 9px;
+  padding: 0 20px;
+}
+
+.service-detail-list div {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 10px;
+}
+
+.service-detail-list dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.service-detail-list dd {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.service-skill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 15px 20px;
+}
+
+.service-skill-row span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--sky);
+  font-size: 0.66rem;
+  font-weight: 850;
+}
+
+.service-opportunity-card footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: #fbfcfd;
+}
+
+.service-opportunity-card footer strong,
+.service-opportunity-card footer span {
+  display: block;
+}
+
+.service-opportunity-card footer span {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.service-integrity-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+  gap: 24px;
+  margin-top: 22px;
+  color: white;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--navy), #123f61);
+}
+
+.service-integrity-panel ul {
+  margin: 0;
+  color: #c7dae4;
+}
+
+.connection-pathway {
+  display: grid;
+  gap: 18px;
+}
+
+.pathway-progress-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 24px;
+  align-items: center;
+  padding: 30px;
+  border-radius: 27px;
+  color: white;
+  background: linear-gradient(135deg, #07192b, #164f76);
+}
+
+.pathway-progress-header h2 {
+  margin: 5px 0;
+  font-family: Georgia, serif;
+  font-size: 2.2rem;
+}
+
+.pathway-progress-header p:last-child {
+  color: #c4d8e2;
+}
+
+.pathway-progress-ring {
+  width: 130px;
+  height: 130px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, #0c2d43 58%, transparent 60%), conic-gradient(var(--gold) var(--path-progress), rgba(255,255,255,.1) 0);
+}
+
+.pathway-progress-ring strong,
+.pathway-progress-ring span {
+  display: block;
+}
+
+.pathway-progress-ring strong {
+  font-size: 1.7rem;
+}
+
+.pathway-progress-ring span {
+  color: #bdd2dd;
+  font-size: 0.65rem;
+}
+
+.pathway-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.pathway-step-list {
+  display: grid;
+  gap: 12px;
+}
+
+.pathway-step-list--paused {
+  opacity: 0.65;
+}
+
+.pathway-step {
+  display: grid;
+  grid-template-columns: 92px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: white;
+}
+
+.pathway-step--completed {
+  border-color: #9dd4b7;
+  background: #f0faf5;
+}
+
+.pathway-step--skipped {
+  background: #f7f8f9;
+}
+
+.pathway-week {
+  color: var(--blue);
+  font-weight: 900;
+}
+
+.pathway-step h3,
+.pathway-step p {
+  margin: 0;
+}
+
+.pathway-step p {
+  margin: 5px 0 13px;
+  color: var(--muted);
+}
+
+.pathway-text-button {
+  color: var(--blue);
+}
+
+.pathway-status {
+  min-width: 90px;
+  color: var(--green);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.bottom-nav--six > a {
+  min-width: 50px;
+}
+
+@media (max-width: 900px) {
+  .service-market-grid,
+  .service-integrity-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .member-login-value-grid,
+  .auth-support-grid,
+  .service-hero,
+  .pathway-progress-header {
+    grid-template-columns: 1fr;
+  }
+
+  .service-hero__mark {
+    display: none;
+  }
+
+  .service-opportunity-card header,
+  .service-opportunity-card footer,
+  .concierge-paused {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pathway-progress-ring {
+    width: 110px;
+    height: 110px;
+  }
+
+  .pathway-step {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  .pathway-status {
+    text-align: left;
+  }
+}
