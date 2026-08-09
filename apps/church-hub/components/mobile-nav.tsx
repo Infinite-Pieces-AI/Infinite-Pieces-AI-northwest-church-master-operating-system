@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const items = [
-  ["Week", "/this-week", "⌂"],
+  ["This Week", "/this-week", "⌂"],
   ["Bible", "/bible", "✦"],
   ["Meetups", "/fellowship", "∞"],
   ["Community", "/community", "◌"],
