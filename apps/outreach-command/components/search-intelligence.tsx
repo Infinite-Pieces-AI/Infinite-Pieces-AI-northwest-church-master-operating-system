@@ -8,9 +8,7 @@ type Segment = "all" | "local" | "online";
 
 export function SearchIntelligence() {
   const [segment, setSegment] = useState<Segment>("all");
-  const [selectedQuery, setSelectedQuery] = useState<string>(
-    searchOpportunities[0]?.query ?? "",
-  );
+  const [selectedQuery, setSelectedQuery] = useState<string>(searchOpportunities[0]?.query ?? "");
   const [brief, setBrief] = useState<ReturnType<typeof createPeopleFirstContentBrief> | null>(null);
 
   const rows = useMemo(
