@@ -115,6 +115,43 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/outreach-command:
+    dependencies:
+      '@church/authorization':
+        specifier: workspace:*
+        version: link:../../packages/authorization
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../packages/outreach
+      '@supabase/ssr':
+        specifier: 0.12.3
+        version: 0.12.3(@supabase/supabase-js@2.110.9)
+      '@supabase/supabase-js':
+        specifier: 2.110.9
+        version: 2.110.9
+      next:
+        specifier: 16.2.12
+        version: 16.2.12(@babel/core@7.29.7)(@playwright/test@1.62.1)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react:
+        specifier: 19.2.0
+        version: 19.2.0
+      react-dom:
+        specifier: 19.2.0
+        version: 19.2.0(react@19.2.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.0
+        version: 24.13.3
+      '@types/react':
+        specifier: 19.2.17
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.4(@types/react@19.2.17)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   apps/public-web:
     dependencies:
       '@church/analytics':
@@ -186,6 +223,60 @@ importers:
         specifier: ^4.0.0
         version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
 
+  apps/workers/ai-visibility-monitor:
+    dependencies:
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
+  apps/workers/campaign-intelligence:
+    dependencies:
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../../packages/outreach
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
+  apps/workers/content-generation:
+    dependencies:
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../../packages/outreach
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
   apps/workers/group-rotation-proposals:
     dependencies:
       '@church/group-rotation':
@@ -243,6 +334,25 @@ importers:
         specifier: ^4.0.0
         version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
 
+  apps/workers/public-web-listening:
+    dependencies:
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../../packages/outreach
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
   apps/workers/push-delivery:
     dependencies:
       '@church/notifications':
@@ -272,6 +382,44 @@ importers:
         version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
 
   apps/workers/search-console-sync:
+    dependencies:
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../../packages/outreach
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
+  apps/workers/seo-intelligence:
+    dependencies:
+      '@church/outreach':
+        specifier: workspace:*
+        version: link:../../../packages/outreach
+      '@church/worker-runtime':
+        specifier: workspace:*
+        version: link:../../../packages/worker-runtime
+    devDependencies:
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.8
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.10(@types/node@24.13.3)(vite@8.2.0(@types/node@24.13.3)(esbuild@0.28.1)(tsx@4.23.8))
+
+  apps/workers/social-listening:
     dependencies:
       '@church/outreach':
         specifier: workspace:*

@@ -4,22 +4,22 @@ import { SiteHeader } from "@/components/site-header";
 import { PublicTelemetry } from "@/components/public-telemetry";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
+import "./journey.css";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
   title: {
-    default: "Boston Church Lowell | Sunday Worship in Lowell, MA",
+    default: "Boston Church Lowell | Meet Jesus, Find Community, Serve Lowell",
     template: "%s | Boston Church Lowell",
   },
   description:
-    "Meet the Boston Church Lowell / Northwest community, plan a Sunday visit, explore Bible studies, family groups, Kids Kingdom, teen ministry, sermons, and public events.",
+    "Meet Jesus, find genuine community, plan a Sunday visit, explore Bible conversations, family groups, Kids Kingdom, teen ministry, service, sermons, and public events in Lowell, Massachusetts.",
   applicationName: "Boston Church Lowell",
-  alternates: { canonical: "/" },
   openGraph: {
     title: "Boston Church Lowell",
-    description: "A community seeking to love God, love one another, and serve Lowell.",
+    description: "Meet Jesus, find your people, and serve Lowell together.",
     type: "website",
     locale: "en_US",
     url: "/",

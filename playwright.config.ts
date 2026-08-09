@@ -22,6 +22,11 @@ export default defineConfig({
       testMatch: ["**/accessibility/hub-*.spec.ts", "**/end-to-end/member-*.spec.ts"],
       use: { ...devices["Pixel 7"], baseURL: "http://127.0.0.1:3001" },
     },
+    {
+      name: "outreach-desktop",
+      testMatch: ["**/accessibility/outreach-*.spec.ts", "**/end-to-end/outreach-*.spec.ts"],
+      use: { ...devices["Desktop Chrome"], baseURL: "http://127.0.0.1:3002" },
+    },
   ],
   webServer: [
     {
@@ -32,6 +37,12 @@ export default defineConfig({
     {
       command: "pnpm --filter @church/church-hub dev",
       url: "http://127.0.0.1:3001/login",
+      reuseExistingServer: !process.env.CI,
+      env: { NEXT_PUBLIC_ENABLE_DEMO: "true" },
+    },
+    {
+      command: "pnpm --filter @church/outreach-command dev",
+      url: "http://127.0.0.1:3002/login",
       reuseExistingServer: !process.env.CI,
       env: { NEXT_PUBLIC_ENABLE_DEMO: "true" },
     },

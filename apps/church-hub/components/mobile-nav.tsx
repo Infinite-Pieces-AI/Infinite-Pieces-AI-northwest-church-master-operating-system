@@ -1,16 +1,17 @@
 import Link from "next/link";
 
 const items = [
-  ["Week", "/this-week", "⌂"],
+  ["This Week", "/this-week", "⌂"],
   ["Bible", "/bible", "✦"],
   ["Meetups", "/fellowship", "∞"],
+  ["Serve", "/service", "◇"],
   ["Community", "/community", "◌"],
   ["Family", "/family", "⌁"],
 ] as const;
 
 export function MobileNav({ canAdmin }: { canAdmin: boolean }) {
   return (
-    <nav className="bottom-nav" aria-label="Mobile member navigation">
+    <nav className="bottom-nav bottom-nav--six" aria-label="Mobile member navigation">
       {items.map(([label, href, icon]) => (
         <Link key={href} href={href}>
           <span aria-hidden="true">{icon}</span>

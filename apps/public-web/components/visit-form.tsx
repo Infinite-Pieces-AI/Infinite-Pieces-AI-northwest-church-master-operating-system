@@ -7,33 +7,43 @@ export function VisitForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
   const [started, setStarted] = useState(false);
+  const [contactMethod, setContactMethod] = useState<"email" | "phone">("email");
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("submitting");
     const form = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-    payload.partySize = String(payload.partySize || "1");
-    payload.communicationConsent = form.get("communicationConsent") === "on" ? "true" : "false";
+    const payload = {
+      firstName: String(form.get("firstName") ?? ""),
+      lastName: String(form.get("lastName") ?? ""),
+      contactMethod,
+      email: String(form.get("email") ?? ""),
+      phone: String(form.get("phone") ?? ""),
+      partySize: Number(form.get("partySize") ?? 1),
+      childrenAttending: form.get("childrenAttending") === "on",
+      practicalNote: String(form.get("practicalNote") ?? ""),
+      requestedNextStep: "plan_visit",
+      communicationConsent: form.get("communicationConsent") === "on",
+      sourcePath: "/plan-a-visit",
+      website: String(form.get("website") ?? ""),
+    };
+
     try {
       const response = await fetch("/api/public/visit-requests", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          partySize: Number(payload.partySize),
-          communicationConsent: payload.communicationConsent === "true",
-        }),
+        body: JSON.stringify(payload),
       });
       const result = (await response.json()) as { message?: string };
       if (!response.ok) throw new Error(result.message ?? "Unable to send your request");
       setStatus("success");
       setMessage(
         result.message ??
-          "Thank you. A welcome volunteer will follow up using the contact information you provided.",
+          "Thank you. A welcome volunteer will follow up using the contact method you selected.",
       );
       trackPublicEvent("plan_visit_submitted", { path: "/plan-a-visit" });
       event.currentTarget.reset();
+      setContactMethod("email");
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Unable to send your request");
@@ -42,7 +52,7 @@ export function VisitForm() {
 
   return (
     <form
-      className="form-card"
+      className="form-card consent-first-form"
       onFocusCapture={() => {
         if (!started) {
           setStarted(true);
@@ -57,57 +67,65 @@ export function VisitForm() {
           <input name="firstName" autoComplete="given-name" required maxLength={80} />
         </label>
         <label>
-          <span>Last name</span>
-          <input name="lastName" autoComplete="family-name" required maxLength={80} />
+          <span>Last name (optional)</span>
+          <input name="lastName" autoComplete="family-name" maxLength={80} />
         </label>
         <label>
-          <span>Email</span>
-          <input type="email" name="email" autoComplete="email" required maxLength={254} />
-        </label>
-        <label>
-          <span>Phone (optional)</span>
-          <input name="phone" autoComplete="tel" maxLength={40} />
-        </label>
-        <label>
-          <span>Party size</span>
-          <input type="number" name="partySize" min={1} max={20} defaultValue={1} />
-        </label>
-        <label>
-          <span>Children’s ages (optional)</span>
-          <input name="childrenAges" maxLength={200} placeholder="Example: 4, 7, 12" />
-        </label>
-        <label className="form-grid__full">
-          <span>How can we help?</span>
-          <select name="requestedNextStep" defaultValue="plan_visit">
-            <option value="plan_visit">Plan a Sunday visit</option>
-            <option value="bible_study">Learn about a Bible study</option>
-            <option value="family_group">Connect with a family group</option>
-            <option value="prayer">Request prayer</option>
-            <option value="general_question">Ask a general question</option>
+          <span>How should we contact you?</span>
+          <select
+            name="contactMethod"
+            value={contactMethod}
+            onChange={(event) => setContactMethod(event.target.value as "email" | "phone")}
+          >
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
           </select>
         </label>
+        {contactMethod === "email" ? (
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" autoComplete="email" required maxLength={254} />
+          </label>
+        ) : (
+          <label>
+            <span>Phone</span>
+            <input name="phone" autoComplete="tel" required maxLength={40} />
+          </label>
+        )}
+        <label>
+          <span>Approximate party size</span>
+          <input type="number" name="partySize" min={1} max={20} defaultValue={1} />
+        </label>
+        <label className="check-row compact-check-row">
+          <input type="checkbox" name="childrenAttending" />
+          <span>Children will be attending with me</span>
+        </label>
         <label className="form-grid__full">
-          <span>Message (optional)</span>
-          <textarea name="message" rows={5} maxLength={1500} />
+          <span>Anything practical we should know? (optional)</span>
+          <textarea
+            name="practicalNote"
+            rows={4}
+            maxLength={1500}
+            placeholder="Accessibility, arrival, seating, or Kids Kingdom questions. Please do not include medical or highly sensitive information here."
+          />
         </label>
         <label className="honeypot" aria-hidden="true">
           Website
           <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
-        <input type="hidden" name="sourcePath" value="/plan-a-visit" />
         <label className="check-row form-grid__full">
           <input type="checkbox" name="communicationConsent" required />
           <span>
-            I agree that an authorized church volunteer may contact me about this request. I can opt
-            out at any time.
+            I agree that an authorized welcome volunteer may contact me about this visit request. I
+            can opt out at any time.
           </span>
         </label>
       </div>
       <button className="button button--gold" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending…" : "Send my visit request"}
+        {status === "submitting" ? "Sending…" : "Tell someone I’m coming"}
       </button>
       {message ? (
-        <p className={`form-status form-status--${status}`} role="status">
+        <p className={`form-status form-status--${status}`} role="status" aria-live="polite">
           {message}
         </p>
       ) : null}
