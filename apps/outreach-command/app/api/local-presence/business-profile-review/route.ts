@@ -1,4 +1,4 @@
-import { evaluateBusinessProfileEligibility } from "@church/outreach";
+import { evaluateConnectedBusinessProfileEligibility } from "@church/outreach";
 import { requireOutreachViewer } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       centralIdentityApproved: body.centralIdentityApproved === true,
       recoveryOwnersDocumented: body.recoveryOwnersDocumented === true,
     };
-    const evaluation = evaluateBusinessProfileEligibility(input);
+    const evaluation = evaluateConnectedBusinessProfileEligibility(input);
     const decision = evaluation.eligible
       ? "eligible"
       : evaluation.requiresLegalOrPolicyReview
