@@ -117,15 +117,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "The invitation could not be created." }, { status: 403 });
 
   if (value.exactMeetingInstructions || value.virtualJoinUrl || value.hostContactNote) {
-    const { error: detailError } = await supabase
-      .from("fellowship_meetup_private_details")
-      .insert({
-        meetup_id: meetup.id,
-        exact_meeting_instructions: value.exactMeetingInstructions || null,
-        virtual_join_url: value.virtualJoinUrl || null,
-        host_contact_note: value.hostContactNote || null,
-        updated_by: viewer.id,
-      });
+    const { error: detailError } = await supabase.from("fellowship_meetup_private_details").insert({
+      meetup_id: meetup.id,
+      exact_meeting_instructions: value.exactMeetingInstructions || null,
+      virtual_join_url: value.virtualJoinUrl || null,
+      host_contact_note: value.hostContactNote || null,
+      updated_by: viewer.id,
+    });
     if (detailError)
       return NextResponse.json(
         {
