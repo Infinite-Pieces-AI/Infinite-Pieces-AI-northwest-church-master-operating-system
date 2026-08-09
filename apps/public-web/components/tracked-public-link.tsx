@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ComponentProps } from "react";
+import type { PublicAnalyticsEvent } from "@church/analytics";
 import { trackPublicEvent } from "@/lib/analytics-client";
 
 type LinkProps = ComponentProps<typeof Link>;
@@ -12,7 +13,7 @@ export function TrackedPublicLink({
   onClick,
   ...props
 }: LinkProps & {
-  eventName: string;
+  eventName: PublicAnalyticsEvent;
   eventProperties?: Record<string, string | number | boolean | null>;
 }) {
   return (
