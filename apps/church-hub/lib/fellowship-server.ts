@@ -132,7 +132,8 @@ export async function loadFellowshipMeetups(viewer: Viewer): Promise<FellowshipM
   }
 
   return rows.map((row) => {
-    const host = profileLabels.get(row.creator_profile_id) ?? fallbackHostLabel(row.creator_profile_id);
+    const host =
+      profileLabels.get(row.creator_profile_id) ?? fallbackHostLabel(row.creator_profile_id);
     const memberResponse = myResponses.get(row.id) ?? null;
     const tags = [categoryLabels[row.category]];
     if (row.family_friendly) tags.push("Kids welcome");
@@ -165,9 +166,7 @@ export async function loadFellowshipMeetups(viewer: Viewer): Promise<FellowshipM
       costNote: row.cost_note,
       weatherPlan: row.weather_plan,
       memberResponse,
-      canOpenThread: ["host", "interested", "going", "waitlisted"].includes(
-        memberResponse ?? "",
-      ),
+      canOpenThread: ["host", "interested", "going", "waitlisted"].includes(memberResponse ?? ""),
       canManage: row.creator_profile_id === viewer.id,
     };
   });

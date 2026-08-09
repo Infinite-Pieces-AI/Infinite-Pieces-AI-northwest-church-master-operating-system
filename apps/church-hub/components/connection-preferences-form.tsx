@@ -56,7 +56,8 @@ export function ConnectionPreferencesForm() {
         setStatus("Recommendations use only the choices you save here and authorized meetup data.");
       })
       .catch((error: unknown) => {
-        if (active) setStatus(error instanceof Error ? error.message : "Preferences could not be loaded.");
+        if (active)
+          setStatus(error instanceof Error ? error.message : "Preferences could not be loaded.");
       });
     return () => {
       active = false;
@@ -100,7 +101,9 @@ export function ConnectionPreferencesForm() {
         throw new Error(result.message ?? "Preferences could not be saved.");
       }
       setPreferences(result.preferences);
-      setStatus("Preferences saved. Future recommendations must explain which saved choices matched.");
+      setStatus(
+        "Preferences saved. Future recommendations must explain which saved choices matched.",
+      );
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Preferences could not be saved.");
     } finally {
@@ -122,7 +125,10 @@ export function ConnectionPreferencesForm() {
               }))
             }
           />
-          <span><strong>Enable recommendations</strong><small>Suggest authorized meetups only when I opt in.</small></span>
+          <span>
+            <strong>Enable recommendations</strong>
+            <small>Suggest authorized meetups only when I opt in.</small>
+          </span>
         </label>
         <label>
           <input
@@ -132,27 +138,42 @@ export function ConnectionPreferencesForm() {
               setPreferences((current) => ({ ...current, openToLastMinute: event.target.checked }))
             }
           />
-          <span><strong>Open to last-minute invitations</strong><small>Include gatherings starting soon.</small></span>
+          <span>
+            <strong>Open to last-minute invitations</strong>
+            <small>Include gatherings starting soon.</small>
+          </span>
         </label>
         <label>
           <input
             type="checkbox"
             checked={preferences.familyFriendlyOnly}
             onChange={(event) =>
-              setPreferences((current) => ({ ...current, familyFriendlyOnly: event.target.checked }))
+              setPreferences((current) => ({
+                ...current,
+                familyFriendlyOnly: event.target.checked,
+              }))
             }
           />
-          <span><strong>Family-friendly only</strong><small>Prefer gatherings that explicitly welcome children and guardians.</small></span>
+          <span>
+            <strong>Family-friendly only</strong>
+            <small>Prefer gatherings that explicitly welcome children and guardians.</small>
+          </span>
         </label>
         <label>
           <input
             type="checkbox"
             checked={preferences.lowPressurePreferred}
             onChange={(event) =>
-              setPreferences((current) => ({ ...current, lowPressurePreferred: event.target.checked }))
+              setPreferences((current) => ({
+                ...current,
+                lowPressurePreferred: event.target.checked,
+              }))
             }
           />
-          <span><strong>Prefer low-pressure gatherings</strong><small>Prioritize come-and-go, beginner-friendly invitations.</small></span>
+          <span>
+            <strong>Prefer low-pressure gatherings</strong>
+            <small>Prioritize come-and-go, beginner-friendly invitations.</small>
+          </span>
         </label>
       </div>
 
@@ -215,7 +236,8 @@ export function ConnectionPreferencesForm() {
           {preferences.categories.length ? preferences.categories.join(", ") : "no categories yet"};{" "}
           {preferences.preferredTimeWindows.length
             ? preferences.preferredTimeWindows.join(", ")
-            : "no saved time window"}; and{" "}
+            : "no saved time window"}
+          ; and{" "}
           {preferences.generalAreas.length ? preferences.generalAreas.join(", ") : "no saved area"}.
         </p>
         <small>
@@ -242,7 +264,9 @@ export function ConnectionPreferencesForm() {
           Pause for 30 days
         </button>
       </div>
-      <p className="fellowship-notice" role="status" aria-live="polite">{status}</p>
+      <p className="fellowship-notice" role="status" aria-live="polite">
+        {status}
+      </p>
     </form>
   );
 }

@@ -14,10 +14,7 @@ interface ProfileRow {
   display_name: string | null;
 }
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ meetupId: string }> },
-) {
+export async function GET(_request: Request, context: { params: Promise<{ meetupId: string }> }) {
   try {
     const viewer = await getApiViewer();
     if (!viewer) return Response.json({ message: "Sign in is required." }, { status: 401 });
@@ -75,10 +72,7 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ meetupId: string }> },
-) {
+export async function POST(request: Request, context: { params: Promise<{ meetupId: string }> }) {
   try {
     const viewer = await getApiViewer();
     if (!viewer) return Response.json({ message: "Sign in is required." }, { status: 401 });

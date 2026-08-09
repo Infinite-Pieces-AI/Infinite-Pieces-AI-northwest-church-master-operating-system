@@ -31,7 +31,8 @@ export function MeetupThread({
         setStatus(result.messages?.length ? "Participant-only meetup thread" : "No messages yet.");
       })
       .catch((error: unknown) => {
-        if (active) setStatus(error instanceof Error ? error.message : "The thread could not be opened.");
+        if (active)
+          setStatus(error instanceof Error ? error.message : "The thread could not be opened.");
       });
     return () => {
       active = false;
@@ -58,7 +59,8 @@ export function MeetupThread({
           typeof result.message === "string" ? result.message : "The message could not be sent.",
         );
       }
-      if (result.message) setMessages((current) => [...current, result.message as FellowshipMessageView]);
+      if (result.message)
+        setMessages((current) => [...current, result.message as FellowshipMessageView]);
       event.currentTarget.reset();
       inputRef.current?.focus();
       setStatus("Message sent to the participant-only thread.");

@@ -106,9 +106,7 @@
   padding: 22px;
   border: 1px solid #a6cbdc;
   border-radius: 22px;
-  background:
-    radial-gradient(circle at 100% 0, rgba(23, 109, 168, 0.1), transparent 35%),
-    white;
+  background: radial-gradient(circle at 100% 0, rgba(23, 109, 168, 0.1), transparent 35%), white;
   box-shadow: var(--shadow);
 }
 

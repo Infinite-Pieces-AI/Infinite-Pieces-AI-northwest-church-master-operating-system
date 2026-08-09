@@ -65,7 +65,8 @@ export function BusinessProfileEligibilityGate() {
         );
       })
       .catch((error: unknown) => {
-        if (active) setMessage(error instanceof Error ? error.message : "The review could not be loaded.");
+        if (active)
+          setMessage(error instanceof Error ? error.message : "The review could not be loaded.");
       });
     return () => {
       active = false;
@@ -110,11 +111,31 @@ export function BusinessProfileEligibilityGate() {
   }
 
   const checks: Array<[keyof ReviewState, string, string]> = [
-    ["addressAuthorized", "Address representation is authorized", "The church has written authority to represent its Sunday presence at this address."],
-    ["representativesPresentDuringHours", "Representatives are present during listed hours", "Public hours match the times when church representatives actually meet visitors."],
-    ["signageVerified", "Sunday signage is verifiable", "The approved entrance and church signage are documented."],
-    ["centralIdentityApproved", "Central identity is approved", "Boston Church leadership approves the public name, location relationship, and account ownership."],
-    ["recoveryOwnersDocumented", "Two recovery owners are documented", "At least two authorized church leaders control account recovery."],
+    [
+      "addressAuthorized",
+      "Address representation is authorized",
+      "The church has written authority to represent its Sunday presence at this address.",
+    ],
+    [
+      "representativesPresentDuringHours",
+      "Representatives are present during listed hours",
+      "Public hours match the times when church representatives actually meet visitors.",
+    ],
+    [
+      "signageVerified",
+      "Sunday signage is verifiable",
+      "The approved entrance and church signage are documented.",
+    ],
+    [
+      "centralIdentityApproved",
+      "Central identity is approved",
+      "Boston Church leadership approves the public name, location relationship, and account ownership.",
+    ],
+    [
+      "recoveryOwnersDocumented",
+      "Two recovery owners are documented",
+      "At least two authorized church leaders control account recovery.",
+    ],
   ];
 
   return (
@@ -128,7 +149,9 @@ export function BusinessProfileEligibilityGate() {
             platform-policy review.
           </p>
         </div>
-        <span className={`status-pill status-pill--${review.decision === "eligible" ? "ready" : "blocked"}`}>
+        <span
+          className={`status-pill status-pill--${review.decision === "eligible" ? "ready" : "blocked"}`}
+        >
           {review.decision ?? "pending"}
         </span>
       </div>
@@ -138,7 +161,9 @@ export function BusinessProfileEligibilityGate() {
             Venue name
             <input
               value={review.venueName}
-              onChange={(event) => setReview((current) => ({ ...current, venueName: event.target.value }))}
+              onChange={(event) =>
+                setReview((current) => ({ ...current, venueName: event.target.value }))
+              }
               maxLength={160}
             />
           </label>
@@ -168,7 +193,10 @@ export function BusinessProfileEligibilityGate() {
                 checked={Boolean(review[key])}
                 onChange={(event) => setCheck(key, event.target.checked)}
               />
-              <span><strong>{label}</strong><small>{detail}</small></span>
+              <span>
+                <strong>{label}</strong>
+                <small>{detail}</small>
+              </span>
             </label>
           ))}
         </div>

@@ -53,7 +53,10 @@ export async function POST(
     return Response.json({ response: data.status, partySize: data.party_size });
   } catch (error) {
     return Response.json(
-      { message: error instanceof Error ? error.message : "The service response could not be saved." },
+      {
+        message:
+          error instanceof Error ? error.message : "The service response could not be saved.",
+      },
       { status: 400 },
     );
   }

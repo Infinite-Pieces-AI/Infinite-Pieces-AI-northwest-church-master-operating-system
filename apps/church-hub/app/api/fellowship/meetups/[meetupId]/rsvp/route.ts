@@ -4,10 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const responses = ["interested", "going", "waitlisted", "cancelled"] as const;
 
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ meetupId: string }> },
-) {
+export async function POST(request: Request, context: { params: Promise<{ meetupId: string }> }) {
   try {
     const viewer = await getApiViewer();
     if (!viewer) return Response.json({ message: "Sign in is required." }, { status: 401 });

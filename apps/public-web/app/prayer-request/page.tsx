@@ -21,9 +21,9 @@ export default function Page() {
       ctaHref="/ask-a-question"
     >
       <div className="sensitive-path-notice">
-        <strong>This is not an emergency service.</strong> The form may not be monitored immediately.
-        For immediate danger, contact local emergency services. For an urgent mental-health crisis in
-        the United States, call or text 988.
+        <strong>This is not an emergency service.</strong> The form may not be monitored
+        immediately. For immediate danger, contact local emergency services. For an urgent
+        mental-health crisis in the United States, call or text 988.
       </div>
 
       <div className="info-grid">
@@ -31,15 +31,15 @@ export default function Page() {
           <h2>Restricted access</h2>
           <p>
             Prayer requests are intended for an approved prayer or pastoral workflow. Technical and
-            outreach users should not receive automatic access merely because they administer another
-            part of the platform.
+            outreach users should not receive automatic access merely because they administer
+            another part of the platform.
           </p>
         </div>
         <div className="info-panel">
           <h2>Optional follow-up</h2>
           <p>
-            You may request prayer without requesting a response. Contact information is required only
-            when you choose follow-up.
+            You may request prayer without requesting a response. Contact information is required
+            only when you choose follow-up.
           </p>
         </div>
       </div>

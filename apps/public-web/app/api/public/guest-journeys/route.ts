@@ -84,7 +84,10 @@ export async function POST(request: Request) {
     const client = getPublicSubmissionAdminClient();
     if (!client) {
       return Response.json(
-        { message: "The request form is temporarily unavailable. Please use the public contact page." },
+        {
+          message:
+            "The request form is temporarily unavailable. Please use the public contact page.",
+        },
         { status: 503 },
       );
     }

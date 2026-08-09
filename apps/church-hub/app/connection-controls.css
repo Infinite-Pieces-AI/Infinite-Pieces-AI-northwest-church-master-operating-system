@@ -225,9 +225,7 @@
 }
 
 .service-preview-card {
-  background:
-    radial-gradient(circle at 100% 0, rgba(69, 201, 139, 0.16), transparent 40%),
-    white;
+  background: radial-gradient(circle at 100% 0, rgba(69, 201, 139, 0.16), transparent 40%), white;
 }
 
 @media (max-width: 1000px) {

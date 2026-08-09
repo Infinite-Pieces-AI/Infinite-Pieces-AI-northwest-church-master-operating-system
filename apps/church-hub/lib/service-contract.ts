@@ -1,10 +1,5 @@
 export type ServiceSignupStatus =
-  | "interested"
-  | "going"
-  | "waitlisted"
-  | "cancelled"
-  | "attended"
-  | "no_show";
+  "interested" | "going" | "waitlisted" | "cancelled" | "attended" | "no_show";
 
 export interface ServiceOpportunityView {
   id: string;

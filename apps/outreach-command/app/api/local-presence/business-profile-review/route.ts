@@ -28,7 +28,8 @@ export async function GET() {
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
-  if (error) return Response.json({ message: "Eligibility review could not be loaded." }, { status: 400 });
+  if (error)
+    return Response.json({ message: "Eligibility review could not be loaded." }, { status: 400 });
   return Response.json({ review: data });
 }
 
@@ -57,7 +58,9 @@ export async function POST(request: Request) {
         : "pending";
     const record = {
       venue_name:
-        typeof body.venueName === "string" ? body.venueName.trim().slice(0, 160) : "Butler Middle School",
+        typeof body.venueName === "string"
+          ? body.venueName.trim().slice(0, 160)
+          : "Butler Middle School",
       venue_relationship: input.venueRelationship,
       address_authorized: input.addressAuthorized,
       representatives_present_during_hours: input.representativesPresentDuringHours,
@@ -65,8 +68,7 @@ export async function POST(request: Request) {
       central_identity_approved: input.centralIdentityApproved,
       recovery_owners_documented: input.recoveryOwnersDocumented,
       evidence: {
-        note:
-          typeof body.evidenceNote === "string" ? body.evidenceNote.trim().slice(0, 2000) : "",
+        note: typeof body.evidenceNote === "string" ? body.evidenceNote.trim().slice(0, 2000) : "",
         evaluation: evaluation.explanation,
         missing: evaluation.missing,
       },
@@ -84,7 +86,10 @@ export async function POST(request: Request) {
     return Response.json({ evaluation, decision }, { status: 201 });
   } catch (error) {
     return Response.json(
-      { message: error instanceof Error ? error.message : "The eligibility review could not be saved." },
+      {
+        message:
+          error instanceof Error ? error.message : "The eligibility review could not be saved.",
+      },
       { status: 400 },
     );
   }

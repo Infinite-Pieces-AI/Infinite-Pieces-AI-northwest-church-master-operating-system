@@ -30,7 +30,9 @@ const prohibitedPropertyFragments = [
   "member_email",
 ] as const;
 
-export function assertMeaningfulPublicEventName(value: string): asserts value is MeaningfulPublicEventName {
+export function assertMeaningfulPublicEventName(
+  value: string,
+): asserts value is MeaningfulPublicEventName {
   if (!meaningfulPublicEventNames.includes(value as MeaningfulPublicEventName)) {
     throw new Error(`Unsupported public analytics event: ${value}`);
   }
@@ -89,7 +91,9 @@ function score100(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
-export function scoreMinistryOpportunity(input: MinistryOpportunityInputs): MinistryOpportunityScore {
+export function scoreMinistryOpportunity(
+  input: MinistryOpportunityInputs,
+): MinistryOpportunityScore {
   const normalized: MinistryOpportunityInputs = {
     churchVisitIntent: score100(input.churchVisitIntent),
     localRelevance: score100(input.localRelevance),
@@ -111,7 +115,9 @@ export function scoreMinistryOpportunity(input: MinistryOpportunityInputs): Mini
     normalized.freshness * opportunityWeights.freshness;
   const riskDeduction =
     normalized.sensitivityPolicyRisk * Math.abs(opportunityWeights.sensitivityPolicyRisk);
-  const priority = score100((positiveSubtotal - riskDeduction) * (0.6 + normalized.confidence / 250));
+  const priority = score100(
+    (positiveSubtotal - riskDeduction) * (0.6 + normalized.confidence / 250),
+  );
   const explanation = [
     `Church or visit intent contributed ${Math.round(normalized.churchVisitIntent * opportunityWeights.churchVisitIntent)} points.`,
     `Local relevance contributed ${Math.round(normalized.localRelevance * opportunityWeights.localRelevance)} points.`,
@@ -168,7 +174,8 @@ export function evaluateBusinessProfileEligibility(input: BusinessProfileEligibi
     [input.recoveryOwnersDocumented, "At least two church-controlled recovery owners"],
   ];
   const missing = checks.filter(([complete]) => !complete).map(([, label]) => label);
-  const requiresLegalOrPolicyReview = input.venueRelationship === "rented_event_space" || input.venueRelationship === "other";
+  const requiresLegalOrPolicyReview =
+    input.venueRelationship === "rented_event_space" || input.venueRelationship === "other";
   const eligible = missing.length === 0 && !requiresLegalOrPolicyReview;
   return {
     eligible,
@@ -204,10 +211,14 @@ export function assertContextualCampaignPlan(input: {
   const combined = `${input.description} ${input.dataSources.join(" ")} ${input.targetMethod}`;
   const prohibited = prohibitedAdPlanPatterns.find((pattern) => pattern.test(combined));
   if (prohibited) {
-    throw new Error("Campaign planning may not use sensitive church, prayer, pastoral, child, or inferred-belief data.");
+    throw new Error(
+      "Campaign planning may not use sensitive church, prayer, pastoral, child, or inferred-belief data.",
+    );
   }
   if (!/context|keyword|geograph|public page|public event|organic/i.test(combined)) {
-    throw new Error("Campaign planning requires a contextual, geographic, organic, or public-event basis.");
+    throw new Error(
+      "Campaign planning requires a contextual, geographic, organic, or public-event basis.",
+    );
   }
 }
 
@@ -246,24 +257,94 @@ export interface SiteQualityFinding {
 export function evaluatePageQuality(input: SiteQualityFindingInput): SiteQualityFinding[] {
   const findings: SiteQualityFinding[] = [];
   if (input.statusCode >= 400) {
-    findings.push({ findingType: "indexability_conflict", severity: "critical", summary: `Page returned HTTP ${input.statusCode}.`, evidence: { statusCode: input.statusCode } });
+    findings.push({
+      findingType: "indexability_conflict",
+      severity: "critical",
+      summary: `Page returned HTTP ${input.statusCode}.`,
+      evidence: { statusCode: input.statusCode },
+    });
   }
-  if (!input.title?.trim()) findings.push({ findingType: "missing_title", severity: "high", summary: "Page has no descriptive title.", evidence: {} });
-  if (!input.description?.trim()) findings.push({ findingType: "missing_description", severity: "warning", summary: "Page has no meta description.", evidence: {} });
+  if (!input.title?.trim())
+    findings.push({
+      findingType: "missing_title",
+      severity: "high",
+      summary: "Page has no descriptive title.",
+      evidence: {},
+    });
+  if (!input.description?.trim())
+    findings.push({
+      findingType: "missing_description",
+      severity: "warning",
+      summary: "Page has no meta description.",
+      evidence: {},
+    });
   if (input.canonical && new URL(input.canonical, input.pageUrl).toString() !== input.pageUrl) {
-    findings.push({ findingType: "canonical_conflict", severity: "high", summary: "Canonical URL does not match the crawled page.", evidence: { canonical: input.canonical } });
+    findings.push({
+      findingType: "canonical_conflict",
+      severity: "high",
+      summary: "Canonical URL does not match the crawled page.",
+      evidence: { canonical: input.canonical },
+    });
   }
   for (const link of input.links ?? []) {
-    if ((link.statusCode ?? 200) >= 400) findings.push({ findingType: "broken_link", severity: "high", summary: `Broken link: ${link.href}`, evidence: { href: link.href, statusCode: link.statusCode } });
-    if ((link.redirectCount ?? 0) > 1) findings.push({ findingType: "redirect_chain", severity: "warning", summary: `Redirect chain detected for ${link.href}.`, evidence: { href: link.href, redirectCount: link.redirectCount } });
+    if ((link.statusCode ?? 200) >= 400)
+      findings.push({
+        findingType: "broken_link",
+        severity: "high",
+        summary: `Broken link: ${link.href}`,
+        evidence: { href: link.href, statusCode: link.statusCode },
+      });
+    if ((link.redirectCount ?? 0) > 1)
+      findings.push({
+        findingType: "redirect_chain",
+        severity: "warning",
+        summary: `Redirect chain detected for ${link.href}.`,
+        evidence: { href: link.href, redirectCount: link.redirectCount },
+      });
   }
   for (const image of input.images ?? []) {
-    if (!image.alt?.trim()) findings.push({ findingType: "image_missing_alt", severity: "warning", summary: `Image lacks meaningful alt text: ${image.src}`, evidence: { src: image.src } });
-    if (!image.width || !image.height) findings.push({ findingType: "image_missing_dimensions", severity: "warning", summary: `Image does not reserve dimensions: ${image.src}`, evidence: { src: image.src } });
+    if (!image.alt?.trim())
+      findings.push({
+        findingType: "image_missing_alt",
+        severity: "warning",
+        summary: `Image lacks meaningful alt text: ${image.src}`,
+        evidence: { src: image.src },
+      });
+    if (!image.width || !image.height)
+      findings.push({
+        findingType: "image_missing_dimensions",
+        severity: "warning",
+        summary: `Image does not reserve dimensions: ${image.src}`,
+        evidence: { src: image.src },
+      });
   }
-  if (!(input.structuredDataTypes ?? []).length) findings.push({ findingType: "missing_structured_data", severity: "info", summary: "No supported structured-data type was detected.", evidence: {} });
-  if ((input.wordCount ?? 0) < 180) findings.push({ findingType: "thin_page", severity: "warning", summary: "Page may not answer its visitor question substantively.", evidence: { wordCount: input.wordCount ?? 0 } });
-  if ((input.responseMilliseconds ?? 0) > 2500) findings.push({ findingType: "slow_response", severity: "high", summary: "Initial response exceeded 2.5 seconds in this crawl.", evidence: { responseMilliseconds: input.responseMilliseconds } });
-  if (input.indexable === false) findings.push({ findingType: "indexability_conflict", severity: "high", summary: "A public discovery page is not indexable.", evidence: {} });
+  if (!(input.structuredDataTypes ?? []).length)
+    findings.push({
+      findingType: "missing_structured_data",
+      severity: "info",
+      summary: "No supported structured-data type was detected.",
+      evidence: {},
+    });
+  if ((input.wordCount ?? 0) < 180)
+    findings.push({
+      findingType: "thin_page",
+      severity: "warning",
+      summary: "Page may not answer its visitor question substantively.",
+      evidence: { wordCount: input.wordCount ?? 0 },
+    });
+  if ((input.responseMilliseconds ?? 0) > 2500)
+    findings.push({
+      findingType: "slow_response",
+      severity: "high",
+      summary: "Initial response exceeded 2.5 seconds in this crawl.",
+      evidence: { responseMilliseconds: input.responseMilliseconds },
+    });
+  if (input.indexable === false)
+    findings.push({
+      findingType: "indexability_conflict",
+      severity: "high",
+      summary: "A public discovery page is not indexable.",
+      evidence: {},
+    });
   return findings;
 }

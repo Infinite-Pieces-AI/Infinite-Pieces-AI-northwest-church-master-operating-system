@@ -1,7 +1,11 @@
 import { getPublishedSchedule } from "@/lib/published-content";
 
 function escapeIcs(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\n/g, "\\n");
 }
 
 function localDateTime(date: string, time: string): string {
@@ -41,7 +45,10 @@ export async function GET() {
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${uid}`,
-    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}`,
+    `DTSTAMP:${new Date()
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}Z$/, "Z")}`,
     `DTSTART;TZID=${service.timezone}:${start}`,
     `DTEND;TZID=${service.timezone}:${end}`,
     `SUMMARY:${escapeIcs(service.title)}`,

@@ -19,15 +19,24 @@ export default function ConnectionPreferencesPage() {
       <section className="connection-preference-boundaries">
         <article>
           <strong>Allowed recommendation inputs</strong>
-          <p>Your saved categories, availability, general area, family-friendly preference, group membership, and authorized meetup attributes.</p>
+          <p>
+            Your saved categories, availability, general area, family-friendly preference, group
+            membership, and authorized meetup attributes.
+          </p>
         </article>
         <article>
           <strong>Prohibited recommendation inputs</strong>
-          <p>Prayer text, counseling, pastoral conversations, private messages, child records, inferred loneliness, risk, or spiritual-engagement scoring.</p>
+          <p>
+            Prayer text, counseling, pastoral conversations, private messages, child records,
+            inferred loneliness, risk, or spiritual-engagement scoring.
+          </p>
         </article>
         <article>
           <strong>Your controls</strong>
-          <p>Pause recommendations, change preferences, choose fewer suggestions like one, or disable the system entirely.</p>
+          <p>
+            Pause recommendations, change preferences, choose fewer suggestions like one, or disable
+            the system entirely.
+          </p>
         </article>
       </section>
 

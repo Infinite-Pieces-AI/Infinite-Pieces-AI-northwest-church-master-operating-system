@@ -2,17 +2,21 @@ import { getApiViewer } from "@/lib/auth/api-viewer";
 import { createClient } from "@/lib/supabase/server";
 
 function escapeIcs(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\n/g, "\\n");
 }
 
 function utcIcs(value: string): string {
-  return new Date(value).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+  return new Date(value)
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}Z$/, "Z");
 }
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ meetupId: string }> },
-) {
+export async function GET(_request: Request, context: { params: Promise<{ meetupId: string }> }) {
   const viewer = await getApiViewer();
   if (!viewer) return Response.json({ message: "Sign in is required." }, { status: 401 });
   const { meetupId } = await context.params;
@@ -50,7 +54,10 @@ export async function GET(
     .eq("id", meetupId)
     .single();
   if (error || !data) {
-    return Response.json({ message: "This meetup is not available to your account." }, { status: 403 });
+    return Response.json(
+      { message: "This meetup is not available to your account." },
+      { status: 403 },
+    );
   }
 
   const location = `${data.general_location_name}, ${data.general_area}`;

@@ -94,7 +94,8 @@ function extractImages(html: string, pageUrl: URL) {
 
 function structuredDataTypes(html: string): string[] {
   const output = new Set<string>();
-  const scriptPattern = /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  const scriptPattern =
+    /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   for (const match of html.matchAll(scriptPattern)) {
     const raw = match[1]?.trim();
     if (!raw) continue;
@@ -108,7 +109,9 @@ function structuredDataTypes(html: string): string[] {
         const type = record["@type"];
         if (typeof type === "string") output.add(type);
         else if (Array.isArray(type)) {
-          type.filter((item): item is string => typeof item === "string").forEach((item) => output.add(item));
+          type
+            .filter((item): item is string => typeof item === "string")
+            .forEach((item) => output.add(item));
         }
         const graph = record["@graph"];
         if (Array.isArray(graph)) queue.push(...graph);
@@ -236,7 +239,7 @@ await runWorker("site-quality-crawler", async (context) => {
       const baseUrl = allowedBaseUrl(
         typeof event.payload.base_url === "string"
           ? event.payload.base_url
-          : process.env.PUBLIC_SITE_URL ?? "",
+          : (process.env.PUBLIC_SITE_URL ?? ""),
         allowedHosts,
       );
       const pageLimit = Math.max(1, Math.min(500, Number(event.payload.page_limit ?? 100)));

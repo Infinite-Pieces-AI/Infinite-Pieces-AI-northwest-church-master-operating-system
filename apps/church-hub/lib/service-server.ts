@@ -30,7 +30,8 @@ const demoServiceOpportunities: ServiceOpportunityView[] = [
     skillsNeeded: ["No special skills", "Packing", "Organization"],
     accessibilityNote: "Accessible work surfaces and seated tasks are available in this demo.",
     suppliesNote: "All synthetic supplies are provided.",
-    transportationNote: "The production opportunity would list approved parking and transportation help.",
+    transportationNote:
+      "The production opportunity would list approved parking and transportation help.",
     safeguardingRequirements: "Children participate with an approved guardian.",
     visibility: "members",
     canOpenThread: false,
@@ -55,7 +56,8 @@ const demoServiceOpportunities: ServiceOpportunityView[] = [
     capacity: 30,
     signupCount: 12,
     memberStatus: "interested",
-    physicalRequirements: "Walking, bending, and carrying light bags; alternate support tasks available.",
+    physicalRequirements:
+      "Walking, bending, and carrying light bags; alternate support tasks available.",
     skillsNeeded: ["Outdoor activity", "Teamwork"],
     accessibilityNote: "Contact the service leader to select an accessible role.",
     suppliesNote: "Gloves, bags, and safety instructions are provided in the demo.",

@@ -73,7 +73,8 @@ export async function PUT(request: Request) {
     const preferredTimeWindows = textArray(body.preferredTimeWindows, 12, 80);
     const generalAreas = textArray(body.generalAreas, 12, 100);
     const pausedUntil = body.pausedUntil ? new Date(String(body.pausedUntil)) : null;
-    if (pausedUntil && Number.isNaN(pausedUntil.getTime())) throw new Error("Choose a valid pause date.");
+    if (pausedUntil && Number.isNaN(pausedUntil.getTime()))
+      throw new Error("Choose a valid pause date.");
 
     const preferences = {
       recommendationsEnabled: body.recommendationsEnabled === true,
