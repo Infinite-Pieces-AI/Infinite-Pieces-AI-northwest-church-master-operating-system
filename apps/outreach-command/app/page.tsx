@@ -1,5 +1,2 @@
 import { redirect } from "next/navigation";
-
-export default function Page() {
-  redirect("/radar");
-}
+export default function Page() { redirect("/overview"); }

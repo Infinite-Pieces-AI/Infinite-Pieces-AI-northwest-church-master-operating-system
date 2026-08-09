@@ -1,0 +1,39 @@
+.morning-brief-hero { display:grid; grid-template-columns:minmax(0,1fr) 180px; gap:28px; align-items:center; margin-bottom:20px; padding:32px; border:1px solid rgba(54,183,221,.25); border-radius:28px; background:radial-gradient(circle at 85% 15%,rgba(98,217,233,.2),transparent 28%),linear-gradient(135deg,#071a29,#0c3d5a); box-shadow:var(--shadow); }
+.morning-brief-hero h2 { max-width:850px; margin:8px 0; font-family:Georgia,serif; font-size:clamp(2rem,4vw,3.4rem); line-height:1.03; }
+.morning-brief-hero p:last-child { color:#bed3de; line-height:1.6; }
+.brief-score { width:150px; height:150px; display:grid; place-items:center; align-content:center; border:1px solid rgba(239,199,94,.45); border-radius:50%; background:rgba(3,13,20,.42); box-shadow:0 0 55px rgba(54,183,221,.2); }
+.brief-score span,.brief-score strong,.brief-score small { display:block; }
+.brief-score span { color:var(--gold); font-size:.62rem; font-weight:900; text-transform:uppercase; }
+.brief-score strong { font-size:3.1rem; line-height:1; }
+.brief-score small { color:var(--muted); }
+.morning-question-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; margin-bottom:18px; }
+.morning-question-grid article { min-height:260px; padding:20px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,rgba(14,38,55,.92),rgba(7,22,33,.92)); }
+.morning-question-grid article > span { color:var(--cyan); font-size:.65rem; font-weight:900; }
+.morning-question-grid h3 { min-height:45px; margin:12px 0; font-size:.85rem; }
+.morning-question-grid strong { display:block; font-size:1rem; line-height:1.45; }
+.morning-question-grid p { color:var(--muted); font-size:.7rem; line-height:1.55; }
+.morning-question-grid a { color:var(--gold); font-size:.72rem; font-weight:850; }
+.score-contribution-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+.score-contribution-grid article { padding:13px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.02); }
+.score-contribution-grid strong,.score-contribution-grid span,.score-contribution-grid small { display:block; }
+.score-contribution-grid strong { font-size:1.35rem; }
+.score-contribution-grid span { margin:4px 0; font-size:.68rem; font-weight:800; }
+.score-contribution-grid small { color:var(--muted); font-size:.6rem; }
+.score-risk-cell strong { color:var(--rose); }
+.explanation-actions { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; }
+.explanation-actions li { margin:7px 0; color:#b9cdd7; font-size:.72rem; }
+.business-profile-gate { margin-top:18px; }
+.eligibility-meter { height:10px; overflow:hidden; margin-bottom:7px; border-radius:999px; background:rgba(255,255,255,.08); }
+.eligibility-meter span { display:block; height:100%; background:linear-gradient(90deg,var(--rose),var(--gold),var(--green)); }
+.eligibility-check-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin:18px 0; }
+.eligibility-check-grid label { display:grid; grid-template-columns:22px 1fr; gap:10px; padding:12px; border:1px solid var(--line); border-radius:12px; background:rgba(255,255,255,.02); cursor:pointer; }
+.eligibility-check-grid input { width:18px; height:18px; }
+.eligibility-check-grid strong,.eligibility-check-grid small { display:block; }
+.eligibility-check-grid small { margin-top:3px; color:var(--muted); }
+.site-finding-list { display:grid; gap:9px; }
+.site-finding-list article { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:start; padding:14px; border:1px solid var(--line); border-radius:13px; background:rgba(255,255,255,.018); }
+.site-finding-list strong,.site-finding-list small { display:block; }
+.site-finding-list small { color:var(--cyan); }
+.site-finding-list p { margin-bottom:0; color:var(--muted); font-size:.72rem; }
+@media(max-width:1100px){.morning-question-grid,.score-contribution-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:720px){.morning-brief-hero,.explanation-actions,.eligibility-check-grid{grid-template-columns:1fr}.brief-score{width:120px;height:120px}.morning-question-grid,.score-contribution-grid{grid-template-columns:1fr}.site-finding-list article{grid-template-columns:1fr}}
