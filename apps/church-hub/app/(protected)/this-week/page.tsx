@@ -4,11 +4,15 @@ import { ConnectionPathway } from "@/components/connection-pathway";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { fellowshipMeetups } from "@/lib/demo-data";
+import { loadConnectionPathway } from "@/lib/connection-pathway";
 import { loadThisWeekData } from "@/lib/this-week";
 
 export default async function ThisWeekPage() {
   const viewer = await requireViewer();
-  const d = await loadThisWeekData(viewer);
+  const [d, connectionPathway] = await Promise.all([
+    loadThisWeekData(viewer),
+    loadConnectionPathway(viewer),
+  ]);
   if (!d) {
     return (
       <>
@@ -82,7 +86,7 @@ export default async function ThisWeekPage() {
       </section>
 
       <ConnectionConcierge compact />
-      <ConnectionPathway />
+      <ConnectionPathway initial={connectionPathway} demo={viewer.demo} />
 
       <div className="dashboard-grid">
         <section className="hub-panel hub-panel--span2 lesson-feature-panel">

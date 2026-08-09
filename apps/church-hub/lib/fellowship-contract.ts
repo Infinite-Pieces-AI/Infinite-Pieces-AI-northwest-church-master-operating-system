@@ -4,10 +4,10 @@ export type FellowshipVisibility = "church" | "ministry" | "group";
 export type FellowshipResponse = "interested" | "going" | "waitlisted" | "cancelled";
 
 export interface FellowshipMeetupView extends FellowshipMeetup {
-  startsAt?: string;
-  endsAt?: string;
-  timezone?: string;
-  visibility?: FellowshipVisibility;
+  startsAt?: string | undefined;
+  endsAt?: string | undefined;
+  timezone?: string | undefined;
+  visibility?: FellowshipVisibility | undefined;
   accessibilityNote?: string | null;
   costNote?: string | null;
   weatherPlan?: string | null;

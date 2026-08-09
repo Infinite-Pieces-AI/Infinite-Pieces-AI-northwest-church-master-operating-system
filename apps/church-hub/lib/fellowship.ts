@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/server";
 export type FellowshipResponseStatus = "host" | "interested" | "going" | "waitlisted" | "cancelled";
 
 export interface FellowshipMeetupView extends FellowshipMeetup {
-  startsAt?: string;
-  endsAt?: string;
-  visibility?: "church" | "ministry" | "group";
+  startsAt?: string | undefined;
+  endsAt?: string | undefined;
+  visibility?: "church" | "ministry" | "group" | undefined;
   joinedStatus?: FellowshipResponseStatus | null;
   accessibilityNote?: string | null;
   foodNote?: string | null;

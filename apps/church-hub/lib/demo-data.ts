@@ -37,10 +37,10 @@ export interface FellowshipMeetup {
   description: string;
   audience: string;
   attendeeCount: number;
-  capacity?: number;
+  capacity?: number | undefined;
   familyFriendly: boolean;
-  spontaneous?: boolean;
-  exactLocationAfterJoin?: boolean;
+  spontaneous?: boolean | undefined;
+  exactLocationAfterJoin?: boolean | undefined;
   tags: string[];
 }
 
