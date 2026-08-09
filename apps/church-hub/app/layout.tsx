@@ -5,6 +5,7 @@ import "./experience-fellowship.css";
 import "./experience-bible.css";
 import "./experience-responsive.css";
 import "./hub-journey.css";
+import "./hub-fellowship-live.css";
 
 export const metadata: Metadata = {
   title: { default: "Church Hub", template: "%s | Church Hub" },
