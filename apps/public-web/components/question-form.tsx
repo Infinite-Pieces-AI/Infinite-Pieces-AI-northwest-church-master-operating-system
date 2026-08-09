@@ -3,11 +3,23 @@
 import { useState } from "react";
 import { trackPublicEvent } from "@/lib/analytics-client";
 
-export function VisitForm() {
+const topics = [
+  ["first_visit", "A first visit"],
+  ["beliefs", "Beliefs or questions about Jesus"],
+  ["bible_study", "Bible study"],
+  ["kids_teens", "Kids or teens"],
+  ["accessibility", "Accessibility"],
+  ["online", "Online participation"],
+  ["other", "Something else"],
+] as const;
+
+type Topic = (typeof topics)[number][0];
+
+export function QuestionForm({ defaultTopic = "first_visit" }: { defaultTopic?: Topic }) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-  const [started, setStarted] = useState(false);
   const [contactMethod, setContactMethod] = useState<"email" | "phone">("email");
+  const [topic, setTopic] = useState<Topic>(defaultTopic);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -15,65 +27,62 @@ export function VisitForm() {
     const form = new FormData(event.currentTarget);
     const payload = {
       firstName: String(form.get("firstName") ?? ""),
-      lastName: String(form.get("lastName") ?? ""),
       contactMethod,
       email: String(form.get("email") ?? ""),
       phone: String(form.get("phone") ?? ""),
-      partySize: Number(form.get("partySize") ?? 1),
-      childrenAttending: form.get("childrenAttending") === "on",
-      practicalNote: String(form.get("practicalNote") ?? ""),
-      requestedNextStep: "plan_visit",
+      topic,
+      message: String(form.get("message") ?? ""),
       communicationConsent: form.get("communicationConsent") === "on",
-      sourcePath: "/plan-a-visit",
+      sourcePath: window.location.pathname,
       website: String(form.get("website") ?? ""),
     };
 
     try {
-      const response = await fetch("/api/public/visit-requests", {
+      const response = await fetch("/api/public/questions", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
       const result = (await response.json()) as { message?: string };
-      if (!response.ok) throw new Error(result.message ?? "Unable to send your request");
+      if (!response.ok) throw new Error(result.message ?? "Unable to send your question");
       setStatus("success");
-      setMessage(
-        result.message ??
-          "Thank you. A welcome volunteer will follow up using the contact method you selected.",
+      setMessage(result.message ?? "Thank you. An authorized volunteer will respond.");
+      trackPublicEvent(
+        topic === "online"
+          ? "online_conversation_requested"
+          : topic === "bible_study"
+            ? "bible_study_requested"
+            : "question_submitted",
+        { path: window.location.pathname, topic },
       );
-      trackPublicEvent("plan_visit_submitted", { path: "/plan-a-visit" });
       event.currentTarget.reset();
       setContactMethod("email");
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "Unable to send your request");
+      setMessage(error instanceof Error ? error.message : "Unable to send your question");
     }
   }
 
   return (
-    <form
-      className="form-card consent-first-form"
-      onFocusCapture={() => {
-        if (!started) {
-          setStarted(true);
-          trackPublicEvent("plan_visit_started", { path: "/plan-a-visit" });
-        }
-      }}
-      onSubmit={submit}
-    >
+    <form className="form-card consent-first-form" onSubmit={submit}>
       <div className="form-grid">
         <label>
           <span>First name</span>
           <input name="firstName" autoComplete="given-name" required maxLength={80} />
         </label>
         <label>
-          <span>Last name (optional)</span>
-          <input name="lastName" autoComplete="family-name" maxLength={80} />
+          <span>Question topic</span>
+          <select value={topic} onChange={(event) => setTopic(event.target.value as Topic)}>
+            {topics.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
-          <span>How should we contact you?</span>
+          <span>How should we respond?</span>
           <select
-            name="contactMethod"
             value={contactMethod}
             onChange={(event) => setContactMethod(event.target.value as "email" | "phone")}
           >
@@ -92,22 +101,9 @@ export function VisitForm() {
             <input name="phone" autoComplete="tel" required maxLength={40} />
           </label>
         )}
-        <label>
-          <span>Approximate party size</span>
-          <input type="number" name="partySize" min={1} max={20} defaultValue={1} />
-        </label>
-        <label className="check-row compact-check-row">
-          <input type="checkbox" name="childrenAttending" />
-          <span>Children will be attending with me</span>
-        </label>
         <label className="form-grid__full">
-          <span>Anything practical we should know? (optional)</span>
-          <textarea
-            name="practicalNote"
-            rows={4}
-            maxLength={1500}
-            placeholder="Accessibility, arrival, seating, or Kids Kingdom questions. Please do not include medical or highly sensitive information here."
-          />
+          <span>Your question</span>
+          <textarea name="message" rows={6} minLength={10} maxLength={2000} required />
         </label>
         <label className="honeypot" aria-hidden="true">
           Website
@@ -116,13 +112,13 @@ export function VisitForm() {
         <label className="check-row form-grid__full">
           <input type="checkbox" name="communicationConsent" required />
           <span>
-            I agree that an authorized welcome volunteer may contact me about this visit request. I
+            I agree that an authorized church volunteer may contact me only about this question. I
             can opt out at any time.
           </span>
         </label>
       </div>
       <button className="button button--gold" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending…" : "Tell someone I’m coming"}
+        {status === "submitting" ? "Sending…" : "Send my question"}
       </button>
       {message ? (
         <p className={`form-status form-status--${status}`} role="status" aria-live="polite">

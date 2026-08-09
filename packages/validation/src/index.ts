@@ -8,26 +8,106 @@ const optionalTrimmed = (max: number) =>
     .optional()
     .transform((value) => value || undefined);
 
-export const visitRequestSchema = z.object({
-  firstName: z.string().trim().min(1).max(80),
-  lastName: z.string().trim().min(1).max(80),
-  email: z.string().trim().email().max(254),
-  phone: optionalTrimmed(40),
-  partySize: z.coerce.number().int().min(1).max(20).default(1),
-  childrenAges: optionalTrimmed(200),
-  requestedNextStep: z.enum([
-    "plan_visit",
-    "bible_study",
-    "family_group",
-    "prayer",
-    "general_question",
-  ]),
-  message: optionalTrimmed(1500),
-  communicationConsent: z.literal(true),
-  sourcePath: z.string().trim().max(300).default("/"),
-  campaign: optionalTrimmed(120),
-  website: z.string().max(0).optional(),
-});
+const optionalEmail = z
+  .string()
+  .trim()
+  .email()
+  .max(254)
+  .optional()
+  .or(z.literal(""))
+  .transform((value) => value || undefined);
+
+const contactMethodSchema = z.enum(["email", "phone"]);
+
+export const visitRequestSchema = z
+  .object({
+    firstName: z.string().trim().min(1).max(80),
+    lastName: optionalTrimmed(80),
+    contactMethod: contactMethodSchema,
+    email: optionalEmail,
+    phone: optionalTrimmed(40),
+    partySize: z.coerce.number().int().min(1).max(20).default(1),
+    childrenAttending: z.coerce.boolean().default(false),
+    practicalNote: optionalTrimmed(1500),
+    requestedNextStep: z.literal("plan_visit").default("plan_visit"),
+    communicationConsent: z.literal(true),
+    sourcePath: z.string().trim().max(300).default("/plan-a-visit"),
+    campaign: optionalTrimmed(120),
+    website: z.string().max(0).optional(),
+  })
+  .superRefine((value, context) => {
+    if (value.contactMethod === "email" && !value.email) {
+      context.addIssue({ code: "custom", path: ["email"], message: "Enter an email address." });
+    }
+    if (value.contactMethod === "phone" && !value.phone) {
+      context.addIssue({ code: "custom", path: ["phone"], message: "Enter a phone number." });
+    }
+  });
+
+export const publicQuestionSchema = z
+  .object({
+    firstName: z.string().trim().min(1).max(80),
+    contactMethod: contactMethodSchema,
+    email: optionalEmail,
+    phone: optionalTrimmed(40),
+    topic: z.enum([
+      "first_visit",
+      "beliefs",
+      "bible_study",
+      "kids_teens",
+      "accessibility",
+      "online",
+      "other",
+    ]),
+    message: z.string().trim().min(10).max(2000),
+    communicationConsent: z.literal(true),
+    sourcePath: z.string().trim().max(300).default("/ask-a-question"),
+    website: z.string().max(0).optional(),
+  })
+  .superRefine((value, context) => {
+    if (value.contactMethod === "email" && !value.email) {
+      context.addIssue({ code: "custom", path: ["email"], message: "Enter an email address." });
+    }
+    if (value.contactMethod === "phone" && !value.phone) {
+      context.addIssue({ code: "custom", path: ["phone"], message: "Enter a phone number." });
+    }
+  });
+
+export const prayerRequestSchema = z
+  .object({
+    firstName: optionalTrimmed(80),
+    prayerText: z.string().trim().min(3).max(2500),
+    responseRequested: z.coerce.boolean().default(false),
+    contactMethod: contactMethodSchema.optional(),
+    email: optionalEmail,
+    phone: optionalTrimmed(40),
+    consentToContact: z.coerce.boolean().default(false),
+    sourcePath: z.string().trim().max(300).default("/request-prayer"),
+    website: z.string().max(0).optional(),
+  })
+  .superRefine((value, context) => {
+    if (!value.responseRequested) return;
+    if (!value.contactMethod) {
+      context.addIssue({
+        code: "custom",
+        path: ["contactMethod"],
+        message: "Choose how an authorized ministry leader may respond.",
+      });
+    }
+    if (value.contactMethod === "email" && !value.email) {
+      context.addIssue({ code: "custom", path: ["email"], message: "Enter an email address." });
+    }
+    if (value.contactMethod === "phone" && !value.phone) {
+      context.addIssue({ code: "custom", path: ["phone"], message: "Enter a phone number." });
+    }
+    if (!value.consentToContact) {
+      context.addIssue({
+        code: "custom",
+        path: ["consentToContact"],
+        message: "Consent is required when requesting a response.",
+      });
+    }
+  });
 
 export const accessRequestSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
@@ -72,6 +152,8 @@ export const socialDraftSchema = z.object({
 });
 
 export type VisitRequestInput = z.infer<typeof visitRequestSchema>;
+export type PublicQuestionInput = z.infer<typeof publicQuestionSchema>;
+export type PrayerRequestInput = z.infer<typeof prayerRequestSchema>;
 export type AccessRequestInput = z.infer<typeof accessRequestSchema>;
 export type InvitationAcceptInput = z.infer<typeof invitationAcceptSchema>;
 export type AiBibleQuestionInput = z.infer<typeof aiBibleQuestionSchema>;
