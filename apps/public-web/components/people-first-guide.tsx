@@ -18,13 +18,17 @@ export interface PeopleFirstGuideContent {
 }
 
 export function PeopleFirstGuide({ content }: { content: PeopleFirstGuideContent }) {
+  const optionalCtaProps = {
+    ...(content.ctaLabel ? { ctaLabel: content.ctaLabel } : {}),
+    ...(content.ctaHref ? { ctaHref: content.ctaHref } : {}),
+  };
+
   return (
     <ContentPage
       eyebrow={content.eyebrow}
       title={content.title}
       intro={content.intro}
-      ctaLabel={content.ctaLabel}
-      ctaHref={content.ctaHref}
+      {...optionalCtaProps}
     >
       <div className="expectation-grid">
         {content.sections.map((section) => (
