@@ -3,7 +3,7 @@ begin;
 select plan(28);
 
 select has_table('public', 'public_questions', 'General public questions have a dedicated table');
-select has_table('public', 'prayer_requests', 'Prayer has a restricted dedicated table');
+select has_table('public', 'public_prayer_requests', 'Public prayer intake has a restricted dedicated table');
 select has_table('public', 'ministry_journey_events', 'Connected ministry journey stages exist');
 select has_table('public', 'fellowship_meetup_cohosts', 'Fellowship co-hosts exist');
 select has_table('public', 'service_opportunities', 'Service opportunity table exists');
@@ -32,7 +32,7 @@ select is(
     join pg_catalog.pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public'
       and c.relname in (
-        'public_questions','prayer_requests','ministry_journey_events','fellowship_meetup_cohosts',
+        'public_questions','public_prayer_requests','ministry_journey_events','fellowship_meetup_cohosts',
         'service_opportunities','service_shifts','service_shift_signups','connection_pathway_enrollments',
         'connection_pathway_steps','outreach_opportunity_assessments','site_quality_crawl_runs',
         'site_quality_findings','canonical_public_facts','business_profile_eligibility_reviews',
@@ -46,7 +46,7 @@ select is(
 );
 
 select is((select count(*)::integer from information_schema.columns where table_schema = 'public' and table_name = 'visit_requests' and column_name = 'prayer_text'), 0, 'Visit records cannot contain prayer text');
-select is((select count(*)::integer from information_schema.columns where table_schema = 'public' and table_name = 'prayer_requests' and column_name = 'prayer_text'), 1, 'Prayer text exists only in the restricted prayer table');
+select is((select count(*)::integer from information_schema.columns where table_schema = 'public' and table_name = 'public_prayer_requests' and column_name = 'prayer_text'), 1, 'Public prayer text exists only in the restricted public prayer table');
 
 insert into auth.users (
   id, instance_id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -65,8 +65,8 @@ select '00000000-0000-4000-8000-000000000402', id, 'church', 'Connected journey 
 
 insert into public.public_questions(first_name, contact_method, email, topic, message, consent_to_contact)
 values ('Synthetic', 'email', 'question@example.invalid', 'first_visit', 'A synthetic general question for authorization testing.', true);
-insert into public.prayer_requests(prayer_text, response_requested, consent_to_contact)
-values ('Synthetic restricted prayer text.', false, false);
+insert into public.public_prayer_requests(prayer_text, response_requested, consent_to_contact)
+values ('Synthetic restricted public prayer text.', false, false);
 insert into public.service_opportunities(
   id, title, need_statement, impact_statement, partner_name, general_location,
   publication_status, published_by, published_at
@@ -87,7 +87,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000401', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000401","role":"authenticated","aal":"aal1"}', true);
 select is((select count(*)::integer from public.public_questions), 0, 'An ordinary member cannot read public-question CRM content');
-select is((select count(*)::integer from public.prayer_requests), 0, 'An ordinary member cannot read restricted prayer content');
+select is((select count(*)::integer from public.public_prayer_requests), 0, 'An ordinary member cannot read restricted public prayer content');
 select is((select count(*)::integer from public.service_opportunities), 1, 'An active member can read published service opportunities');
 select is((select count(*)::integer from public.connection_pathway_enrollments), 1, 'A member sees only their own voluntary connection pathway');
 reset role;
