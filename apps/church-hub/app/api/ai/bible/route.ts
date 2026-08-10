@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { assertAiRequestAllowed, buildBibleCompanionSystemPrompt } from "@church/ai";
-import { getApiViewer } from "@/lib/auth/api-viewer";
+import { getViewer } from "@/lib/auth/viewer";
 import { generateGeminiText, isGeminiEnabled } from "@/lib/ai/gemini";
 
 function normalizeReference(value: unknown): string | null {
@@ -10,7 +10,7 @@ function normalizeReference(value: unknown): string | null {
 }
 
 export async function POST(request: Request) {
-  const viewer = await getApiViewer();
+  const viewer = await getViewer();
   if (!viewer) return NextResponse.json({ message: "Sign in is required." }, { status: 401 });
 
   const body: unknown = await request.json().catch(() => null);
@@ -21,7 +21,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Choose a valid Scripture reference." }, { status: 400 });
   }
 
-  assertAiRequestAllowed({ requestedDataClasses: [], publishAutomatically: false });
+  try {
+    assertAiRequestAllowed({
+      requestedDataClasses: [],
+      publishAutomatically: false,
+      recipientIsMinor: viewer.roles.includes("teen"),
+    });
+  } catch {
+    return NextResponse.json(
+      { message: "This AI study companion is not enabled for independent minor accounts." },
+      { status: 403 },
+    );
+  }
 
   if (viewer.demo || !isGeminiEnabled()) {
     return NextResponse.json({
