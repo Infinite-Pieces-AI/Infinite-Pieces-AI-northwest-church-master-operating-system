@@ -34,11 +34,23 @@ export async function POST(request: Request) {
     );
   }
 
-  if (viewer.demo || !isGeminiEnabled()) {
-    return NextResponse.json({
-      mode: "demo",
-      text: `This synthetic demo shows where a concise historical and cultural note for ${verse} will appear. When Gemini is enabled, the server sends only the selected reference and tightly scoped study instructions—never private prayer, child, counseling, attendance, or safeguarding data. Important background claims should still be checked against licensed Scripture and minister-approved study resources.`,
-    });
+  if (viewer.demo) {
+    return NextResponse.json(
+      {
+        message:
+          "Live Gemini responses are disabled in local preview mode. Sign in through the configured production backend to use the AI study companion.",
+      },
+      { status: 503 },
+    );
+  }
+  if (!isGeminiEnabled()) {
+    return NextResponse.json(
+      {
+        message:
+          "Gemini is not configured for this environment. An administrator must set the server-only AI provider and key before this button can generate content.",
+      },
+      { status: 503 },
+    );
   }
 
   try {

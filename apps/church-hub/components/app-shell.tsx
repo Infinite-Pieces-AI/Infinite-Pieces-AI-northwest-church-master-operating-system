@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { hasPermission, type Permission } from "@church/authorization";
 import type { Viewer } from "@/lib/auth/viewer";
+import { MinistryNavigator } from "./ministry-navigator";
 import { MobileNav } from "./mobile-nav";
 import { ServiceWorkerRegistration } from "./service-worker-registration";
 
@@ -9,7 +10,7 @@ const sideItems = [
   ["This Week", "/this-week", "⌂"],
   ["Bible Journey", "/bible", "✦"],
   ["Fellowship", "/fellowship", "∞"],
-  ["Serve", "/service", "◇"],
+  ["Serve", "/serve", "◇"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
   ["Connection Path", "/connection-path", "↗"],
@@ -30,7 +31,10 @@ const adminPermissions: readonly Permission[] = [
 export function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {
   const canAdmin = adminPermissions.some((permission) => hasPermission(viewer.roles, permission));
   const canOutreach = hasPermission(viewer.roles, "outreach.manage");
-  const outreachUrl = process.env.NEXT_PUBLIC_OUTREACH_URL ?? "http://localhost:3002";
+  const outreachUrl =
+    process.env.NEXT_PUBLIC_OUTREACH_URL ??
+    process.env.NEXT_PUBLIC_OUTREACH_COMMAND_URL ??
+    "http://localhost:3002";
 
   return (
     <div className="hub-shell">
@@ -73,13 +77,13 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         <header className="hub-topbar">
           <div>
             <p>Boston Church Lowell</p>
-            <span>Discover · Join · Serve · Follow Jesus together</span>
+            <span>Belong · Grow · Follow Jesus together</span>
           </div>
           <div className="viewer-chip">
             <span>{viewer.displayName.slice(0, 1)}</span>
             <div>
               <strong>{viewer.displayName}</strong>
-              <small>{viewer.demo ? "Synthetic demo account" : viewer.email}</small>
+              <small>{viewer.demo ? "Explicit local preview" : viewer.email}</small>
             </div>
             <Link href="/profile" aria-label="Open profile settings">
               ›
@@ -87,12 +91,15 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
           </div>
         </header>
         {viewer.demo ? (
-          <div className="demo-banner">
-            <strong>Demo mode:</strong> all people, children, groups, locations, service projects,
-            and activity shown here are synthetic. Production builds block demo mode.
+          <div className="preview-banner">
+            <strong>Local preview mode:</strong> authentication, persistent records, external
+            integrations, and live AI provider calls are not production operations.
           </div>
         ) : null}
-        <main className="hub-content">{children}</main>
+        <main className="hub-content">
+          <MinistryNavigator />
+          {children}
+        </main>
         <MobileNav canAdmin={canAdmin} />
       </div>
     </div>

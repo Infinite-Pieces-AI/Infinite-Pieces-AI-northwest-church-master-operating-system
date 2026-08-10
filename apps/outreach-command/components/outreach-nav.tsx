@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
-  ["Morning Brief", "/overview", "☼"],
+  ["Overview", "/overview", "⌂"],
+  ["Morning Brief", "/morning-brief", "☀"],
+  ["Member Access", "/member-access", "◇"],
   ["Command Radar", "/radar", "⌁"],
   ["Search Intelligence", "/search-intelligence", "⌕"],
   ["Site Quality", "/site-quality", "✓"],
@@ -14,6 +16,7 @@ const items = [
   ["Campaigns", "/campaigns", "◫"],
   ["Visitor CRM", "/visitor-crm", "◇"],
   ["Source Control", "/source-control", "⚙"],
+  ["Production Readiness", "/production-readiness", "◉"],
 ] as const;
 
 export function OutreachNav() {
