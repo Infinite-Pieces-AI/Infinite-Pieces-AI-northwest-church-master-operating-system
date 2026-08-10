@@ -17,10 +17,10 @@
     "@church/database": "workspace:*",
     "@church/ui": "workspace:*",
     "@church/validation": "workspace:*",
-    "@supabase/supabase-js": "2.111.0",
+    "@supabase/supabase-js": "2.112.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^2.0.0",
-    "next": "16.2.12",
+    "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "4.4.3"
