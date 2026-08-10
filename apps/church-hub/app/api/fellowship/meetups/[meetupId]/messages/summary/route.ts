@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getApiViewer } from "@/lib/auth/api-viewer";
 import { generateGeminiText, isGeminiEnabled } from "@/lib/ai/gemini";
+import { getViewer } from "@/lib/auth/viewer";
 import { loadFellowshipMeetupDetail, type FellowshipResponseStatus } from "@/lib/fellowship";
-import type { Viewer } from "@/lib/auth/viewer";
 
 const participantStates: ReadonlySet<FellowshipResponseStatus> = new Set([
   "host",
@@ -15,15 +14,15 @@ export async function POST(
   _request: Request,
   context: { params: Promise<{ meetupId: string }> },
 ) {
-  const apiViewer = await getApiViewer();
-  if (!apiViewer) return NextResponse.json({ message: "Sign in is required." }, { status: 401 });
+  const viewer = await getViewer();
+  if (!viewer) return NextResponse.json({ message: "Sign in is required." }, { status: 401 });
+  if (viewer.roles.includes("teen")) {
+    return NextResponse.json(
+      { message: "AI thread summaries are not enabled for independent teen accounts." },
+      { status: 403 },
+    );
+  }
 
-  const viewer: Viewer = {
-    ...apiViewer,
-    displayName: apiViewer.email.split("@")[0] || "Member",
-    roles: ["member"],
-    aal: "aal1",
-  };
   const { meetupId } = await context.params;
   const detail = await loadFellowshipMeetupDetail(viewer, meetupId).catch(() => null);
   const status = detail?.meetup.joinedStatus ?? null;
@@ -39,7 +38,7 @@ export async function POST(
     return NextResponse.json({ text: "There are no recent meetup messages to summarize.", mode: "demo" });
   }
 
-  if (apiViewer.demo) {
+  if (viewer.demo) {
     return NextResponse.json({
       mode: "demo",
       text: "• The host asked everyone to check the thread before leaving in case plans change.\n• No new responsibility has been assigned in the synthetic demo thread.\n• Open question: confirm any final weather or meeting update before traveling.",
