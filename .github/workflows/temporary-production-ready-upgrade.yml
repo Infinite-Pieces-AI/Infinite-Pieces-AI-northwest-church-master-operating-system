@@ -1,0 +1,58 @@
+name: Temporary Production-Ready Church Platform Upgrade
+
+on:
+  push:
+    branches:
+      - feature/production-ready-church-platform
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-production-ready-church-platform-upgrade
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out upgrade branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/production-ready-church-platform
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Apply production-ready upgrade
+        run: node scripts/apply-production-ready-upgrade.mjs
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format changed files
+        run: pnpm format
+
+      - name: Commit production-ready platform
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes were produced."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "feat: replace runtime demos with production data flows"
+          git push origin HEAD:feature/production-ready-church-platform
