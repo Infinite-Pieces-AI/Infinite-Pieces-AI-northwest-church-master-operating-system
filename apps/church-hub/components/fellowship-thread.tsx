@@ -6,6 +6,7 @@ import type {
   FellowshipMessageView,
   FellowshipResponseStatus,
 } from "@/lib/fellowship";
+import { ThreadSummary } from "./thread-summary";
 
 export function FellowshipThread({
   initial,
@@ -179,6 +180,7 @@ export function FellowshipThread({
         </div>
         {joined ? (
           <>
+            <ThreadSummary threadId={initial.meetup.id} />
             <div className="thread-messages">
               {messages.map((message) => (
                 <article key={message.id}>
