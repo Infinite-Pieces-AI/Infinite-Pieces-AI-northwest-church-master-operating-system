@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface BibleContextResponse {
   text?: string;
@@ -11,15 +11,11 @@ interface BibleContextResponse {
 
 export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
   const [contextData, setContextData] = useState("");
+  const [responseFor, setResponseFor] = useState("");
   const [mode, setMode] = useState<"gemini" | "demo" | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    setContextData("");
-    setMode(null);
-    setMessage("");
-  }, [verseRef]);
+  const visibleContext = responseFor === verseRef ? contextData : "";
 
   async function fetchContext() {
     setLoading(true);
@@ -35,6 +31,7 @@ export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
         throw new Error(data.message ?? "Bible context could not be generated.");
       }
       setContextData(data.text);
+      setResponseFor(verseRef);
       setMode(data.mode ?? "gemini");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Bible context could not be generated.");
@@ -64,13 +61,13 @@ export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
       >
         {loading ? "Analyzing context…" : "Ask Gemini for context"}
       </button>
-      {contextData ? (
+      {visibleContext ? (
         <div className="gemini-output">
           <div className="gemini-output__label">
             <strong>{mode === "demo" ? "Synthetic demo response" : "Gemini-generated context"}</strong>
             <span>Verify important details with approved sources.</span>
           </div>
-          <p>{contextData}</p>
+          <p>{visibleContext}</p>
         </div>
       ) : null}
       {message ? <p className="gemini-error">{message}</p> : null}
