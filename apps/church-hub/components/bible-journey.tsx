@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { bibleJourney, bibleJourneyWeeks, type BibleJourneyWeek } from "@/lib/demo-data";
+import { BibleContextCompanion } from "./bible-context-companion";
 
 const tracks = ["Personal", "Couple", "Family", "Teen", "Group"] as const;
 type Track = (typeof tracks)[number];
@@ -250,6 +251,8 @@ export function BibleJourneyExperience() {
           </p>
         </aside>
       </div>
+
+      <BibleContextCompanion verseRef={selectedWeek.references.join(" · ")} />
 
       <section className="ai-story-guide">
         <div className="ai-story-guide__header">
