@@ -27,7 +27,7 @@ describe("Gemini Church Hub guardrails", () => {
         publishAutomatically: false,
         recipientIsMinor: true,
       }),
-    ).toThrow(/minors/i);
+    ).toThrow(/minor/i);
   });
 
   it("keeps automatic AI publication blocked", () => {
