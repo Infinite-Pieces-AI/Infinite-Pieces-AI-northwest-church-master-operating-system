@@ -38,8 +38,8 @@ jobs:
       - name: Apply production-ready upgrade
         run: node scripts/apply-production-ready-upgrade.mjs
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install dependencies and refresh lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Format changed files
         run: pnpm format
