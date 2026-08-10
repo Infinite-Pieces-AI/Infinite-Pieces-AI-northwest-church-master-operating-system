@@ -53,7 +53,7 @@ export async function generateGeminiText(request: GeminiTextRequest): Promise<Ge
   }
 
   const model = request.model || process.env.GEMINI_MODEL || DEFAULT_MODEL;
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey())}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
   const body: Record<string, unknown> = {
     contents: [{ role: "user", parts: [{ text: request.prompt }] }],
     generationConfig: {
@@ -68,7 +68,10 @@ export async function generateGeminiText(request: GeminiTextRequest): Promise<Ge
 
   const response = await fetch(endpoint, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      "x-goog-api-key": apiKey(),
+    },
     body: JSON.stringify(body),
     cache: "no-store",
     signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
