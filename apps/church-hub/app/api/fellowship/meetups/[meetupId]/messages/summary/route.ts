@@ -10,10 +10,7 @@ const participantStates: ReadonlySet<FellowshipResponseStatus> = new Set([
   "waitlisted",
 ]);
 
-export async function POST(
-  _request: Request,
-  context: { params: Promise<{ meetupId: string }> },
-) {
+export async function POST(_request: Request, context: { params: Promise<{ meetupId: string }> }) {
   const viewer = await getViewer();
   if (!viewer) return NextResponse.json({ message: "Sign in is required." }, { status: 401 });
   if (viewer.roles.includes("teen")) {
@@ -35,7 +32,10 @@ export async function POST(
 
   const recentMessages = detail.messages.slice(-50);
   if (!recentMessages.length) {
-    return NextResponse.json({ text: "There are no recent meetup messages to summarize.", mode: "demo" });
+    return NextResponse.json({
+      text: "There are no recent meetup messages to summarize.",
+      mode: "demo",
+    });
   }
 
   if (viewer.demo) {

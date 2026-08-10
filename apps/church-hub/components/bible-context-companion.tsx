@@ -64,7 +64,9 @@ export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
       {visibleContext ? (
         <div className="gemini-output">
           <div className="gemini-output__label">
-            <strong>{mode === "demo" ? "Synthetic demo response" : "Gemini-generated context"}</strong>
+            <strong>
+              {mode === "demo" ? "Synthetic demo response" : "Gemini-generated context"}
+            </strong>
             <span>Verify important details with approved sources.</span>
           </div>
           <p>{visibleContext}</p>

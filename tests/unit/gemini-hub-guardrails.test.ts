@@ -8,9 +8,7 @@ describe("Gemini Church Hub guardrails", () => {
       parseJsonText<Array<{ date: string; role: string; assignedName: string }>>(
         '```json\n[{"date":"2026-09-06","role":"Welcome","assignedName":"Jordan Member"}]\n```',
       ),
-    ).toEqual([
-      { date: "2026-09-06", role: "Welcome", assignedName: "Jordan Member" },
-    ]);
+    ).toEqual([{ date: "2026-09-06", role: "Welcome", assignedName: "Jordan Member" }]);
   });
 
   it("keeps private channel messages prohibited in the general AI policy", () => {

@@ -48,8 +48,12 @@ export function ThreadSummary({ threadId }: { threadId: string }) {
       ) : (
         <div className="thread-summary__result">
           <div className="thread-summary__heading">
-            <strong>{mode === "demo" ? "Synthetic thread summary" : "Gemini thread summary"}</strong>
-            <button type="button" onClick={() => setSummary("")}>Clear</button>
+            <strong>
+              {mode === "demo" ? "Synthetic thread summary" : "Gemini thread summary"}
+            </strong>
+            <button type="button" onClick={() => setSummary("")}>
+              Clear
+            </button>
           </div>
           <p>{summary}</p>
           <small>

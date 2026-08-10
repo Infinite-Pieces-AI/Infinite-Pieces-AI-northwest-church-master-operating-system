@@ -87,6 +87,9 @@ export async function generateGeminiText(request: GeminiTextRequest): Promise<Ge
 }
 
 export function parseJsonText<T>(text: string): T {
-  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  const cleaned = text
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
   return JSON.parse(cleaned) as T;
 }

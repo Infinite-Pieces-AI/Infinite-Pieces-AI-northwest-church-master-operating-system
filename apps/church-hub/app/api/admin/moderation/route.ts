@@ -44,7 +44,8 @@ function validateOutput(value: unknown): ModerationOutput {
     : [];
   const reason = typeof row.reason === "string" ? row.reason.trim().slice(0, 700) : "";
   const confidence = Number(row.confidence);
-  if (!status || !reason || !Number.isFinite(confidence)) throw new Error("Invalid moderation output");
+  if (!status || !reason || !Number.isFinite(confidence))
+    throw new Error("Invalid moderation output");
   return {
     status,
     categories,

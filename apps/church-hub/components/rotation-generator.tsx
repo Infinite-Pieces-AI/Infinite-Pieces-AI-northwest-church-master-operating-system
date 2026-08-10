@@ -55,7 +55,9 @@ export function RotationGenerator({ month }: { month: string }) {
       );
     } catch (error) {
       setSchedule([]);
-      setMessage(error instanceof Error ? error.message : "Rotation proposal could not be generated.");
+      setMessage(
+        error instanceof Error ? error.message : "Rotation proposal could not be generated.",
+      );
     } finally {
       setLoading(false);
     }
@@ -71,8 +73,8 @@ export function RotationGenerator({ month }: { month: string }) {
         <span className="gemini-chip">✦ Draft only</span>
       </div>
       <p>
-        Use a reviewed roster with roles, preferred serving frequency, and blackout dates. Gemini may
-        propose a schedule, but it cannot activate assignments or notify volunteers.
+        Use a reviewed roster with roles, preferred serving frequency, and blackout dates. Gemini
+        may propose a schedule, but it cannot activate assignments or notify volunteers.
       </p>
       <div className="rotation-generator__controls">
         <label>
@@ -103,21 +105,31 @@ export function RotationGenerator({ month }: { month: string }) {
           {loading ? "Calculating proposal…" : "Generate schedule proposal"}
         </button>
       </div>
-      <p className="fellowship-notice" role="status">{message}</p>
+      <p className="fellowship-notice" role="status">
+        {message}
+      </p>
       {schedule.length ? (
         <div className="rotation-proposal">
           <div className="rotation-proposal__heading">
             <strong>{mode === "demo" ? "Synthetic demo proposal" : "Gemini proposal"}</strong>
             <span>{schedule.length} assignments</span>
           </div>
-          <div className="rotation-proposal__table" role="table" aria-label="Volunteer rotation proposal">
+          <div
+            className="rotation-proposal__table"
+            role="table"
+            aria-label="Volunteer rotation proposal"
+          >
             <div className="rotation-proposal__row rotation-proposal__row--header" role="row">
               <span role="columnheader">Date</span>
               <span role="columnheader">Role</span>
               <span role="columnheader">Proposed person</span>
             </div>
             {schedule.map((assignment, index) => (
-              <div className="rotation-proposal__row" role="row" key={`${assignment.date}-${assignment.role}-${index}`}>
+              <div
+                className="rotation-proposal__row"
+                role="row"
+                key={`${assignment.date}-${assignment.role}-${index}`}
+              >
                 <span role="cell">{assignment.date}</span>
                 <span role="cell">{assignment.role}</span>
                 <span role="cell">{assignment.assignedName}</span>

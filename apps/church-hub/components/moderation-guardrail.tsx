@@ -77,13 +77,19 @@ export function ModerationGuardrail() {
       {result ? (
         <div className={`moderation-result moderation-result--${result.status}`} aria-live="polite">
           <div>
-            <strong>{result.status === "safe" ? "No immediate language flag" : "Send for human review"}</strong>
-            <span>{result.mode === "demo" ? "Synthetic demo analysis" : "Gemini-assisted analysis"}</span>
+            <strong>
+              {result.status === "safe" ? "No immediate language flag" : "Send for human review"}
+            </strong>
+            <span>
+              {result.mode === "demo" ? "Synthetic demo analysis" : "Gemini-assisted analysis"}
+            </span>
           </div>
           <p>{result.reason}</p>
           {result.categories?.length ? (
             <div className="meetup-tags">
-              {result.categories.map((category) => <span key={category}>{category}</span>)}
+              {result.categories.map((category) => (
+                <span key={category}>{category}</span>
+              ))}
             </div>
           ) : null}
           <small>
