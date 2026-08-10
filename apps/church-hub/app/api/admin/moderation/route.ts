@@ -71,8 +71,23 @@ export async function POST(request: Request) {
     );
   }
 
-  if (viewer.demo || !isGeminiEnabled()) {
+  if (viewer.demo) {
     return NextResponse.json({ ...demoModeration(text), mode: "demo" });
+  }
+  if (process.env.ALLOW_AI_PRIVATE_DATA_ACCESS !== "true") {
+    return NextResponse.json(
+      {
+        message:
+          "AI moderation preflight is disabled until leadership approves the AI vendor and member-content data boundary.",
+      },
+      { status: 403 },
+    );
+  }
+  if (!isGeminiEnabled()) {
+    return NextResponse.json(
+      { message: "Gemini is not configured for this environment." },
+      { status: 503 },
+    );
   }
 
   try {
