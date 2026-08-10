@@ -32,6 +32,13 @@ const tools: ReadonlyArray<{
     permission: "group.manage_assigned",
   },
   {
+    title: "Volunteer Rotations",
+    description:
+      "Generate review-only volunteer serving proposals from approved availability, roles, frequencies, and blackout dates.",
+    slug: "rotations",
+    permission: "group.manage_assigned",
+  },
+  {
     title: "Kids Kingdom",
     description:
       "View integration health, consent review, private media queues, safeguarding controls, and fallback readiness.",
@@ -41,7 +48,7 @@ const tools: ReadonlyArray<{
   {
     title: "Moderation",
     description:
-      "Review reports, preserve evidence, apply proportionate actions, and escalate safety concerns.",
+      "Review reports, preserve evidence, run an advisory language preflight, apply proportionate actions, and escalate safety concerns.",
     slug: "moderation",
     permission: "moderation.review",
   },
