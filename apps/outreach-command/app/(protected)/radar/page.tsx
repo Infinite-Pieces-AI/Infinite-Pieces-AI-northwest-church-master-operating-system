@@ -1,86 +1,96 @@
-import { MetricCard } from "@/components/metric-card";
+import {
+  dateTime,
+  EmptyLiveData,
+  LiveDataNotice,
+  statusClass,
+  text,
+} from "@/components/live-data-ui";
 import { PageHeading } from "@/components/page-heading";
-import { RadarWorkspace } from "@/components/radar-workspace";
+import { loadRadarSignals, outreachBackendConfigured } from "@/lib/live-intelligence";
 
-export default function RadarPage() {
+export default async function RadarPage() {
+  const signals = await loadRadarSignals();
   return (
     <>
       <PageHeading
-        eyebrow="Public conversation intelligence"
+        eyebrow="Approved public-source intelligence"
         title="Command Radar"
-        description="Surface publicly available questions and community discussions, score their local and ministry relevance, and prepare transparent human responses—without crawling private groups or building religious dossiers."
+        description="Review public questions and community discussions imported through approved APIs or public feeds. Private groups, direct messages, login bypass, and individual religious dossiers are prohibited."
       />
-
-      <section className="command-hero">
-        <div>
-          <p className="eyebrow">Public intelligence → respectful action</p>
-          <h2>
-            Understand what people are publicly asking before deciding what the church should say or
-            build.
-          </h2>
-          <p>
-            Radar combines approved public-source listening, aggregate search demand, local
-            relevance, content gaps, and human review. It never reveals private Google searchers or
-            silently contacts anyone.
-          </p>
-        </div>
-        <div className="hero-rail" aria-label="Radar operating boundaries">
-          <article>
-            <span>01</span>
+      <LiveDataNotice title="Human outreach only">
+        <p>
+          Radar may recommend a response or content action. It never contacts a person or publishes
+          on its own.
+        </p>
+      </LiveDataNotice>
+      {!outreachBackendConfigured() ? (
+        <EmptyLiveData
+          title="No production data connection"
+          description="Configure an approved public-source connector. The Radar remains empty rather than generating fictional public posts."
+          href="/source-control"
+          action="Open Source Control"
+        />
+      ) : !signals.length ? (
+        <EmptyLiveData
+          title="No approved public signal is currently stored"
+          description="A source must be genuinely public, terms-approved, allowlisted, and imported by a server-side worker."
+          href="/source-control"
+          action="Review connectors"
+        />
+      ) : (
+        <section className="panel" style={{ marginTop: 18 }}>
+          <div className="panel__header">
             <div>
-              <strong>Public sources</strong>
-              <small>Official APIs, RSS, and approved accessible pages</small>
+              <h2>Public opportunity stream</h2>
+              <p>{signals.length} time-bounded records</p>
             </div>
-          </article>
-          <article>
-            <span>02</span>
-            <div>
-              <strong>Explainable scores</strong>
-              <small>Local, church, family, online, freshness, opportunity, risk</small>
-            </div>
-          </article>
-          <article>
-            <span>03</span>
-            <div>
-              <strong>Human response</strong>
-              <small>Disclosed affiliation and approval before any reply</small>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <div className="metric-grid">
-        <MetricCard
-          label="Public opportunities"
-          value="6"
-          detail="Synthetic conversations ready for product review"
-          trend="4 high-priority"
-          tone="blue"
-        />
-        <MetricCard
-          label="Local relevance"
-          value="92%"
-          detail="Average among top Lowell-area signals"
-          trend="Lowell + approved nearby towns"
-          tone="gold"
-        />
-        <MetricCard
-          label="Online ministry"
-          value="2"
-          detail="Strong online or Zoom-intent opportunities"
-          trend="No live outreach connected"
-          tone="green"
-        />
-        <MetricCard
-          label="Sensitive-risk holds"
-          value="1"
-          detail="Opportunity requires a privacy-first response"
-          trend="No marketing audience created"
-          tone="rose"
-        />
-      </div>
-
-      <RadarWorkspace />
+          </div>
+          <div className="search-table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Public question</th>
+                  <th>Source</th>
+                  <th>Local / church intent</th>
+                  <th>Risk</th>
+                  <th>Status</th>
+                  <th>Published</th>
+                </tr>
+              </thead>
+              <tbody>
+                {signals.map((row) => (
+                  <tr key={text(row.id)}>
+                    <td>
+                      <strong>{text(row.priority_score)}</strong>
+                    </td>
+                    <td>
+                      <strong>{text(row.title)}</strong>
+                      <small>{text(row.excerpt)}</small>
+                      <small>{text(row.recommendation)}</small>
+                    </td>
+                    <td>
+                      {text(row.source_label)}
+                      <br />
+                      <small>
+                        {text(row.source_kind)} · {text(row.locality)}
+                      </small>
+                    </td>
+                    <td>
+                      {text(row.local_relevance)} / {text(row.church_intent)}
+                    </td>
+                    <td>{text(row.risk_sensitivity)}</td>
+                    <td>
+                      <span className={statusClass(row.status)}>{text(row.status)}</span>
+                    </td>
+                    <td>{dateTime(row.published_at ?? row.ingested_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
     </>
   );
 }

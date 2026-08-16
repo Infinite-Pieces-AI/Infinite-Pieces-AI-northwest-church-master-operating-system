@@ -12,10 +12,10 @@ export interface OutreachViewer {
   demo: boolean;
 }
 
-const demoViewer: OutreachViewer = {
+const localPreviewViewer: OutreachViewer = {
   id: "00000000-0000-4000-8000-000000000901",
-  displayName: "Jordan Outreach Leader",
-  email: "outreach.leader@example.invalid",
+  displayName: "Local Preview Outreach Leader",
+  email: "preview-outreach@example.invalid",
   roles: ["minister", "technical_admin"],
   aal: "aal2",
   sessionIssuedAt: Math.floor(Date.now() / 1000),
@@ -23,13 +23,15 @@ const demoViewer: OutreachViewer = {
 };
 
 export function isOutreachDemoModeEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "false") return false;
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "true") return true;
-  return process.env.NODE_ENV !== "production";
+  if (process.env.NODE_ENV === "production") return false;
+  return (
+    process.env.NEXT_PUBLIC_ENABLE_DEMO === "true" &&
+    process.env.ALLOW_LOCAL_PREVIEW_MODE === "true"
+  );
 }
 
 async function getOutreachViewer(): Promise<OutreachViewer | null> {
-  if (isOutreachDemoModeEnabled()) return demoViewer;
+  if (isOutreachDemoModeEnabled()) return localPreviewViewer;
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return null;
   }

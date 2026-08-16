@@ -4,7 +4,7 @@ import { useState } from "react";
 
 interface BibleContextResponse {
   text?: string;
-  mode?: "gemini" | "demo";
+  mode?: "gemini";
   model?: string;
   message?: string;
 }
@@ -12,7 +12,7 @@ interface BibleContextResponse {
 export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
   const [contextData, setContextData] = useState("");
   const [responseFor, setResponseFor] = useState("");
-  const [mode, setMode] = useState<"gemini" | "demo" | null>(null);
+  const [model, setModel] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const visibleContext = responseFor === verseRef ? contextData : "";
@@ -32,7 +32,7 @@ export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
       }
       setContextData(data.text);
       setResponseFor(verseRef);
-      setMode(data.mode ?? "gemini");
+      setModel(data.model ?? "Gemini");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Bible context could not be generated.");
     } finally {
@@ -64,10 +64,8 @@ export function BibleContextCompanion({ verseRef }: { verseRef: string }) {
       {visibleContext ? (
         <div className="gemini-output">
           <div className="gemini-output__label">
-            <strong>
-              {mode === "demo" ? "Synthetic demo response" : "Gemini-generated context"}
-            </strong>
-            <span>Verify important details with approved sources.</span>
+            <strong>Gemini-generated context</strong>
+            <span>{model} · Verify important details with approved sources.</span>
           </div>
           <p>{visibleContext}</p>
         </div>

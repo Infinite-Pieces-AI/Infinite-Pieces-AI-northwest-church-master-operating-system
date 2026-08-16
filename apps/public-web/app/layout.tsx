@@ -1,40 +1,27 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { PublicTelemetry } from "@/components/public-telemetry";
-import { siteUrl } from "@/lib/site-url";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 import "./journey.css";
-
-export const revalidate = 300;
+import "./production-ready.css";
 
 export const metadata: Metadata = {
-  metadataBase: siteUrl(),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Boston Church Lowell | Meet Jesus, Find Community, Serve Lowell",
+    default: "Boston Church Lowell",
     template: "%s | Boston Church Lowell",
   },
-  description:
-    "Meet Jesus, find genuine community, plan a Sunday visit, explore Bible conversations, family groups, Kids Kingdom, teen ministry, service, sermons, and public events in Lowell, Massachusetts.",
+  description: "Meet Jesus, find genuine community, and serve Lowell with Boston Church Lowell.",
   applicationName: "Boston Church Lowell",
-  openGraph: {
-    title: "Boston Church Lowell",
-    description: "Meet Jesus, find your people, and serve Lowell together.",
-    type: "website",
-    locale: "en_US",
-    url: "/",
-  },
-  robots: { index: true, follow: true },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <SiteHeader />
-        <main id="main-content">{children}</main>
+        <main>{children}</main>
         <SiteFooter />
-        <PublicTelemetry />
       </body>
     </html>
   );

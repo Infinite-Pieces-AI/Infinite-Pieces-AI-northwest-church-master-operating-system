@@ -38,13 +38,19 @@ export default defineConfig({
       command: "pnpm --filter @church/church-hub dev",
       url: "http://127.0.0.1:3001/login",
       reuseExistingServer: !process.env.CI,
-      env: { NEXT_PUBLIC_ENABLE_DEMO: "true" },
+      env: {
+        NEXT_PUBLIC_ENABLE_DEMO: "true",
+        ALLOW_LOCAL_PREVIEW_MODE: "true",
+      },
     },
     {
       command: "pnpm --filter @church/outreach-command dev",
       url: "http://127.0.0.1:3002/login",
       reuseExistingServer: !process.env.CI,
-      env: { NEXT_PUBLIC_ENABLE_DEMO: "true" },
+      env: {
+        NEXT_PUBLIC_ENABLE_DEMO: "true",
+        ALLOW_LOCAL_PREVIEW_MODE: "true",
+      },
     },
   ],
 });

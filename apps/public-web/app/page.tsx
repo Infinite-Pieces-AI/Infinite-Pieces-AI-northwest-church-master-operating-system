@@ -2,6 +2,7 @@ import Link from "next/link";
 import { churchIdentity, ministries } from "@church/church-content";
 import { JsonLd } from "@/components/json-ld";
 import { IconCard } from "@/components/icon-card";
+import { MinistryNavigator } from "@/components/ministry-navigator";
 import { PublicActionLink } from "@/components/public-action-link";
 import { VisitorPathways } from "@/components/visitor-pathways";
 import { WelcomeVideo } from "@/components/welcome-video";
@@ -15,7 +16,9 @@ export default function HomePage() {
   const service = getPublishedSchedule();
   const events = getPublishedEvents().slice(0, 3);
   const sermons = getPublishedSermons().slice(0, 1);
+  const sermon = sermons[0];
   const serviceTime = service.localTime === "10:00" ? "10:00 AM" : service.localTime;
+  const hubUrl = process.env.NEXT_PUBLIC_HUB_URL ?? "http://localhost:3001";
   const organizationData = {
     "@context": "https://schema.org",
     "@type": "Church",
@@ -121,6 +124,12 @@ export default function HomePage() {
       <section className="page-section pathway-section">
         <div className="page-shell">
           <VisitorPathways />
+        </div>
+      </section>
+
+      <section className="page-section page-section--guide">
+        <div className="page-shell">
+          <MinistryNavigator />
         </div>
       </section>
 
@@ -262,6 +271,71 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="page-section hub-public-section">
+        <div className="page-shell hub-public-section__grid">
+          <div>
+            <p className="eyebrow">A private app for real connection</p>
+            <h2>Church Hub connects the Sunday gathering to the rest of the week.</h2>
+            <p>
+              Approved members can follow the current Bible journey, discover or host Fellowship
+              meetups, join service opportunities, communicate with assigned groups, and manage
+              family information through a secure member application.
+            </p>
+            <div className="hub-capability-grid">
+              <article>
+                <strong>Bible Journey</strong>
+                <span>Current passages, lessons, questions, and study assistance.</span>
+              </article>
+              <article>
+                <strong>Fellowship</strong>
+                <span>Prayer walks, meals, playdates, outings, sports, and conversations.</span>
+              </article>
+              <article>
+                <strong>Serve</strong>
+                <span>Approved opportunities, shifts, requirements, leaders, and reminders.</span>
+              </article>
+              <article>
+                <strong>Community</strong>
+                <span>Church, ministry, group, parent, and meetup communication.</span>
+              </article>
+            </div>
+          </div>
+          <aside className="hub-invite-card">
+            <span aria-hidden="true">∞</span>
+            <h3>Interested in the member app?</h3>
+            <p>
+              Ask a leader at Sunday worship or submit an access request. Every account is reviewed,
+              invited individually, and limited to approved roles and groups.
+            </p>
+            <dl>
+              <div>
+                <dt>Sunday</dt>
+                <dd>{serviceTime}</dd>
+              </div>
+              <div>
+                <dt>Location</dt>
+                <dd>{service.location.name}</dd>
+              </div>
+              <div>
+                <dt>Address</dt>
+                <dd>
+                  {service.location.addressLine1}, {service.location.city}
+                </dd>
+              </div>
+            </dl>
+            <div className="button-row">
+              <a className="button button--gold" href={`${hubUrl}/request-access`}>
+                Request an invitation
+              </a>
+              <a className="button button--outline-dark" href={`${hubUrl}/login`}>
+                Member sign in
+              </a>
+            </div>
+            <Link href="/plan-a-visit">Ask about Church Hub at Sunday worship →</Link>
+          </aside>
+        </div>
+      </section>
+
       <section className="page-section">
         <div className="page-shell">
           <div className="section-intro">
@@ -292,20 +366,33 @@ export default function HomePage() {
       </section>
 
       <section className="page-section page-section--tint">
-        <div className="page-shell split">
-          <div>
+        <div className="page-shell">
+          <div className="section-intro">
             <p className="eyebrow">Current teaching</p>
-            <h2>{sermons[0]?.seriesTitle ?? "Weekly teaching"}</h2>
-            <h3>{sermons[0]?.title ?? "Approved sermon content appears here"}</h3>
-            <p>{sermons[0]?.summary}</p>
-            <p className="scripture-chip">{sermons[0]?.scriptureReferences.join(" · ")}</p>
-            <Link className="text-cta" href="/sermons">
-              Explore sermons and lessons →
-            </Link>
+            <h2>Follow the teaching that has been approved for public release.</h2>
           </div>
-          <div className="media-placeholder" role="img" aria-label="Sermon media area">
-            <span>Video, audio, transcript, Scripture references, and discussion resources</span>
-          </div>
+          {sermon ? (
+            <article className="current-teaching-card">
+              <div>
+                <p className="card-kicker">{sermon.seriesTitle}</p>
+                <h3>{sermon.title}</h3>
+                <p>{sermon.summary}</p>
+                <p className="scripture-chip">{sermon.scriptureReferences.join(" · ")}</p>
+              </div>
+              <Link className="button button--outline-dark" href="/sermons">
+                Open sermon, media, and resources
+              </Link>
+            </article>
+          ) : (
+            <div className="empty-public-state">
+              <h3>No public teaching has been published yet.</h3>
+              <p>
+                Sermons appear here only after the title, speaker, Scripture references, summary,
+                and media have been reviewed and published.
+              </p>
+              <Link href="/sermons">Open the teaching library →</Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -345,9 +432,21 @@ export default function HomePage() {
 
       <section className="page-section page-section--dark">
         <div className="page-shell split split--reverse">
-          <div className="map-placeholder">
-            <span>Lowell, Massachusetts</span>
-            <strong>{service.location.addressLine1}</strong>
+          <div className="location-proof-card">
+            <p className="eyebrow">Current meeting location</p>
+            <strong>{service.location.name}</strong>
+            <span>{service.location.addressLine1}</span>
+            <span>
+              {service.location.city}, {service.location.region} {service.location.postalCode}
+            </span>
+            <PublicActionLink
+              className="button button--gold"
+              href={service.location.directionsUrl}
+              event="directions_clicked"
+              properties={{ path: "/" }}
+            >
+              Open directions
+            </PublicActionLink>
           </div>
           <div>
             <p className="eyebrow">Rooted in Lowell</p>

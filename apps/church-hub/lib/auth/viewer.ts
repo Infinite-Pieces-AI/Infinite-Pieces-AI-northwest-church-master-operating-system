@@ -11,10 +11,10 @@ export interface Viewer {
   demo: boolean;
 }
 
-const demoViewer: Viewer = {
+const localPreviewViewer: Viewer = {
   id: "00000000-0000-4000-8000-000000000001",
-  displayName: "Jordan Member",
-  email: "jordan.member@example.invalid",
+  displayName: "Local Preview Member",
+  email: "preview@example.invalid",
   roles: [
     "member",
     "verified_guardian",
@@ -30,19 +30,19 @@ const demoViewer: Viewer = {
 };
 
 /**
- * Demo mode is intentionally automatic in local development so designers and
- * ministry leaders can review the entire Church Hub before Supabase is set up.
- * Production remains secure by default: demo access is only enabled there when
- * NEXT_PUBLIC_ENABLE_DEMO is explicitly set to "true".
+ * Local preview access is an explicit development-only escape hatch.
+ * It is never enabled automatically and can never run in a production build.
  */
 export function isDemoModeEnabled(): boolean {
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "false") return false;
-  if (process.env.NEXT_PUBLIC_ENABLE_DEMO === "true") return true;
-  return process.env.NODE_ENV !== "production";
+  if (process.env.NODE_ENV === "production") return false;
+  return (
+    process.env.NEXT_PUBLIC_ENABLE_DEMO === "true" &&
+    process.env.ALLOW_LOCAL_PREVIEW_MODE === "true"
+  );
 }
 
 export async function getViewer(): Promise<Viewer | null> {
-  if (isDemoModeEnabled()) return demoViewer;
+  if (isDemoModeEnabled()) return localPreviewViewer;
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return null;
   }
