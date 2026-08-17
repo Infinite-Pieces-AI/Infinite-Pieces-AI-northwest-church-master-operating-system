@@ -16,7 +16,7 @@
     "@church/worker-runtime": "workspace:*"
   },
   "devDependencies": {
-    "tsx": "^4.23.10",
+    "tsx": "^4.23.12",
     "typescript": "^5.9.3",
     "vitest": "^4.0.0"
   }
