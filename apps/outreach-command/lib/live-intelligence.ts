@@ -2,16 +2,37 @@ import { createClient } from "@/lib/supabase/server";
 
 type AnyRow = Record<string, unknown>;
 
+type DynamicQueryResult = {
+  data: unknown[] | null;
+  error: unknown;
+  count: number | null;
+};
+
+interface DynamicQuery extends PromiseLike<DynamicQueryResult> {
+  select(
+    columns?: string,
+    options?: { count?: "exact"; head?: boolean },
+  ): DynamicQuery;
+  order(column: string, options: { ascending: boolean }): DynamicQuery;
+  limit(value: number): DynamicQuery;
+  in(column: string, values: readonly unknown[]): DynamicQuery;
+  or(filters: string): DynamicQuery;
+}
+
+type DynamicDatabaseClient = {
+  from(table: string): DynamicQuery;
+};
+
+type QueryFilter = (query: DynamicQuery) => DynamicQuery;
+
 export function outreachBackendConfigured(): boolean {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   );
 }
 
-async function dbClient() {
-  return (await createClient()) as unknown as {
-    from: (table: string) => any;
-  };
+async function dbClient(): Promise<DynamicDatabaseClient> {
+  return (await createClient()) as unknown as DynamicDatabaseClient;
 }
 
 async function rows(input: {
@@ -20,7 +41,7 @@ async function rows(input: {
   order?: string;
   ascending?: boolean;
   limit?: number;
-  filters?: (query: any) => any;
+  filters?: QueryFilter;
 }): Promise<AnyRow[]> {
   if (!outreachBackendConfigured()) return [];
   const db = await dbClient();
@@ -33,7 +54,7 @@ async function rows(input: {
   return (data ?? []) as AnyRow[];
 }
 
-async function count(table: string, filters?: (query: any) => any): Promise<number> {
+async function count(table: string, filters?: QueryFilter): Promise<number> {
   if (!outreachBackendConfigured()) return 0;
   const db = await dbClient();
   let query = db.from(table).select("id", { count: "exact", head: true });
