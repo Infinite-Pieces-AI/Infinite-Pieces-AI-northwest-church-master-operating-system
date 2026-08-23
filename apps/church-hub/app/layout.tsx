@@ -9,6 +9,7 @@ import "./hub-fellowship-live.css";
 import "./gemini-assistants.css";
 import "./production-ready.css";
 import "./family-showcase.css";
+import "./ministry-expansion.css";
 
 export const metadata: Metadata = {
   title: { default: "Church Hub", template: "%s | Church Hub" },
