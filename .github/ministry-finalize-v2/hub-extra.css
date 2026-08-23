@@ -1,0 +1,389 @@
+.ministry-navigator {
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid #c8dce6;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fff, #f2f8fa);
+  box-shadow: 0 12px 34px rgba(7, 25, 43, 0.06);
+}
+
+.ministry-navigator__toggle {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 48px 1fr 30px;
+  gap: 12px;
+  align-items: center;
+  padding: 16px 20px;
+  border: 0;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ministry-navigator__toggle > span:first-child {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--navy);
+  background: #ffe39a;
+  font-size: 1.2rem;
+}
+
+.ministry-navigator__toggle strong,
+.ministry-navigator__toggle small {
+  display: block;
+}
+
+.ministry-navigator__toggle small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+.ministry-navigator__toggle > b {
+  color: var(--blue);
+  font-size: 1.4rem;
+}
+
+.ministry-navigator__panel {
+  padding: 0 20px 20px;
+  border-top: 1px solid #dbe7eb;
+}
+
+.ministry-navigator__input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ministry-navigator__input input {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #bcd0d9;
+  border-radius: 12px;
+  background: white;
+}
+
+.ministry-navigator__input button {
+  min-height: 46px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  background: var(--blue);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.ministry-navigator__prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.ministry-navigator__prompts button {
+  padding: 7px 10px;
+  border: 1px solid #c8dce6;
+  border-radius: 999px;
+  color: #315b70;
+  background: white;
+  cursor: pointer;
+  font-size: 0.68rem;
+}
+
+.ministry-navigator__results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ministry-navigator__results a {
+  display: grid;
+  grid-template-columns: 34px 1fr 18px;
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid #c8dce6;
+  border-radius: 14px;
+  color: inherit;
+  background: white;
+  text-decoration: none;
+}
+
+.ministry-navigator__results a > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--blue);
+  background: var(--sky);
+}
+
+.ministry-navigator__results p,
+.ministry-navigator__results small {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.ministry-navigator__notice,
+.ministry-navigator__boundary {
+  margin: 11px 0 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.module-admin-link {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 12px;
+}
+
+.module-admin-link a {
+  padding: 8px 12px;
+  border: 1px solid #bfd0d9;
+  border-radius: 10px;
+  color: var(--blue);
+  background: white;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.sidebar-subitem {
+  padding-left: 24px !important;
+  font-size: 0.72rem;
+  opacity: 0.86;
+}
+
+.more-destination-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.more-destination-grid > a {
+  display: grid;
+  grid-template-columns: 44px 1fr 18px;
+  gap: 12px;
+  align-items: center;
+  min-height: 120px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  color: inherit;
+  background: white;
+  box-shadow: 0 8px 28px rgba(7, 25, 43, 0.04);
+  text-decoration: none;
+}
+
+.more-destination-grid > a > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--blue);
+  background: var(--sky);
+}
+
+.more-destination-grid p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.recovery-access-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.recovery-access-options > article,
+.recovery-membership-controls {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 19px;
+  background: white;
+}
+
+.recovery-access-options header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.recovery-access-options header span,
+.recovery-access-options header b {
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.63rem;
+  background: var(--sky);
+}
+
+.recovery-access-options p,
+.recovery-access-options small,
+.recovery-membership-controls p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.recovery-access-options label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+  font-size: 0.73rem;
+  font-weight: 800;
+}
+
+.recovery-access-options textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bfd0d9;
+  border-radius: 11px;
+  resize: vertical;
+}
+
+.recovery-access-options button,
+.recovery-membership-controls button {
+  min-height: 42px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 10px;
+  color: white;
+  background: #21735f;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.gift-moderation-list,
+.prayer-leader-list,
+.recovery-admin-programs,
+.recovery-access-queue {
+  display: grid;
+  gap: 13px;
+}
+
+.gift-moderation-list > article,
+.prayer-leader-list > article,
+.recovery-admin-programs > article,
+.recovery-access-queue > article {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #fbfdfe;
+}
+
+.gift-moderation-list header,
+.prayer-leader-list header,
+.recovery-admin-programs header,
+.recovery-access-queue header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gift-moderation-list header div,
+.prayer-leader-list header div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gift-moderation-list header span,
+.prayer-leader-list header span,
+.recovery-admin-programs header span,
+.recovery-admin-programs header b,
+.recovery-access-queue header span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--sky);
+  font-size: 0.62rem;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.gift-moderation-list > article > div:last-child,
+.prayer-leader-list > article > div:last-child,
+.recovery-access-queue > article > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.gift-moderation-list button,
+.prayer-leader-list button,
+.recovery-access-queue button {
+  min-height: 39px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 9px;
+  color: white;
+  background: var(--blue);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.prayer-leader-list dl,
+.recovery-admin-programs dl {
+  display: grid;
+  gap: 6px;
+}
+
+.prayer-leader-list dl > div,
+.recovery-admin-programs dl > div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 9px;
+  background: #f1f5f6;
+}
+
+.prayer-leader-list dt,
+.prayer-leader-list dd,
+.recovery-admin-programs dt,
+.recovery-admin-programs dd {
+  margin: 0;
+  font-size: 0.72rem;
+}
+
+.prayer-leader-list dt,
+.recovery-admin-programs dt {
+  color: var(--muted);
+}
+
+.recovery-admin-programs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recovery-admin-programs select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px;
+  border: 1px solid #bfd0d9;
+  border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+  .ministry-navigator__results,
+  .more-destination-grid,
+  .recovery-access-options,
+  .recovery-admin-programs {
+    grid-template-columns: 1fr;
+  }
+
+  .ministry-navigator__input {
+    grid-template-columns: 1fr;
+  }
+}
