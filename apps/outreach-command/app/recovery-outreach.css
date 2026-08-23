@@ -1,0 +1,535 @@
+.recovery-outreach-workspace {
+  display: grid;
+  gap: 18px;
+}
+
+.recovery-outreach-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 24px;
+  min-height: 260px;
+  padding: 32px;
+  border: 1px solid rgba(86, 213, 169, 0.24);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(86, 213, 169, 0.25), transparent 30%),
+    linear-gradient(135deg, #061923, #0f3b3e 65%, #176252);
+  box-shadow: var(--shadow);
+}
+
+.recovery-outreach-hero > div {
+  position: relative;
+  z-index: 1;
+  max-width: 940px;
+}
+
+.recovery-outreach-hero p,
+.recovery-outreach-hero h2,
+.recovery-outreach-hero span {
+  margin: 0;
+}
+
+.recovery-outreach-hero p {
+  color: var(--gold);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.recovery-outreach-hero h2 {
+  margin-top: 10px;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  line-height: 1.04;
+}
+
+.recovery-outreach-hero div > span {
+  display: block;
+  max-width: 780px;
+  margin-top: 14px;
+  color: #b9d4d3;
+  line-height: 1.65;
+}
+
+.recovery-outreach-hero > strong {
+  width: 135px;
+  height: 135px;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: #6ce0b5;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 4.5rem;
+  font-weight: 400;
+}
+
+.recovery-outreach-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.recovery-outreach-metrics article {
+  min-height: 135px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgba(16, 44, 64, 0.78), rgba(8, 25, 38, 0.92));
+}
+
+.recovery-outreach-metrics span,
+.recovery-outreach-metrics strong,
+.recovery-outreach-metrics small {
+  display: block;
+}
+
+.recovery-outreach-metrics span {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.recovery-outreach-metrics strong {
+  margin: 10px 0 5px;
+  color: #71ddb7;
+  font-size: 2.1rem;
+}
+
+.recovery-outreach-metrics small {
+  color: #9db4bf;
+  line-height: 1.45;
+}
+
+.recovery-outreach-tabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-outreach-tabs button {
+  flex: 1 0 auto;
+  min-height: 40px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.recovery-outreach-tabs button.active {
+  color: #06211b;
+  background: #69ddb4;
+}
+
+.recovery-outreach-notice {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(86, 213, 169, 0.25);
+  border-radius: 12px;
+  color: #a8d9c6;
+  background: rgba(86, 213, 169, 0.07);
+  font-size: 0.73rem;
+}
+
+.recovery-outreach-empty {
+  padding: 30px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.recovery-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.recovery-overview-grid > article,
+.recovery-outreach-panel,
+.recovery-inquiry-list,
+.recovery-inquiry-detail,
+.recovery-policy-grid > article {
+  padding: 21px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: linear-gradient(150deg, rgba(14, 38, 55, 0.92), rgba(7, 22, 33, 0.92));
+}
+
+.recovery-overview-grid h3,
+.recovery-outreach-panel h3,
+.recovery-policy-grid strong {
+  margin-top: 0;
+}
+
+.recovery-overview-grid ul,
+.recovery-policy-grid ul {
+  padding-left: 19px;
+  color: #acc1cb;
+  font-size: 0.75rem;
+  line-height: 1.65;
+}
+
+.recovery-daily-actions p {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin: 9px 0;
+  padding: 10px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.recovery-daily-actions p strong {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #071c22;
+  background: #69ddb4;
+}
+
+.recovery-daily-actions p span {
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.recovery-topic-toolbar {
+  margin-bottom: 16px;
+}
+
+.recovery-topic-toolbar input,
+.recovery-outreach-form input,
+.recovery-outreach-form select,
+.recovery-outreach-form textarea,
+.recovery-partner-list select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  color: white;
+  background: rgba(3, 13, 20, 0.56);
+  font: inherit;
+}
+
+.recovery-topic-layout,
+.recovery-partner-layout,
+.recovery-inquiry-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr);
+  gap: 16px;
+}
+
+.recovery-topic-list,
+.recovery-partner-list {
+  display: grid;
+  gap: 12px;
+}
+
+.recovery-topic-list article,
+.recovery-partner-list article {
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-topic-list article > div,
+.recovery-partner-list header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.recovery-topic-list article > div span,
+.recovery-topic-list article > div b,
+.recovery-partner-list header span,
+.recovery-partner-list header b {
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.recovery-topic-list article > div span,
+.recovery-partner-list header span {
+  color: var(--cyan);
+  background: rgba(54, 183, 221, 0.09);
+}
+
+.recovery-topic-list article > div b,
+.recovery-partner-list header b {
+  color: #ffe18d;
+  background: rgba(239, 199, 94, 0.1);
+}
+
+.recovery-topic-list h3,
+.recovery-partner-list h3 {
+  margin: 13px 0 6px;
+  font-size: 0.95rem;
+}
+
+.recovery-topic-list p,
+.recovery-topic-list small,
+.recovery-partner-list p,
+.recovery-partner-list blockquote {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.recovery-topic-list blockquote,
+.recovery-partner-list blockquote {
+  margin: 13px 0;
+  padding: 11px;
+  border-left: 3px solid #69ddb4;
+  background: rgba(86, 213, 169, 0.04);
+  line-height: 1.55;
+}
+
+.recovery-topic-list a,
+.recovery-partner-list a {
+  color: #76dfbd;
+  font-size: 0.7rem;
+  font-weight: 850;
+}
+
+.recovery-partner-list select {
+  margin-top: 13px;
+}
+
+.recovery-outreach-form {
+  display: grid;
+  gap: 11px;
+  align-self: start;
+  position: sticky;
+  top: 95px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-outreach-form label {
+  display: grid;
+  gap: 5px;
+  color: #c4d5de;
+  font-size: 0.67rem;
+  font-weight: 800;
+}
+
+.recovery-outreach-form textarea {
+  resize: vertical;
+}
+
+.recovery-outreach-form button,
+.recovery-inquiry-detail button,
+.recovery-policy-grid > button {
+  min-height: 41px;
+  padding: 8px 13px;
+  border: 0;
+  border-radius: 10px;
+  color: #06211b;
+  background: #69ddb4;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.recovery-content-plan {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.recovery-content-plan article {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-content-plan article > span {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #06211b;
+  background: #69ddb4;
+  font-weight: 900;
+}
+
+.recovery-content-plan p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.recovery-inquiry-list {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.recovery-inquiry-list > button {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 11px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.recovery-inquiry-list > button:hover,
+.recovery-inquiry-list > button.active {
+  border-color: rgba(86, 213, 169, 0.25);
+  background: rgba(86, 213, 169, 0.06);
+}
+
+.recovery-inquiry-list > button > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #06211b;
+  background: var(--gold);
+  font-weight: 900;
+}
+
+.recovery-inquiry-list strong,
+.recovery-inquiry-list small {
+  display: block;
+}
+
+.recovery-inquiry-list small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.63rem;
+}
+
+.recovery-inquiry-detail > span {
+  color: var(--gold);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.recovery-inquiry-detail h3 {
+  margin: 8px 0 14px;
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+}
+
+.recovery-inquiry-detail dl {
+  display: grid;
+  gap: 8px;
+}
+
+.recovery-inquiry-detail dl > div {
+  display: grid;
+  grid-template-columns: 145px 1fr;
+  gap: 8px;
+  padding: 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.recovery-inquiry-detail dt,
+.recovery-inquiry-detail dd {
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.recovery-inquiry-detail dt {
+  color: var(--muted);
+}
+
+.recovery-inquiry-detail > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 17px 0;
+}
+
+.recovery-inquiry-detail > p {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.recovery-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.recovery-policy-grid > button {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1120px) {
+  .recovery-outreach-metrics,
+  .recovery-overview-grid,
+  .recovery-policy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recovery-topic-layout,
+  .recovery-partner-layout,
+  .recovery-inquiry-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .recovery-outreach-form {
+    position: static;
+  }
+}
+
+@media (max-width: 700px) {
+  .recovery-outreach-hero {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .recovery-outreach-hero > strong {
+    width: 100%;
+    height: 90px;
+    border-radius: 18px;
+  }
+
+  .recovery-outreach-metrics,
+  .recovery-overview-grid,
+  .recovery-content-plan,
+  .recovery-policy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recovery-inquiry-detail dl > div {
+    grid-template-columns: 1fr;
+  }
+}
