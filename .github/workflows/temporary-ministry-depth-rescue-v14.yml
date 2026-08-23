@@ -1,0 +1,264 @@
+name: Temporary Ministry Operational Depth Rescue V14
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finish-operational-depth-robustly:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: finish role-aware ministry administration UX')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out role-aware branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Apply whitespace-independent gift and prayer completion
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, content: str) -> None:
+              Path(path).write_text(content, encoding="utf-8")
+
+          gifts_api_path = "apps/church-hub/app/api/gifts/route.ts"
+          gifts_api = read(gifts_api_path)
+          if "const giftResponseStatuses" not in gifts_api:
+              gifts_api = gifts_api.replace(
+                  'const exchangeTypes = new Set(["free", "donation", "borrow", "exchange", "paid"]);',
+                  'const exchangeTypes = new Set(["free", "donation", "borrow", "exchange", "paid"]);\nconst giftResponseStatuses = new Set([\n  "interested",\n  "accepted",\n  "declined",\n  "completed",\n  "withdrawn",\n]);\nconst giftPostStatuses = new Set(["open", "matched", "fulfilled", "closed"]);',
+                  1,
+              )
+          if 'action === "update_response"' not in gifts_api:
+              unsupported = '''    } else {
+      return NextResponse.json({ message: "Unsupported action." }, { status: 400 });
+    }'''
+              replacement = '''    } else if (action === "update_response") {
+      const status = text(row.status, 30, true);
+      if (!giftResponseStatuses.has(status)) {
+        throw new Error("Unsupported response status.");
+      }
+      const { error } = await client
+        .from("gift_post_responses")
+        .update({ status })
+        .eq("id", text(row.responseId, 80, true));
+      if (error) throw error;
+    } else if (action === "update_post_status") {
+      const status = text(row.status, 30, true);
+      if (!giftPostStatuses.has(status)) {
+        throw new Error("Unsupported gift-post status.");
+      }
+      const { error } = await client
+        .from("gift_posts")
+        .update({ status })
+        .eq("id", text(row.postId, 80, true));
+      if (error) throw error;
+    } else {
+      return NextResponse.json({ message: "Unsupported action." }, { status: 400 });
+    }'''
+              if unsupported not in gifts_api:
+                  raise RuntimeError("Unable to locate Gifts API unsupported-action branch")
+              gifts_api = gifts_api.replace(unsupported, replacement, 1)
+          write(gifts_api_path, gifts_api)
+
+          gifts_path = "apps/church-hub/components/gifts-of-church.tsx"
+          gifts = read(gifts_path)
+          if "async function updateResponseStatus" not in gifts:
+              marker = "  async function updateScore(score: GiftScore, nextValue: number) {"
+              if marker not in gifts:
+                  raise RuntimeError("Unable to locate Gifts score update function")
+              functions = '''  async function updateResponseStatus(
+    post: GiftPost,
+    response: GiftResponse,
+    status: GiftResponse["status"],
+  ) {
+    try {
+      if (mode === "showcase") {
+        setPosts((current) =>
+          current.map((row) =>
+            row.id === post.id
+              ? {
+                  ...row,
+                  responses: row.responses.map((entry) =>
+                    entry.id === response.id ? { ...entry, status } : entry,
+                  ),
+                }
+              : row,
+          ),
+        );
+      } else {
+        await sendLive("update_response", { responseId: response.id, status });
+      }
+      setNotice(`Private response marked ${status}.`);
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "The private response could not be updated.",
+      );
+    }
+  }
+
+  async function updatePostStatus(
+    post: GiftPost,
+    status: GiftPost["status"],
+  ) {
+    try {
+      if (mode === "showcase") {
+        setPosts((current) =>
+          current.map((row) => (row.id === post.id ? { ...row, status } : row)),
+        );
+      } else {
+        await sendLive("update_post_status", { postId: post.id, status });
+      }
+      setNotice(`Gift post marked ${status}.`);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The gift post could not be updated.");
+    }
+  }
+
+'''
+              gifts = gifts.replace(marker, functions + marker, 1)
+
+          if "gift-response-panel" not in gifts:
+              footer_pattern = re.compile(
+                  r'''<footer>\s*<button\s+type="button"\s+onClick=\{\(\) => void respond\(post\)\}\s*>\s*Respond privately\s*</button>\s*<small>\s*\{post\.responses\.length\}\s*response\s*\{post\.responses\.length === 1 \? "" : "s"\}\s*</small>\s*</footer>''',
+                  re.S,
+              )
+              replacement = '''<footer>
+                  <button type="button" onClick={() => void respond(post)}>
+                    Respond privately
+                  </button>
+                  <small>
+                    {post.responses.length} response{post.responses.length === 1 ? "" : "s"}
+                  </small>
+                </footer>
+                {post.ownerName === "You" ? (
+                  <div className="gift-post-owner-actions">
+                    <button type="button" onClick={() => void updatePostStatus(post, "matched")}>
+                      Mark matched
+                    </button>
+                    <button type="button" onClick={() => void updatePostStatus(post, "fulfilled")}>
+                      Mark fulfilled
+                    </button>
+                    <button type="button" onClick={() => void updatePostStatus(post, "closed")}>
+                      Close post
+                    </button>
+                  </div>
+                ) : null}
+                {post.responses.length ? (
+                  <details className="gift-response-panel">
+                    <summary>View private responses</summary>
+                    {post.responses.map((response) => (
+                      <article key={response.id}>
+                        <div>
+                          <strong>{response.profileName}</strong>
+                          <span>{response.status}</span>
+                        </div>
+                        <p>{response.message}</p>
+                        {post.ownerName === "You" ? (
+                          <div>
+                            <button type="button" onClick={() => void updateResponseStatus(post, response, "accepted")}>Accept</button>
+                            <button type="button" onClick={() => void updateResponseStatus(post, response, "declined")}>Decline</button>
+                            <button type="button" onClick={() => void updateResponseStatus(post, response, "completed")}>Complete</button>
+                          </div>
+                        ) : response.profileName === "You" && response.status === "interested" ? (
+                          <button type="button" onClick={() => void updateResponseStatus(post, response, "withdrawn")}>
+                            Withdraw response
+                          </button>
+                        ) : null}
+                      </article>
+                    ))}
+                  </details>
+                ) : null}'''
+              gifts, count = footer_pattern.subn(replacement, gifts, count=1)
+              if count != 1:
+                  raise RuntimeError("Unable to install Gifts response lifecycle")
+          write(gifts_path, gifts)
+
+          prayer_path = "apps/church-hub/components/prayer-well-complete.tsx"
+          prayer = read(prayer_path)
+          if 'request.sensitivity !== "normal"' not in prayer:
+              prayer = re.sub(
+                  r'''if \(tab === "feed" && request\.status !== "open"\) return false;''',
+                  '''if (
+        tab === "feed" &&
+        (request.status !== "open" || request.sensitivity !== "normal")
+      ) {
+        return false;
+      }''',
+                  prayer,
+                  count=1,
+              )
+          if 'sensitivity === "normal" && data.get("allowEncouragement")' not in prayer:
+              prayer = re.sub(
+                  r'''allowEncouragement:\s*data\.get\("allowEncouragement"\) === "on",\s*allowPrayed:\s*data\.get\("allowPrayed"\) === "on",''',
+                  '''allowEncouragement:
+        sensitivity === "normal" && data.get("allowEncouragement") === "on",
+      allowPrayed:
+        sensitivity === "normal" && data.get("allowPrayed") === "on",''',
+                  prayer,
+                  count=1,
+              )
+          if 'request.sensitivity !== "normal"' not in prayer:
+              raise RuntimeError("Restricted prayer requests still appear in the ordinary feed")
+          if 'sensitivity === "normal" && data.get("allowEncouragement")' not in prayer:
+              raise RuntimeError("Restricted prayer interaction controls remain enabled")
+          write(prayer_path, prayer)
+
+          css_path = "apps/church-hub/app/ministry-expansion.css"
+          css = read(css_path)
+          if ".gift-response-panel" not in css:
+              css += '''
+
+.gift-post-owner-actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.gift-post-owner-actions button,.gift-response-panel button { min-height:36px; padding:7px 10px; border:1px solid #bfd0d9; border-radius:9px; color:var(--navy); background:white; cursor:pointer; font-weight:800; }
+.gift-response-panel { margin-top:12px; padding:12px; border:1px solid #d1e0e6; border-radius:12px; background:white; }
+.gift-response-panel summary { cursor:pointer; color:var(--blue); font-weight:850; }
+.gift-response-panel article { margin-top:10px; padding:11px; border-radius:10px; background:#f4f8f9; }
+.gift-response-panel article>div { display:flex; justify-content:space-between; gap:10px; }
+.gift-response-panel p { color:var(--muted); }
+'''
+              write(css_path, css)
+          PY
+
+      - name: Remove superseded operational-depth workflows
+        shell: bash
+        run: |
+          rm -f .github/workflows/temporary-ministry-depth-v12.yml
+          rm -f .github/workflows/temporary-ministry-depth-rescue-v14.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit operational depth
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: complete response management and recovery leader planning"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
