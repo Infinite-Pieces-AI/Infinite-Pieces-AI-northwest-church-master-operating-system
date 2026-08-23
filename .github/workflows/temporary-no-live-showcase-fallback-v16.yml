@@ -1,0 +1,133 @@
+name: Temporary No Live Showcase Fallback V16
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  remove-live-showcase-fallback:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'feat: lock final ministry operational source')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out final-source branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Prevent live runtime from falling back to showroom records
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          gifts_path = Path('apps/church-hub/components/gifts-of-church.tsx')
+          gifts = gifts_path.read_text(encoding='utf-8')
+          gifts = gifts.replace(
+              'const [scores, setScores] = useState<GiftScore[]>(previewScores);',
+              'const [scores, setScores] = useState<GiftScore[]>(\n    mode === "showcase" ? previewScores : [],\n  );',
+          )
+          gifts = gifts.replace(
+              'const [posts, setPosts] = useState<GiftPost[]>(previewPosts);',
+              'const [posts, setPosts] = useState<GiftPost[]>(\n    mode === "showcase" ? previewPosts : [],\n  );',
+          )
+          gifts_path.write_text(gifts, encoding='utf-8')
+
+          prayer_path = Path('apps/church-hub/components/prayer-well-complete.tsx')
+          prayer = prayer_path.read_text(encoding='utf-8')
+          prayer = prayer.replace(
+              'const [requests, setRequests] = useState<PrayerRequest[]>(previewRequests);',
+              'const [requests, setRequests] = useState<PrayerRequest[]>(\n    mode === "showcase" ? previewRequests : [],\n  );',
+          )
+          prayer = prayer.replace(
+              'const [selectedId, setSelectedId] = useState<string | null>(previewRequests[0]?.id ?? null);',
+              'const [selectedId, setSelectedId] = useState<string | null>(\n    mode === "showcase" ? previewRequests[0]?.id ?? null : null,\n  );',
+          )
+          prayer_path.write_text(prayer, encoding='utf-8')
+
+          recovery_path = Path('apps/church-hub/components/recovery-ministry.tsx')
+          recovery = recovery_path.read_text(encoding='utf-8')
+          recovery = recovery.replace(
+              'const [sessions, setSessions] = useState<RecoverySession[]>(previewSessions);',
+              'const [sessions, setSessions] = useState<RecoverySession[]>(\n    mode === "showcase" ? previewSessions : [],\n  );',
+          )
+          recovery = recovery.replace(
+              'const [posts, setPosts] = useState<RecoveryPost[]>(previewPosts);',
+              'const [posts, setPosts] = useState<RecoveryPost[]>(\n    mode === "showcase" ? previewPosts : [],\n  );',
+          )
+          recovery = recovery.replace(
+              'const [membershipRole, setMembershipRole] = useState<RecoveryRole | null>(\n    canLead ? "leader" : "participant",\n  );',
+              'const [membershipRole, setMembershipRole] = useState<RecoveryRole | null>(\n    mode === "showcase" ? (canLead ? "leader" : "participant") : null,\n  );',
+          )
+          recovery_path.write_text(recovery, encoding='utf-8')
+
+          outreach_path = Path('apps/outreach-command/components/recovery-outreach-workspace.tsx')
+          outreach = outreach_path.read_text(encoding='utf-8')
+          if 'const emptyPayload' not in outreach:
+              insert_at = outreach.find('export function RecoveryOutreachWorkspace')
+              if insert_at == -1:
+                  raise RuntimeError('Unable to locate Recovery Outreach component')
+              empty = '''const emptyPayload: RecoveryOutreachPayload = {
+  partners: [],
+  topics: [],
+  inquiries: [],
+  counts: {
+    publicOrganizations: 0,
+    publicTopics: 0,
+    newInquiries: 0,
+    approvedPartners: 0,
+  },
+};
+
+'''
+              outreach = outreach[:insert_at] + empty + outreach[insert_at:]
+          outreach = outreach.replace(
+              'const [payload, setPayload] = useState<RecoveryOutreachPayload>(previewPayload);',
+              'const [payload, setPayload] = useState<RecoveryOutreachPayload>(\n    mode === "showcase" ? previewPayload : emptyPayload,\n  );',
+          )
+          outreach_path.write_text(outreach, encoding='utf-8')
+
+          docs_path = Path('docs/GIFTS_PRAYER_RECOVERY_MINISTRIES.md')
+          docs = docs_path.read_text(encoding='utf-8')
+          if 'Live-data failure behavior' not in docs:
+              docs += '''
+
+## Live-data failure behavior
+
+Showcase records are available only when explicit local preview mode is active. In live mode, failed authentication, missing migrations, provider outages, or database errors produce an empty/error state and never fall back to fictional gifts, prayer requests, recovery participation, public conversations, organizations, or visitor inquiries.
+'''
+          docs_path.write_text(docs, encoding='utf-8')
+          PY
+
+      - name: Remove temporary V16 workflow
+        run: rm -f .github/workflows/temporary-no-live-showcase-fallback-v16.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit live-data integrity boundary
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: prevent live fallback to showcase data"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
