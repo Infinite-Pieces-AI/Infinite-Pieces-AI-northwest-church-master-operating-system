@@ -1,0 +1,55 @@
+name: Temporary Family Showcase Formatter
+
+on:
+  push:
+    branches:
+      - feature/production-ready-church-platform
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-format-family-showcase
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out showcase branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/production-ready-church-platform
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format Family showcase files
+        run: pnpm exec prettier --write apps/church-hub/app/family-showcase.css apps/church-hub/components/family-showcase.tsx
+
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet -- apps/church-hub/app/family-showcase.css apps/church-hub/components/family-showcase.tsx; then
+            echo "No formatting changes were needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/church-hub/app/family-showcase.css apps/church-hub/components/family-showcase.tsx
+          git commit -m "chore: format Family showcase"
+          git push origin HEAD:feature/production-ready-church-platform
