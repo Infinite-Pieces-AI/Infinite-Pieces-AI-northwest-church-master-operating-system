@@ -1,0 +1,54 @@
+name: Temporary Recovery Outreach API V9
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-recovery-outreach-api:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: narrow Recovery Outreach inquiry access')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out narrowed branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install final explicit API
+        shell: bash
+        run: |
+          cp .github/ministry-finalize-v8/recovery-outreach-api.ts apps/outreach-command/app/api/recovery-outreach/route.ts
+          rm -f .github/ministry-finalize-v8/recovery-outreach-api.ts
+          rmdir .github/ministry-finalize-v8 2>/dev/null || true
+          rm -f .github/workflows/temporary-recovery-outreach-api-v9.yml
+
+      - name: Install dependencies and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit final Recovery Outreach API
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: finalize Recovery Outreach API"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
