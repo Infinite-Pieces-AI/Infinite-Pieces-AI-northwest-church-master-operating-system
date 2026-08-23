@@ -9,6 +9,8 @@ type Row = Record<string, unknown>;
 const giftThemes = new Set(["directional", "relational", "insight", "positional", "other"]);
 const postTypes = new Set(["offer", "member_need", "church_need", "item_share"]);
 const exchangeTypes = new Set(["free", "donation", "borrow", "exchange", "paid"]);
+const reviewRiskPattern =
+  /\b(child|children|babysit|childcare|ride|transport|driver|home|house|address|medication|medical|therapy|counsel|legal|finance|loan|cash|electrical|plumbing|contractor|licensed|weapon|firearm|knife|alcohol|drug)\b/i;
 
 function text(value: unknown, maximum: number, required = false): string | null {
   const normalized = typeof value === "string" ? value.trim().slice(0, maximum) : "";
@@ -18,12 +20,35 @@ function text(value: unknown, maximum: number, required = false): string | null 
 
 function stringList(value: unknown, maximum = 12): string[] {
   return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean).slice(0, maximum)
+    ? value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, maximum)
     : [];
 }
 
 function dynamicClient(client: Awaited<ReturnType<typeof createClient>>): SupabaseClient {
   return client as unknown as SupabaseClient;
+}
+
+function canModerate(roles: Parameters<typeof hasPermission>[0]): boolean {
+  return hasPermission(roles, "moderation.review") || hasPermission(roles, "content.publish");
+}
+
+function postNeedsReview(input: {
+  postType: string;
+  exchangeType: string;
+  title: string;
+  description: string;
+  skillTags: string[];
+}): boolean {
+  return (
+    input.exchangeType === "paid" ||
+    input.postType === "member_need" ||
+    input.postType === "item_share" ||
+    reviewRiskPattern.test(`${input.title} ${input.description} ${input.skillTags.join(" ")}`)
+  );
 }
 
 async function loadPayload(client: SupabaseClient, viewerId: string) {
@@ -49,10 +74,12 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
 
   const { data: postData, error: postError } = await client
     .from("gift_posts")
-    .select("id,created_by,post_type,title,description,gift_tags,skill_tags,exchange_type,price_note,general_location,availability_text,status,created_at")
-    .in("status", ["open", "matched", "fulfilled"])
+    .select(
+      "id,created_by,post_type,title,description,gift_tags,skill_tags,exchange_type,price_note,general_location,availability_text,status,moderation_status,created_at",
+    )
+    .neq("status", "removed")
     .order("created_at", { ascending: false })
-    .limit(100);
+    .limit(150);
   if (postError) throw postError;
 
   const postRows = (postData ?? []) as Row[];
@@ -86,14 +113,20 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
   if (responseProfilesResult.error) throw responseProfilesResult.error;
 
   const profileMap = new Map<string, string>();
-  for (const row of [...((profilesResult.data ?? []) as Row[]), ...((responseProfilesResult.data ?? []) as Row[])]) {
+  for (const row of [
+    ...((profilesResult.data ?? []) as Row[]),
+    ...((responseProfilesResult.data ?? []) as Row[]),
+  ]) {
     profileMap.set(String(row.id), String(row.display_name ?? "Member"));
   }
 
   return {
-    providerKey: typeof assessmentRow?.provider_key === "string" ? assessmentRow.provider_key : undefined,
+    providerKey:
+      typeof assessmentRow?.provider_key === "string" ? assessmentRow.provider_key : undefined,
     providerReportUrl:
-      typeof assessmentRow?.provider_report_url === "string" ? assessmentRow.provider_report_url : null,
+      typeof assessmentRow?.provider_report_url === "string"
+        ? assessmentRow.provider_report_url
+        : null,
     scores: ((strengthsResult.data ?? []) as Row[]).map((row) => ({
       id: String(row.gift_key ?? row.id),
       label: String(row.gift_label ?? "Gift"),
@@ -108,14 +141,18 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       ownerName:
         String(row.created_by) === viewerId
           ? "You"
-          : profileMap.get(String(row.created_by)) ?? "Church member",
+          : (profileMap.get(String(row.created_by)) ?? "Church member"),
+      isMine: String(row.created_by) === viewerId,
       giftTags: stringList(row.gift_tags),
       skillTags: stringList(row.skill_tags),
       exchangeType: String(row.exchange_type),
       priceNote: typeof row.price_note === "string" ? row.price_note : undefined,
-      generalLocation: typeof row.general_location === "string" ? row.general_location : undefined,
-      availability: typeof row.availability_text === "string" ? row.availability_text : undefined,
+      generalLocation:
+        typeof row.general_location === "string" ? row.general_location : undefined,
+      availability:
+        typeof row.availability_text === "string" ? row.availability_text : undefined,
       status: String(row.status),
+      moderationStatus: String(row.moderation_status),
       responses: responseRows
         .filter((response) => String(response.post_id) === String(row.id))
         .map((response) => ({
@@ -123,7 +160,7 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
           profileName:
             String(response.profile_id) === viewerId
               ? "You"
-              : profileMap.get(String(response.profile_id)) ?? "Church member",
+              : (profileMap.get(String(response.profile_id)) ?? "Church member"),
           message: String(response.message),
           status: String(response.status),
         })),
@@ -134,20 +171,29 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
 export async function GET() {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   try {
     const client = dynamicClient(await createClient());
     return NextResponse.json(await loadPayload(client, viewer.id));
   } catch {
-    return NextResponse.json({ message: "Gifts of the Church could not be loaded." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Gifts of the Church could not be loaded." },
+      { status: 503 },
+    );
   }
 }
 
 export async function POST(request: Request) {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   const body: unknown = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -156,6 +202,7 @@ export async function POST(request: Request) {
   const row = body as Row;
   const action = text(row.action, 80, true);
   const client = dynamicClient(await createClient());
+  const moderator = canModerate(viewer.roles);
 
   try {
     if (action === "save_score") {
@@ -204,20 +251,31 @@ export async function POST(request: Request) {
       ) {
         throw new Error("Only an approved leader may create a church need.");
       }
+      const title = text(row.title, 180, true) ?? "";
+      const description = text(row.description, 5000, true) ?? "";
+      const skillTags = stringList(row.skillTags);
+      const requiresReview = postNeedsReview({
+        postType,
+        exchangeType,
+        title,
+        description,
+        skillTags,
+      });
+      const autoApproved = moderator && postType === "church_need" && !requiresReview;
       const { error } = await client.from("gift_posts").insert({
         created_by: viewer.id,
         post_type: postType,
-        title: text(row.title, 180, true),
-        description: text(row.description, 5000, true),
+        title,
+        description,
         gift_tags: stringList(row.giftTags),
-        skill_tags: stringList(row.skillTags),
+        skill_tags: skillTags,
         visibility: "church",
         exchange_type: exchangeType,
         price_note: exchangeType === "paid" ? text(row.priceNote, 300) : null,
         general_location: text(row.generalLocation, 200),
         availability_text: text(row.availability, 500),
-        status: "open",
-        moderation_status: "approved",
+        status: autoApproved ? "open" : "draft",
+        moderation_status: autoApproved ? "approved" : "pending",
       });
       if (error) throw error;
     } else if (action === "respond") {
@@ -230,6 +288,26 @@ export async function POST(request: Request) {
         },
         { onConflict: "post_id,profile_id" },
       );
+      if (error) throw error;
+    } else if (action === "review_post") {
+      if (!moderator) throw new Error("Gift-board moderation access is required.");
+      const decision = text(row.decision, 40, true);
+      if (decision !== "approved" && decision !== "rejected") {
+        throw new Error("Unsupported moderation decision.");
+      }
+      const { error } = await client
+        .from("gift_posts")
+        .update({
+          moderation_status: decision,
+          status: decision === "approved" ? "open" : "removed",
+        })
+        .eq("id", text(row.postId, 80, true));
+      if (error) throw error;
+    } else if (action === "close_post") {
+      const { error } = await client
+        .from("gift_posts")
+        .update({ status: "closed" })
+        .eq("id", text(row.postId, 80, true));
       if (error) throw error;
     } else {
       return NextResponse.json({ message: "Unsupported action." }, { status: 400 });
