@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
@@ -40,6 +41,8 @@ const tools = [
 
 export default async function FamilyPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="overview" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (
@@ -52,11 +55,10 @@ export default async function FamilyPage() {
 
       {!workspace.configured ? (
         <section className="real-data-state real-data-state--warning">
-          <h2>Connect the production backend to use family tools.</h2>
+          <h2>Family tools are waiting for the production data connection.</h2>
           <p>
-            This page does not fabricate household or child records. Sign in through the configured
-            Supabase project and apply the approved household, guardian, child, pickup, consent, and
-            check-in migrations.
+            Configure Supabase, apply the approved household and safeguarding migrations, and sign
+            in with a verified guardian account before real child records are displayed.
           </p>
         </section>
       ) : !workspace.household ? (
