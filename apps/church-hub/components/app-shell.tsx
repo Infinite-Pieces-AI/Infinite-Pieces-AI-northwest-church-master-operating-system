@@ -10,7 +10,10 @@ const sideItems = [
   ["This Week", "/this-week", "⌂"],
   ["Bible Journey", "/bible", "✦"],
   ["Fellowship", "/fellowship", "∞"],
+  ["Gifts of the Church", "/gifts", "✧"],
+  ["Prayer Well", "/prayer", "◉"],
   ["Serve", "/serve", "◇"],
+  ["Recovery Ministry", "/recovery", "↺"],
   ["Community", "/community", "◌"],
   ["Events", "/events", "□"],
   ["Connection Path", "/connection-path", "↗"],
@@ -68,8 +71,8 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         <div className="sidebar-safety">
           <strong>Belonging with boundaries</strong>
           <span>
-            Use public meeting places for open invitations. Keep child, prayer, counseling,
-            safeguarding, and private-group information inside approved workflows.
+            Use public meeting places for open invitations. Keep child, prayer, recovery,
+            counseling, safeguarding, and private-group information inside approved workflows.
           </span>
         </div>
       </aside>
