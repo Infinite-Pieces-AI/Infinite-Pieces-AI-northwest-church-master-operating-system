@@ -1,0 +1,88 @@
+name: Temporary Recovery Outreach API Rescue V11
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-api-without-staging-race:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: narrow Recovery Outreach inquiry access')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out narrowed branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Enforce the final API role check directly
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          path = Path('apps/outreach-command/app/api/recovery-outreach/route.ts')
+          content = path.read_text(encoding='utf-8')
+          if 'from "@/lib/auth/recovery-outreach"' not in content:
+              content = content.replace(
+                  'import { getOutreachApiViewer } from "@/lib/auth/api-viewer";',
+                  'import { getOutreachApiViewer } from "@/lib/auth/api-viewer";\nimport { canManageRecoveryOutreach } from "@/lib/auth/recovery-outreach";',
+              )
+          guard = '''  if (!viewer || !canManageRecoveryOutreach(viewer.roles)) {
+    return NextResponse.json(
+      { message: "MFA-verified minister Recovery Outreach access is required." },
+      { status: 403 },
+    );
+  }
+'''
+          marker = '  const viewer = await getOutreachApiViewer();\n'
+          if content.count('MFA-verified minister Recovery Outreach access is required.') < 2:
+              parts = content.split(marker)
+              if len(parts) < 3:
+                  raise RuntimeError('Expected two Recovery Outreach viewer checks')
+              rebuilt = parts[0]
+              for index, part in enumerate(parts[1:], start=1):
+                  rebuilt += marker
+                  if index <= 2:
+                      rebuilt += guard
+                  rebuilt += part
+              content = rebuilt
+          path.write_text(content, encoding='utf-8')
+          PY
+
+      - name: Remove superseded and temporary workflow files
+        shell: bash
+        run: |
+          rm -f .github/workflows/temporary-recovery-outreach-api-v9.yml
+          rm -rf .github/ministry-finalize-v9
+          rm -f .github/workflows/temporary-recovery-outreach-api-rescue-v11.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit final Recovery Outreach API
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: finalize Recovery Outreach API"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
