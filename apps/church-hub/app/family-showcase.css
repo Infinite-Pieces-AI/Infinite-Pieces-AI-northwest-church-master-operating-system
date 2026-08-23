@@ -939,8 +939,7 @@
   border-radius: 21px;
   background:
     linear-gradient(90deg, transparent 48%, rgba(98, 217, 233, 0.09) 50%, transparent 52%),
-    linear-gradient(0deg, transparent 48%, rgba(98, 217, 233, 0.09) 50%, transparent 52%),
-    #020c14;
+    linear-gradient(0deg, transparent 48%, rgba(98, 217, 233, 0.09) 50%, transparent 52%), #020c14;
 }
 
 .family-scanner-window::before,
@@ -983,8 +982,15 @@
 }
 
 @keyframes family-scan {
-  0%, 100% { transform: translateY(-92px); opacity: 0.45; }
-  50% { transform: translateY(92px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(-92px);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(92px);
+    opacity: 1;
+  }
 }
 
 @media print {

@@ -94,9 +94,17 @@ const services = [
 
 const consentScopes = [
   ["private_household", "Private household album", "Visible only to verified household adults"],
-  ["private_class_album", "Private class album", "Visible to authorized class families and leaders"],
+  [
+    "private_class_album",
+    "Private class album",
+    "Visible to authorized class families and leaders",
+  ],
   ["parent_community", "Parent community", "Visible inside approved parent groups"],
-  ["internal_presentation", "Internal church presentation", "Slides shown during an internal church gathering"],
+  [
+    "internal_presentation",
+    "Internal church presentation",
+    "Slides shown during an internal church gathering",
+  ],
   ["public_website", "Public website", "May appear on the church’s public website"],
   ["official_social", "Official social media", "May appear on church-owned social accounts"],
   ["advertising", "Promotional advertising", "May be used in paid promotion"],
@@ -226,19 +234,12 @@ const initialState: FamilyShowcaseState = {
 };
 
 const qrPattern = [
-  1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
-  1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1,
-  1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1,
-  1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1,
-  1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
-  0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0,
-  1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1,
-  0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1,
-  1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0,
-  1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
-  1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0,
-  1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1,
-  1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1,
+  0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0,
+  0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0,
+  1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0,
+  0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0,
+  1, 1, 1, 1,
 ];
 
 const routes: Record<FamilyView, { title: string; eyebrow: string; description: string }> = {
@@ -333,7 +334,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
 
   const currentService = services.find((service) => service.id === selectedService) ?? services[0];
   const selectedConsent = state.consents[selectedConsentChild] ?? {};
-  const checkedInCount = state.children.filter((child) => child.checkinState === "checked_in").length;
+  const checkedInCount = state.children.filter(
+    (child) => child.checkinState === "checked_in",
+  ).length;
   const activePickupCount = state.pickups.filter((pickup) => pickup.active).length;
   const allowedPrivateAlbums = state.children.filter(
     (child) => state.consents[child.id]?.private_class_album,
@@ -546,7 +549,11 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
         title={heading.title}
         description={heading.description}
         actions={
-          <button className="hub-button hub-button--secondary" type="button" onClick={resetShowcase}>
+          <button
+            className="hub-button hub-button--secondary"
+            type="button"
+            onClick={resetShowcase}
+          >
             Reset showcase
           </button>
         }
@@ -656,7 +663,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
           <div className="family-showcase-metrics">
             <article>
               <span>Kids Kingdom</span>
-              <strong>{checkedInCount}/{state.children.length}</strong>
+              <strong>
+                {checkedInCount}/{state.children.length}
+              </strong>
               <small>currently checked in</small>
             </article>
             <article>
@@ -666,7 +675,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             </article>
             <article>
               <span>Private albums</span>
-              <strong>{allowedPrivateAlbums}/{state.children.length}</strong>
+              <strong>
+                {allowedPrivateAlbums}/{state.children.length}
+              </strong>
               <small>children allowed</small>
             </article>
             <article>
@@ -697,7 +708,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                     <span className="family-child-grid__avatar">{child.name.slice(0, 1)}</span>
                     <div>
                       <strong>{child.name}</strong>
-                      <small>{child.className} · {child.ageBand}</small>
+                      <small>
+                        {child.className} · {child.ageBand}
+                      </small>
                       <p>{child.allergies}</p>
                     </div>
                     <b className={`family-status family-status--${child.checkinState}`}>
@@ -726,15 +739,20 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
               <p className="hub-kicker">Trusted adults</p>
               <h2>Pickup ready</h2>
               <div className="compact-list">
-                {state.pickups.filter((pickup) => pickup.active).slice(0, 3).map((pickup) => (
-                  <article key={pickup.id}>
-                    <span className="list-icon">✓</span>
-                    <div>
-                      <strong>{pickup.name}</strong>
-                      <small>{pickup.relationship} · phone •••• {pickup.phoneLastFour}</small>
-                    </div>
-                  </article>
-                ))}
+                {state.pickups
+                  .filter((pickup) => pickup.active)
+                  .slice(0, 3)
+                  .map((pickup) => (
+                    <article key={pickup.id}>
+                      <span className="list-icon">✓</span>
+                      <div>
+                        <strong>{pickup.name}</strong>
+                        <small>
+                          {pickup.relationship} · phone •••• {pickup.phoneLastFour}
+                        </small>
+                      </div>
+                    </article>
+                  ))}
               </div>
               <button
                 className="hub-button hub-button--secondary"
@@ -764,7 +782,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                   <span aria-hidden="true">∞</span>
                   <div>
                     <strong>{playdate.title}</strong>
-                    <small>{playdate.date} · {playdate.time} · {playdate.location}</small>
+                    <small>
+                      {playdate.date} · {playdate.time} · {playdate.location}
+                    </small>
                   </div>
                   <b>{playdate.families} families</b>
                 </article>
@@ -790,7 +810,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                   >
                     <strong>{service.label}</strong>
                     <span>{service.date}</span>
-                    <small>{service.time} · {service.place}</small>
+                    <small>
+                      {service.time} · {service.place}
+                    </small>
                   </button>
                 ))}
               </div>
@@ -806,7 +828,11 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
               </div>
               <strong>{state.householdName}</strong>
               <small>Household pass · changes when a guardian revokes it</small>
-              <button className="hub-button hub-button--primary" type="button" onClick={() => setScannerOpen(true)}>
+              <button
+                className="hub-button hub-button--primary"
+                type="button"
+                onClick={() => setScannerOpen(true)}
+              >
                 Open scanner experience
               </button>
             </div>
@@ -840,7 +866,9 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                       <span className="family-child-grid__avatar">{child.name.slice(0, 1)}</span>
                       <div>
                         <strong>{child.name}</strong>
-                        <small>{child.className} · {child.ageBand}</small>
+                        <small>
+                          {child.className} · {child.ageBand}
+                        </small>
                       </div>
                     </label>
                     <div className="checkin-care-flags">
@@ -869,8 +897,8 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             </div>
             <div className="checkin-confirmation">
               <label>
-                <input type="checkbox" defaultChecked />
-                I reviewed allergies, care notes, class placement, and the adults authorized for pickup.
+                <input type="checkbox" defaultChecked />I reviewed allergies, care notes, class
+                placement, and the adults authorized for pickup.
               </label>
               <button
                 className="hub-button hub-button--primary"
@@ -889,7 +917,11 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                 <p className="hub-kicker">4 · Labels, classroom status, and release</p>
                 <h2>Current child status</h2>
               </div>
-              <button className="hub-button hub-button--secondary" type="button" onClick={() => window.print()}>
+              <button
+                className="hub-button hub-button--secondary"
+                type="button"
+                onClick={() => window.print()}
+              >
                 Print label sheet
               </button>
             </div>
@@ -907,19 +939,53 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                     </b>
                   </header>
                   <dl>
-                    <div><dt>Care flag</dt><dd>{child.allergies}</dd></div>
-                    <div><dt>Pickup code</dt><dd>{child.securityCode ?? "Created at check-in"}</dd></div>
-                    <div><dt>Checked in</dt><dd>{child.checkedInAt ? new Date(child.checkedInAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "—"}</dd></div>
+                    <div>
+                      <dt>Care flag</dt>
+                      <dd>{child.allergies}</dd>
+                    </div>
+                    <div>
+                      <dt>Pickup code</dt>
+                      <dd>{child.securityCode ?? "Created at check-in"}</dd>
+                    </div>
+                    <div>
+                      <dt>Checked in</dt>
+                      <dd>
+                        {child.checkedInAt
+                          ? new Date(child.checkedInAt).toLocaleTimeString([], {
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })
+                          : "—"}
+                      </dd>
+                    </div>
                   </dl>
                   <div className="row-actions">
                     {child.checkinState === "checked_in" ? (
-                      <button className="hub-button hub-button--secondary" type="button" onClick={() => updateCheckinState(child.id, "ready_for_pickup")}>Page guardian</button>
+                      <button
+                        className="hub-button hub-button--secondary"
+                        type="button"
+                        onClick={() => updateCheckinState(child.id, "ready_for_pickup")}
+                      >
+                        Page guardian
+                      </button>
                     ) : null}
                     {child.checkinState === "ready_for_pickup" ? (
-                      <button className="hub-button hub-button--primary" type="button" onClick={() => updateCheckinState(child.id, "released")}>Verify code and release</button>
+                      <button
+                        className="hub-button hub-button--primary"
+                        type="button"
+                        onClick={() => updateCheckinState(child.id, "released")}
+                      >
+                        Verify code and release
+                      </button>
                     ) : null}
                     {child.checkinState === "released" ? (
-                      <button className="hub-button hub-button--secondary" type="button" onClick={() => updateCheckinState(child.id, "not_checked_in")}>Reset child status</button>
+                      <button
+                        className="hub-button hub-button--secondary"
+                        type="button"
+                        onClick={() => updateCheckinState(child.id, "not_checked_in")}
+                      >
+                        Reset child status
+                      </button>
                     ) : null}
                   </div>
                 </article>
@@ -937,13 +1003,29 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <div className="family-form">
               <label>
                 Household name
-                <input value={state.householdName} onChange={(event) => setState((current) => ({ ...current, householdName: event.target.value }))} />
+                <input
+                  value={state.householdName}
+                  onChange={(event) =>
+                    setState((current) => ({ ...current, householdName: event.target.value }))
+                  }
+                />
               </label>
               <label>
                 Emergency contact
-                <input value={state.emergencyContact} onChange={(event) => setState((current) => ({ ...current, emergencyContact: event.target.value }))} />
+                <input
+                  value={state.emergencyContact}
+                  onChange={(event) =>
+                    setState((current) => ({ ...current, emergencyContact: event.target.value }))
+                  }
+                />
               </label>
-              <button className="hub-button hub-button--primary" type="button" onClick={() => setNotice("Household information was saved in this browser.")}>Save household</button>
+              <button
+                className="hub-button hub-button--primary"
+                type="button"
+                onClick={() => setNotice("Household information was saved in this browser.")}
+              >
+                Save household
+              </button>
             </div>
           </section>
 
@@ -956,7 +1038,10 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                   <span className="avatar">{adult.name.slice(0, 1)}</span>
                   <div>
                     <strong>{adult.name}</strong>
-                    <small>{adult.relationship}{adult.primary ? " · Primary contact" : ""} · {adult.phone} · {adult.email}</small>
+                    <small>
+                      {adult.relationship}
+                      {adult.primary ? " · Primary contact" : ""} · {adult.phone} · {adult.email}
+                    </small>
                   </div>
                 </article>
               ))}
@@ -965,14 +1050,28 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
               <summary>Add another household adult</summary>
               <form className="family-form" onSubmit={addAdult}>
                 <div className="family-form__row">
-                  <label>Full name<input name="name" required /></label>
-                  <label>Relationship<input name="relationship" placeholder="Parent, guardian, adult child…" /></label>
+                  <label>
+                    Full name
+                    <input name="name" required />
+                  </label>
+                  <label>
+                    Relationship
+                    <input name="relationship" placeholder="Parent, guardian, adult child…" />
+                  </label>
                 </div>
                 <div className="family-form__row">
-                  <label>Email<input name="email" type="email" /></label>
-                  <label>Phone<input name="phone" type="tel" /></label>
+                  <label>
+                    Email
+                    <input name="email" type="email" />
+                  </label>
+                  <label>
+                    Phone
+                    <input name="phone" type="tel" />
+                  </label>
                 </div>
-                <button className="hub-button hub-button--primary" type="submit">Add household adult</button>
+                <button className="hub-button hub-button--primary" type="submit">
+                  Add household adult
+                </button>
               </form>
             </details>
           </section>
@@ -983,9 +1082,44 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <div className="family-child-profile-grid">
               {state.children.map((child) => (
                 <article key={child.id}>
-                  <header><span>{child.name.slice(0, 1)}</span><div><strong>{child.name}</strong><small>{child.ageBand} · {child.className}</small></div></header>
-                  <label>Allergy / medical flag<input value={child.allergies} onChange={(event) => setState((current) => ({ ...current, children: current.children.map((row) => row.id === child.id ? { ...row, allergies: event.target.value } : row) }))} /></label>
-                  <label>Care notes<textarea rows={3} value={child.careNotes} onChange={(event) => setState((current) => ({ ...current, children: current.children.map((row) => row.id === child.id ? { ...row, careNotes: event.target.value } : row) }))} /></label>
+                  <header>
+                    <span>{child.name.slice(0, 1)}</span>
+                    <div>
+                      <strong>{child.name}</strong>
+                      <small>
+                        {child.ageBand} · {child.className}
+                      </small>
+                    </div>
+                  </header>
+                  <label>
+                    Allergy / medical flag
+                    <input
+                      value={child.allergies}
+                      onChange={(event) =>
+                        setState((current) => ({
+                          ...current,
+                          children: current.children.map((row) =>
+                            row.id === child.id ? { ...row, allergies: event.target.value } : row,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    Care notes
+                    <textarea
+                      rows={3}
+                      value={child.careNotes}
+                      onChange={(event) =>
+                        setState((current) => ({
+                          ...current,
+                          children: current.children.map((row) =>
+                            row.id === child.id ? { ...row, careNotes: event.target.value } : row,
+                          ),
+                        }))
+                      }
+                    />
+                  </label>
                 </article>
               ))}
             </div>
@@ -993,16 +1127,36 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
               <summary>Add a child profile</summary>
               <form className="family-form" onSubmit={addChild}>
                 <div className="family-form__row">
-                  <label>Child’s name<input name="name" required /></label>
-                  <label>Birth date<input name="birthDate" type="date" required /></label>
+                  <label>
+                    Child’s name
+                    <input name="name" required />
+                  </label>
+                  <label>
+                    Birth date
+                    <input name="birthDate" type="date" required />
+                  </label>
                 </div>
                 <div className="family-form__row">
-                  <label>Age band<input name="ageBand" placeholder="Ages 3–5" /></label>
-                  <label>Class placement<input name="className" placeholder="Preschool Sprouts" /></label>
+                  <label>
+                    Age band
+                    <input name="ageBand" placeholder="Ages 3–5" />
+                  </label>
+                  <label>
+                    Class placement
+                    <input name="className" placeholder="Preschool Sprouts" />
+                  </label>
                 </div>
-                <label>Allergies or care flag<input name="allergies" placeholder="No known allergies" /></label>
-                <label>Care notes<textarea name="careNotes" rows={3} /></label>
-                <button className="hub-button hub-button--primary" type="submit">Add child profile</button>
+                <label>
+                  Allergies or care flag
+                  <input name="allergies" placeholder="No known allergies" />
+                </label>
+                <label>
+                  Care notes
+                  <textarea name="careNotes" rows={3} />
+                </label>
+                <button className="hub-button hub-button--primary" type="submit">
+                  Add child profile
+                </button>
               </form>
             </details>
           </section>
@@ -1015,14 +1169,36 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <p className="hub-kicker">Add trusted adult</p>
             <h2>Pickup authorization</h2>
             <form className="family-form" onSubmit={addPickup}>
-              <label>Adult’s full name<input name="name" required /></label>
-              <label>Relationship<input name="relationship" placeholder="Grandparent, aunt, family friend…" /></label>
-              <label>Last four phone digits<input name="phoneLastFour" inputMode="numeric" pattern="[0-9]{4}" maxLength={4} required /></label>
+              <label>
+                Adult’s full name
+                <input name="name" required />
+              </label>
+              <label>
+                Relationship
+                <input name="relationship" placeholder="Grandparent, aunt, family friend…" />
+              </label>
+              <label>
+                Last four phone digits
+                <input
+                  name="phoneLastFour"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength={4}
+                  required
+                />
+              </label>
               <fieldset>
                 <legend>May pick up</legend>
-                {state.children.map((child) => <label className="family-check-line" key={child.id}><input name="children" type="checkbox" value={child.id} defaultChecked /> {child.name}</label>)}
+                {state.children.map((child) => (
+                  <label className="family-check-line" key={child.id}>
+                    <input name="children" type="checkbox" value={child.id} defaultChecked />{" "}
+                    {child.name}
+                  </label>
+                ))}
               </fieldset>
-              <button className="hub-button hub-button--primary" type="submit">Add trusted adult</button>
+              <button className="hub-button hub-button--primary" type="submit">
+                Add trusted adult
+              </button>
             </form>
           </section>
           <section className="hub-panel hub-panel--span2">
@@ -1034,13 +1210,28 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
                   <span className="avatar">{pickup.name.slice(0, 1)}</span>
                   <div>
                     <strong>{pickup.name}</strong>
-                    <small>{pickup.relationship} · phone •••• {pickup.phoneLastFour} · {pickup.childIds.map((id) => state.children.find((child) => child.id === id)?.name).filter(Boolean).join(", ")}</small>
+                    <small>
+                      {pickup.relationship} · phone •••• {pickup.phoneLastFour} ·{" "}
+                      {pickup.childIds
+                        .map((id) => state.children.find((child) => child.id === id)?.name)
+                        .filter(Boolean)
+                        .join(", ")}
+                    </small>
                   </div>
-                  <button className={`hub-button ${pickup.active ? "hub-button--secondary" : "hub-button--primary"}`} type="button" onClick={() => togglePickup(pickup.id)}>{pickup.active ? "Pause permission" : "Reactivate"}</button>
+                  <button
+                    className={`hub-button ${pickup.active ? "hub-button--secondary" : "hub-button--primary"}`}
+                    type="button"
+                    onClick={() => togglePickup(pickup.id)}
+                  >
+                    {pickup.active ? "Pause permission" : "Reactivate"}
+                  </button>
                 </article>
               ))}
             </div>
-            <p className="privacy-note">A name on this screen is never enough for release. The operational workflow still verifies the child label, pickup code, adult record, and guardian authorization.</p>
+            <p className="privacy-note">
+              A name on this screen is never enough for release. The operational workflow still
+              verifies the child label, pickup code, adult record, and guardian authorization.
+            </p>
           </section>
         </div>
       ) : null}
@@ -1052,20 +1243,50 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <h2>Consent profile</h2>
             <div className="family-consent-child-picker">
               {state.children.map((child) => (
-                <button className={selectedConsentChild === child.id ? "active" : ""} type="button" key={child.id} onClick={() => setSelectedConsentChild(child.id)}><span>{child.name.slice(0, 1)}</span><strong>{child.name}</strong><small>{child.className}</small></button>
+                <button
+                  className={selectedConsentChild === child.id ? "active" : ""}
+                  type="button"
+                  key={child.id}
+                  onClick={() => setSelectedConsentChild(child.id)}
+                >
+                  <span>{child.name.slice(0, 1)}</span>
+                  <strong>{child.name}</strong>
+                  <small>{child.className}</small>
+                </button>
               ))}
             </div>
           </section>
           <section className="hub-panel hub-panel--span2">
             <p className="hub-kicker">Permission by exact use</p>
-            <h2>What may the church do with images of {state.children.find((child) => child.id === selectedConsentChild)?.name}?</h2>
+            <h2>
+              What may the church do with images of{" "}
+              {state.children.find((child) => child.id === selectedConsentChild)?.name}?
+            </h2>
             <div className="family-consent-list">
               {consentScopes.map(([scope, label, description]) => {
                 const allowed = Boolean(selectedConsent[scope]);
-                return <article key={scope}><div><strong>{label}</strong><small>{description}</small></div><button className={allowed ? "allowed" : "denied"} type="button" onClick={() => toggleConsent(scope)}><span>{allowed ? "Allowed" : "Not allowed"}</span><i /></button></article>;
+                return (
+                  <article key={scope}>
+                    <div>
+                      <strong>{label}</strong>
+                      <small>{description}</small>
+                    </div>
+                    <button
+                      className={allowed ? "allowed" : "denied"}
+                      type="button"
+                      onClick={() => toggleConsent(scope)}
+                    >
+                      <span>{allowed ? "Allowed" : "Not allowed"}</span>
+                      <i />
+                    </button>
+                  </article>
+                );
               })}
             </div>
-            <p className="privacy-note">No permission cascades into another scope. Public website, social media, and advertising remain off until a guardian explicitly enables each one.</p>
+            <p className="privacy-note">
+              No permission cascades into another scope. Public website, social media, and
+              advertising remain off until a guardian explicitly enables each one.
+            </p>
           </section>
         </div>
       ) : null}
@@ -1078,9 +1299,35 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <div className="family-record-list">
               {state.connections.map((connection) => (
                 <article key={connection.id}>
-                  <span className="avatar">{connection.household.replace("The ", "").slice(0, 1)}</span>
-                  <div><strong>{connection.household}</strong><small>{connection.adults} · {connection.shared}</small></div>
-                  {connection.status === "pending" ? <button className="hub-button hub-button--primary" type="button" onClick={() => setState((current) => ({ ...current, connections: current.connections.map((row) => row.id === connection.id ? { ...row, status: "accepted", shared: "Email and in-app messaging" } : row) }))}>Accept</button> : <span className="pill">Connected</span>}
+                  <span className="avatar">
+                    {connection.household.replace("The ", "").slice(0, 1)}
+                  </span>
+                  <div>
+                    <strong>{connection.household}</strong>
+                    <small>
+                      {connection.adults} · {connection.shared}
+                    </small>
+                  </div>
+                  {connection.status === "pending" ? (
+                    <button
+                      className="hub-button hub-button--primary"
+                      type="button"
+                      onClick={() =>
+                        setState((current) => ({
+                          ...current,
+                          connections: current.connections.map((row) =>
+                            row.id === connection.id
+                              ? { ...row, status: "accepted", shared: "Email and in-app messaging" }
+                              : row,
+                          ),
+                        }))
+                      }
+                    >
+                      Accept
+                    </button>
+                  ) : (
+                    <span className="pill">Connected</span>
+                  )}
                 </article>
               ))}
             </div>
@@ -1089,27 +1336,92 @@ export function FamilyShowcase({ initialView = "overview" }: { initialView?: Fam
             <p className="hub-kicker">Create public-place family plan</p>
             <h2>Propose a playdate or family outing</h2>
             <form className="family-form" onSubmit={addPlaydate}>
-              <label>Activity title<input name="title" placeholder="Family prayer walk and playground time" required /></label>
-              <div className="family-form__row"><label>Date<input name="date" type="date" required /></label><label>Time<input name="time" placeholder="10:00 AM–11:30 AM" required /></label></div>
-              <label>General public location<input name="location" placeholder="Shedd Park · exact meeting point after acceptance" required /></label>
-              <button className="hub-button hub-button--primary" type="submit">Create proposal</button>
+              <label>
+                Activity title
+                <input name="title" placeholder="Family prayer walk and playground time" required />
+              </label>
+              <div className="family-form__row">
+                <label>
+                  Date
+                  <input name="date" type="date" required />
+                </label>
+                <label>
+                  Time
+                  <input name="time" placeholder="10:00 AM–11:30 AM" required />
+                </label>
+              </div>
+              <label>
+                General public location
+                <input
+                  name="location"
+                  placeholder="Shedd Park · exact meeting point after acceptance"
+                  required
+                />
+              </label>
+              <button className="hub-button hub-button--primary" type="submit">
+                Create proposal
+              </button>
             </form>
             <h3>Current family plans</h3>
-            {state.playdates.map((playdate) => <article className="family-plan-card" key={playdate.id}><span aria-hidden="true">∞</span><div><strong>{playdate.title}</strong><small>{playdate.date} · {playdate.time} · {playdate.location}</small></div><b>{playdate.status}</b></article>)}
-            <p className="privacy-note">A child’s school, home address, custody details, recurring schedule, and live location never appear in the parent directory or public invitation.</p>
+            {state.playdates.map((playdate) => (
+              <article className="family-plan-card" key={playdate.id}>
+                <span aria-hidden="true">∞</span>
+                <div>
+                  <strong>{playdate.title}</strong>
+                  <small>
+                    {playdate.date} · {playdate.time} · {playdate.location}
+                  </small>
+                </div>
+                <b>{playdate.status}</b>
+              </article>
+            ))}
+            <p className="privacy-note">
+              A child’s school, home address, custody details, recurring schedule, and live location
+              never appear in the parent directory or public invitation.
+            </p>
           </section>
         </div>
       ) : null}
 
       {scannerOpen ? (
-        <div className="family-scanner-modal" role="dialog" aria-modal="true" aria-label="Household QR scanner">
+        <div
+          className="family-scanner-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Household QR scanner"
+        >
           <div>
-            <button className="family-scanner-modal__close" type="button" onClick={() => setScannerOpen(false)} aria-label="Close scanner">×</button>
+            <button
+              className="family-scanner-modal__close"
+              type="button"
+              onClick={() => setScannerOpen(false)}
+              aria-label="Close scanner"
+            >
+              ×
+            </button>
             <p className="hub-kicker">Kids Kingdom station</p>
             <h2>Scan household pass</h2>
-            <div className="family-scanner-window"><span /><b>Position the family QR code inside the frame</b></div>
-            <button className="hub-button hub-button--primary" type="button" onClick={() => { setScannerOpen(false); setNotice(`${state.householdName} was recognized and is ready for child selection.`); chooseView("checkin"); }}>Use showcase household pass</button>
-            <small>Production can use the device camera, a kiosk scanner, or an approved church-management provider.</small>
+            <div className="family-scanner-window">
+              <span />
+              <b>Position the family QR code inside the frame</b>
+            </div>
+            <button
+              className="hub-button hub-button--primary"
+              type="button"
+              onClick={() => {
+                setScannerOpen(false);
+                setNotice(
+                  `${state.householdName} was recognized and is ready for child selection.`,
+                );
+                chooseView("checkin");
+              }}
+            >
+              Use showcase household pass
+            </button>
+            <small>
+              Production can use the device camera, a kiosk scanner, or an approved
+              church-management provider.
+            </small>
           </div>
         </div>
       ) : null}
