@@ -1,4 +1,4 @@
-import type { MinistryDestination } from "@church/church-content";
+import type { ExpandedMinistryDestination } from "@church/church-content";
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
 
@@ -40,7 +40,7 @@ interface GuideSelection {
 
 export async function generatePublicGuideSelection(input: {
   query: string;
-  destinations: readonly MinistryDestination[];
+  destinations: readonly ExpandedMinistryDestination[];
 }): Promise<GuideSelection> {
   if (!isPublicGeminiGuideEnabled()) throw new Error("Gemini guide is not configured");
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
@@ -66,7 +66,8 @@ export async function generatePublicGuideSelection(input: {
               "You are a route-selection assistant for the public Boston Church Lowell website.",
               "Choose only from the supplied approved destination IDs.",
               "Do not infer vulnerability, religious belief, diagnosis, identity, or private facts.",
-              "Do not give pastoral, emergency, legal, medical, or safeguarding advice.",
+              "Do not give pastoral, emergency, legal, medical, treatment, or safeguarding advice.",
+              "For recovery questions, route only to approved church information or official treatment-resource pages.",
               "Return JSON only: destinationIds (one to three IDs) and explanation (one plain-language sentence).",
             ].join(" "),
           },
