@@ -5,6 +5,54 @@ import { useEffect, useMemo, useState } from "react";
 type RecoveryRole = "participant" | "peer_support" | "leader" | "admin";
 type SessionStatus = "draft" | "published" | "completed" | "cancelled";
 type ProgressStatus = "not_started" | "in_progress" | "completed" | "skipped";
+type MembershipRequestStatus = "pending" | "approved" | "declined" | "withdrawn" | "expired";
+type RecoveryTab = "week" | "journey" | "group" | "resources" | "access" | "leader";
+
+interface RecoveryProgram {
+  id: string;
+  displayName: string;
+  publicSummary: string;
+  meetingDay?: string;
+  meetingTime?: string;
+  generalLocation?: string;
+  programType: "custom" | "celebrate_recovery";
+  officialProgramConfirmation: boolean;
+  status?: string;
+}
+
+interface RequestableProgram {
+  id: string;
+  displayName: string;
+  publicSummary: string;
+  programType: string;
+  officialProgramConfirmation: boolean;
+}
+
+interface RecoveryMembershipRequest {
+  id: string;
+  programId: string;
+  requestedRole: "participant" | "peer_support";
+  displayMode: "first_name" | "initials" | "private";
+  status: MembershipRequestStatus;
+  reason?: string;
+  reviewNote?: string;
+  createdAt: string;
+  reviewedAt?: string;
+  expiresAt: string;
+}
+
+interface PendingRecoveryMembershipRequest {
+  id: string;
+  programId: string;
+  profileId: string;
+  displayName: string;
+  email?: string;
+  requestedRole: "participant" | "peer_support";
+  displayMode: "first_name" | "initials" | "private";
+  reason?: string;
+  createdAt: string;
+  expiresAt: string;
+}
 
 interface RecoverySession {
   id: string;
@@ -30,20 +78,27 @@ interface RecoveryPost {
 }
 
 interface RecoveryPayload {
-  program: {
-    id: string;
-    displayName: string;
-    publicSummary: string;
-    meetingDay?: string;
-    meetingTime?: string;
-    generalLocation?: string;
-    programType: "custom" | "celebrate_recovery";
-    officialProgramConfirmation: boolean;
-  } | null;
+  program: RecoveryProgram | null;
   membershipRole: RecoveryRole | null;
   sessions: RecoverySession[];
   posts: RecoveryPost[];
+  requestablePrograms: RequestableProgram[];
+  membershipRequests: RecoveryMembershipRequest[];
+  pendingMembershipRequests: PendingRecoveryMembershipRequest[];
 }
+
+const previewProgram: RecoveryProgram = {
+  id: "recovery-program-preview",
+  displayName: "Recovery Ministry",
+  publicSummary:
+    "A confidential adult church-based peer ministry offering Scripture, honest community, responsible next steps, and connections to appropriate professional care.",
+  meetingDay: "Sunday",
+  meetingTime: "8:30 AM",
+  generalLocation: "Approved participants receive room details privately",
+  programType: "custom",
+  officialProgramConfirmation: false,
+  status: "active",
+};
 
 const previewSessions: RecoverySession[] = [
   {
@@ -69,7 +124,7 @@ const previewSessions: RecoverySession[] = [
   {
     id: "recovery-week-3",
     week: 3,
-    title: "Surrender and the next right step",
+    title: "Surrender and the next responsible step",
     summary:
       "Name what cannot be controlled, identify one responsible action, and practice asking God and safe people for help.",
     scriptureReferences: ["Proverbs 3:5–6", "Matthew 11:28–30"],
@@ -100,7 +155,7 @@ const previewSessions: RecoverySession[] = [
   {
     id: "recovery-week-6",
     week: 6,
-    title: "Daily practices and relapse-response planning",
+    title: "Daily practices and setback-response planning",
     summary:
       "Build a practical plan for spiritual rhythms, peer contact, treatment adherence where applicable, triggers, warning signs, and what to do after a setback.",
     scriptureReferences: ["Lamentations 3:22–23", "1 Corinthians 10:13"],
@@ -144,7 +199,7 @@ const previewPosts: RecoveryPost[] = [
     id: "recovery-post-2",
     type: "encouragement",
     title: "One responsible next step",
-    body: "This week, focus on one safe next action rather than trying to solve everything at once. Reach out to your approved support person before isolation grows.",
+    body: "This week, focus on one safe next action rather than trying to solve everything at once. Reach out to an approved support person before isolation grows.",
     authorName: "Peer Support Leader",
     createdAt: new Date(Date.now() - 6 * 60 * 60_000).toISOString(),
     leaderOnly: false,
@@ -159,7 +214,22 @@ const previewPosts: RecoveryPost[] = [
   },
 ];
 
-const storageKey = "church-hub-recovery-showcase-v1";
+const previewPendingRequests: PendingRecoveryMembershipRequest[] = [
+  {
+    id: "recovery-request-preview-1",
+    programId: previewProgram.id,
+    profileId: "preview-member-1",
+    displayName: "Taylor Member",
+    email: "taylor@example.invalid",
+    requestedRole: "participant",
+    displayMode: "first_name",
+    reason: "I would like a confidential faith community and weekly recovery support.",
+    createdAt: new Date(Date.now() - 3 * 60 * 60_000).toISOString(),
+    expiresAt: new Date(Date.now() + 27 * 24 * 60 * 60_000).toISOString(),
+  },
+];
+
+const storageKey = "church-hub-recovery-showcase-v2";
 
 export function RecoveryMinistry({
   mode,
@@ -172,23 +242,40 @@ export function RecoveryMinistry({
   programName: string;
   officialProgramConfirmed: boolean;
 }) {
-  const [activeTab, setActiveTab] = useState<"week" | "journey" | "group" | "resources" | "leader">("week");
+  const previewRole: RecoveryRole = canLead ? "leader" : "participant";
+  const [activeTab, setActiveTab] = useState<RecoveryTab>("week");
+  const [program, setProgram] = useState<RecoveryProgram | null>(previewProgram);
   const [sessions, setSessions] = useState<RecoverySession[]>(previewSessions);
   const [posts, setPosts] = useState<RecoveryPost[]>(previewPosts);
-  const [membershipRole, setMembershipRole] = useState<RecoveryRole | null>(canLead ? "leader" : "participant");
+  const [membershipRole, setMembershipRole] = useState<RecoveryRole | null>(previewRole);
+  const [requestablePrograms, setRequestablePrograms] = useState<RequestableProgram[]>([
+    previewProgram,
+  ]);
+  const [membershipRequests, setMembershipRequests] = useState<RecoveryMembershipRequest[]>([]);
+  const [pendingMembershipRequests, setPendingMembershipRequests] = useState<
+    PendingRecoveryMembershipRequest[]
+  >(canLead ? previewPendingRequests : []);
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(mode === "live");
   const [guideQuestion, setGuideQuestion] = useState("");
+  const effectiveCanLead =
+    canLead || membershipRole === "leader" || membershipRole === "admin";
 
   useEffect(() => {
     if (mode === "showcase") {
       const stored = window.localStorage.getItem(storageKey);
       if (stored) {
         try {
-          const payload = JSON.parse(stored) as Pick<RecoveryPayload, "sessions" | "posts" | "membershipRole">;
-          if (Array.isArray(payload.sessions)) setSessions(payload.sessions);
-          if (Array.isArray(payload.posts)) setPosts(payload.posts);
-          if (payload.membershipRole) setMembershipRole(payload.membershipRole);
+          const payload = JSON.parse(stored) as RecoveryPayload;
+          setProgram(payload.program ?? previewProgram);
+          setSessions(payload.sessions ?? previewSessions);
+          setPosts(payload.posts ?? previewPosts);
+          setMembershipRole(payload.membershipRole ?? previewRole);
+          setRequestablePrograms(payload.requestablePrograms ?? [previewProgram]);
+          setMembershipRequests(payload.membershipRequests ?? []);
+          setPendingMembershipRequests(
+            payload.pendingMembershipRequests ?? (canLead ? previewPendingRequests : []),
+          );
         } catch {
           window.localStorage.removeItem(storageKey);
         }
@@ -196,12 +283,32 @@ export function RecoveryMinistry({
       return;
     }
     void refreshLive();
-  }, [mode]);
+  }, [canLead, mode, previewRole]);
 
   useEffect(() => {
     if (mode !== "showcase") return;
-    window.localStorage.setItem(storageKey, JSON.stringify({ sessions, posts, membershipRole }));
-  }, [membershipRole, mode, posts, sessions]);
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        program,
+        sessions,
+        posts,
+        membershipRole,
+        requestablePrograms,
+        membershipRequests,
+        pendingMembershipRequests,
+      } satisfies RecoveryPayload),
+    );
+  }, [
+    membershipRequests,
+    membershipRole,
+    mode,
+    pendingMembershipRequests,
+    posts,
+    program,
+    requestablePrograms,
+    sessions,
+  ]);
 
   async function refreshLive() {
     setLoading(true);
@@ -209,9 +316,13 @@ export function RecoveryMinistry({
       const response = await fetch("/api/recovery", { cache: "no-store" });
       const payload = (await response.json()) as RecoveryPayload & { message?: string };
       if (!response.ok) throw new Error(payload.message ?? "Unable to load Recovery Ministry.");
+      setProgram(payload.program ?? null);
       setSessions(payload.sessions ?? []);
       setPosts(payload.posts ?? []);
       setMembershipRole(payload.membershipRole ?? null);
+      setRequestablePrograms(payload.requestablePrograms ?? []);
+      setMembershipRequests(payload.membershipRequests ?? []);
+      setPendingMembershipRequests(payload.pendingMembershipRequests ?? []);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Unable to load Recovery Ministry.");
     } finally {
@@ -231,16 +342,29 @@ export function RecoveryMinistry({
   }
 
   const currentSession = useMemo(
-    () => sessions.find((session) => session.status === "published" && session.progress !== "completed") ?? sessions[0] ?? null,
+    () =>
+      sessions.find(
+        (session) => session.status === "published" && session.progress !== "completed",
+      ) ??
+      sessions[0] ??
+      null,
     [sessions],
   );
   const completion = sessions.length
-    ? Math.round((sessions.filter((session) => session.progress === "completed").length / sessions.length) * 100)
+    ? Math.round(
+        (sessions.filter((session) => session.progress === "completed").length /
+          sessions.length) *
+          100,
+      )
     : 0;
+  const pendingOwnRequest = membershipRequests.find((request) => request.status === "pending");
 
   function guide() {
     const question = guideQuestion.toLowerCase();
-    if (/lesson|week|curriculum|scripture|step|journey/.test(question)) {
+    if (/access|join|request|privacy|confidential/.test(question)) {
+      setActiveTab("access");
+      setNotice("Opened private access and confidentiality settings.");
+    } else if (/lesson|week|curriculum|scripture|step|journey/.test(question)) {
       setActiveTab("journey");
       setNotice("Opened the weekly journey and approved resource links.");
     } else if (/talk|group|message|connect|encouragement|people/.test(question)) {
@@ -248,13 +372,100 @@ export function RecoveryMinistry({
       setNotice("Opened the private participant group.");
     } else if (/treatment|doctor|detox|medication|crisis|help now|professional/.test(question)) {
       setActiveTab("resources");
-      setNotice("Opened professional and public treatment resources. Church peer support is not a substitute for medical or clinical care.");
-    } else if (/lead|agenda|teach|session|facilitate/.test(question) && canLead) {
+      setNotice(
+        "Opened professional and public treatment resources. Church peer support is not a substitute for medical or clinical care.",
+      );
+    } else if (/lead|agenda|teach|session|facilitate|approve/.test(question) && effectiveCanLead) {
       setActiveTab("leader");
-      setNotice("Opened the restricted leader planner.");
+      setNotice("Opened the restricted leader planner and access review queue.");
     } else {
       setActiveTab("week");
       setNotice("Opened this week’s approved next steps.");
+    }
+  }
+
+  async function requestMembership(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const programId = String(data.get("programId") ?? "");
+    const request: RecoveryMembershipRequest = {
+      id: crypto.randomUUID(),
+      programId,
+      requestedRole: String(data.get("requestedRole")) as RecoveryMembershipRequest["requestedRole"],
+      displayMode: String(data.get("displayMode")) as RecoveryMembershipRequest["displayMode"],
+      status: "pending",
+      reason: String(data.get("reason") ?? "").trim() || undefined,
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60_000).toISOString(),
+    };
+    try {
+      if (mode === "showcase") {
+        setMembershipRequests((current) => [request, ...current]);
+      } else {
+        await sendLive("request_membership", {
+          programId: request.programId,
+          requestedRole: request.requestedRole,
+          displayMode: request.displayMode,
+          reason: request.reason,
+        });
+      }
+      form.reset();
+      setNotice(
+        "Your private request was sent to an authorized recovery leader. It does not enroll you automatically.",
+      );
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The access request could not be sent.");
+    }
+  }
+
+  async function withdrawRequest(request: RecoveryMembershipRequest) {
+    try {
+      if (mode === "showcase") {
+        setMembershipRequests((current) =>
+          current.map((row) =>
+            row.id === request.id ? { ...row, status: "withdrawn" } : row,
+          ),
+        );
+      } else {
+        await sendLive("withdraw_membership_request", { requestId: request.id });
+      }
+      setNotice("Your pending access request was withdrawn.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The request could not be withdrawn.");
+    }
+  }
+
+  async function reviewRequest(
+    request: PendingRecoveryMembershipRequest,
+    decision: "approved" | "declined",
+  ) {
+    const reviewNote = window
+      .prompt(
+        decision === "approved"
+          ? "Optional private leader note for this approval:"
+          : "Add a private reason or next step for the member:",
+      )
+      ?.trim();
+    try {
+      if (mode === "showcase") {
+        setPendingMembershipRequests((current) =>
+          current.filter((row) => row.id !== request.id),
+        );
+      } else {
+        await sendLive("review_membership_request", {
+          requestId: request.id,
+          decision,
+          reviewNote,
+        });
+      }
+      setNotice(
+        decision === "approved"
+          ? "The member was granted private program access."
+          : "The request was declined and remains outside the private program.",
+      );
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "The access decision failed.");
     }
   }
 
@@ -275,13 +486,14 @@ export function RecoveryMinistry({
 
   async function createPost(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const post: RecoveryPost = {
       id: crypto.randomUUID(),
       type: String(data.get("type")) as RecoveryPost["type"],
       title: String(data.get("title") ?? "").trim(),
       body: String(data.get("body") ?? "").trim(),
-      authorName: canLead ? "You · Leader" : "You",
+      authorName: effectiveCanLead ? "You · Leader" : "You",
       createdAt: new Date().toISOString(),
       leaderOnly: data.get("leaderOnly") === "on",
       comments: [],
@@ -292,15 +504,17 @@ export function RecoveryMinistry({
       } else {
         await sendLive("create_post", post as unknown as Record<string, unknown>);
       }
-      event.currentTarget.reset();
-      setNotice("The post was added to the approved recovery group.");
+      form.reset();
+      setNotice("The post was added to the private recovery group.");
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The post could not be added.");
     }
   }
 
   async function comment(post: RecoveryPost) {
-    const body = window.prompt("Write a brief group response. Do not post another person’s private recovery details:")?.trim();
+    const body = window
+      .prompt("Write a brief group response. Do not post another person’s private recovery details:")
+      ?.trim();
     if (!body) return;
     try {
       if (mode === "showcase") {
@@ -311,7 +525,12 @@ export function RecoveryMinistry({
                   ...row,
                   comments: [
                     ...row.comments,
-                    { id: crypto.randomUUID(), authorName: "You", body, createdAt: new Date().toISOString() },
+                    {
+                      id: crypto.randomUUID(),
+                      authorName: "You",
+                      body,
+                      createdAt: new Date().toISOString(),
+                    },
                   ],
                 }
               : row,
@@ -328,7 +547,8 @@ export function RecoveryMinistry({
 
   async function createSession(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const session: RecoverySession = {
       id: crypto.randomUUID(),
       week: Number(data.get("week")),
@@ -349,165 +569,531 @@ export function RecoveryMinistry({
       } else {
         await sendLive("create_session", session as unknown as Record<string, unknown>);
       }
-      event.currentTarget.reset();
-      setNotice("The session was added. Licensed lesson text remains with the approved curriculum provider.");
+      form.reset();
+      setNotice(
+        "The participant guide was published. Licensed lesson text remains with the approved curriculum provider.",
+      );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The session could not be created.");
     }
   }
 
   function resetShowcase() {
+    setProgram(previewProgram);
     setSessions(previewSessions);
     setPosts(previewPosts);
-    setMembershipRole(canLead ? "leader" : "participant");
+    setMembershipRole(previewRole);
+    setRequestablePrograms([previewProgram]);
+    setMembershipRequests([]);
+    setPendingMembershipRequests(canLead ? previewPendingRequests : []);
     window.localStorage.removeItem(storageKey);
     setNotice("Recovery Ministry showcase restored.");
   }
 
-  if (!membershipRole && mode === "live") {
+  if (loading) return <p className="module-empty">Loading the private ministry workspace…</p>;
+
+  if (!membershipRole || !program) {
     return (
-      <section className="module-empty-state">
-        <h2>Recovery Ministry access is private and opt-in.</h2>
-        <p>
-          An approved leader must confirm the group, privacy agreement, age policy, and membership
-          before participant resources or discussions become visible.
-        </p>
-      </section>
+      <div className="ministry-module recovery-module">
+        <section className="module-hero module-hero--recovery">
+          <div>
+            <p className="module-kicker">Private, voluntary, adult peer ministry</p>
+            <h2>Request recovery-ministry access</h2>
+            <p>
+              The private journey, meeting logistics, group discussion, and participant list are
+              visible only after an authorized leader reviews a voluntary request.
+            </p>
+          </div>
+          <div className="module-hero__metric">
+            <strong>{membershipRequests.filter((request) => request.status === "pending").length}</strong>
+            <span>pending access requests</span>
+          </div>
+        </section>
+        <section className="prayer-safety">
+          <strong>This is church peer support—not detoxification, treatment, or emergency care.</strong>
+          <span>
+            Call 911 for immediate danger or overdose. In the United States, call or text 988 for
+            crisis support. Use licensed treatment providers for medical and clinical care.
+          </span>
+        </section>
+        {notice ? <p className="module-notice">{notice}</p> : null}
+        <section className="recovery-access-grid">
+          {requestablePrograms.map((availableProgram) => {
+            const existing = membershipRequests.find(
+              (request) =>
+                request.programId === availableProgram.id && request.status === "pending",
+            );
+            return (
+              <article className="recovery-access-card" key={availableProgram.id}>
+                <span>Adult recovery peer ministry</span>
+                <h3>{availableProgram.displayName}</h3>
+                <p>{availableProgram.publicSummary}</p>
+                {availableProgram.programType === "celebrate_recovery" &&
+                availableProgram.officialProgramConfirmation ? (
+                  <small>Official program configuration confirmed by church leadership.</small>
+                ) : (
+                  <small>
+                    Church-created or independently licensed curriculum. No official Celebrate
+                    Recovery affiliation is claimed.
+                  </small>
+                )}
+                {existing ? (
+                  <div className="recovery-request-status">
+                    <strong>Leader review pending</strong>
+                    <span>Submitted {new Date(existing.createdAt).toLocaleString()}</span>
+                    <button type="button" onClick={() => void withdrawRequest(existing)}>
+                      Withdraw request
+                    </button>
+                  </div>
+                ) : (
+                  <form className="module-form" onSubmit={(event) => void requestMembership(event)}>
+                    <input type="hidden" name="programId" value={availableProgram.id} />
+                    <label>
+                      Requested role
+                      <select name="requestedRole" defaultValue="participant">
+                        <option value="participant">Participant</option>
+                        <option value="peer_support">Peer-support volunteer</option>
+                      </select>
+                    </label>
+                    <label>
+                      Group display
+                      <select name="displayMode" defaultValue="first_name">
+                        <option value="first_name">First name</option>
+                        <option value="initials">Initials</option>
+                        <option value="private">Private in participant lists</option>
+                      </select>
+                    </label>
+                    <label className="span-2">
+                      Optional note to authorized leaders
+                      <textarea
+                        name="reason"
+                        rows={4}
+                        maxLength={2000}
+                        placeholder="Share only what leaders need to understand your request. Do not enter medical records or another person’s private information."
+                      />
+                    </label>
+                    <label className="check-label span-2">
+                      <input type="checkbox" required /> I understand this is a confidential adult
+                      peer-ministry request and does not replace professional treatment.
+                    </label>
+                    <button type="submit">Request private access</button>
+                  </form>
+                )}
+              </article>
+            );
+          })}
+          {!requestablePrograms.length ? (
+            <section className="module-empty-state">
+              <h3>No recovery ministry is currently accepting access requests.</h3>
+              <p>Use the public recovery-support page for official resources or a private inquiry.</p>
+              <a href="/recovery-support-lowell">Open recovery-support information</a>
+            </section>
+          ) : null}
+        </section>
+      </div>
     );
   }
+
+  const confirmed = program.officialProgramConfirmation || officialProgramConfirmed;
+  const tabs: Array<[RecoveryTab, string]> = [
+    ["week", "This week"],
+    ["journey", "Weekly journey"],
+    ["group", "Private group"],
+    ["resources", "Get support"],
+    ["access", "Access & privacy"],
+  ];
+  if (effectiveCanLead) tabs.push(["leader", `Leader tools (${pendingMembershipRequests.length})`]);
 
   return (
     <div className="ministry-module recovery-module">
       <section className="module-hero module-hero--recovery">
         <div>
-          <p className="module-kicker">Private peer ministry · adult participants</p>
-          <h2>{programName}</h2>
-          <p>
-            Follow the weekly ministry path, open approved Scripture and curriculum resources,
-            connect with the private group, and help leaders prepare a consistent Sunday gathering.
-          </p>
+          <p className="module-kicker">Private peer ministry · approved adult participants</p>
+          <h2>{program.displayName || programName}</h2>
+          <p>{program.publicSummary}</p>
         </div>
-        <div className="recovery-progress-ring" style={{ "--progress": completion } as React.CSSProperties}>
-          <strong>{completion}%</strong><span>journey complete</span>
+        <div
+          className="recovery-progress-ring"
+          style={{ "--progress": completion } as React.CSSProperties}
+        >
+          <strong>{completion}%</strong>
+          <span>journey complete</span>
         </div>
       </section>
 
-      {!officialProgramConfirmed ? (
+      {!confirmed ? (
         <section className="curriculum-boundary">
           <strong>Recovery Ministry configuration</strong>
           <span>
             The app does not claim official Celebrate Recovery affiliation or reproduce its licensed
-            curriculum until church leadership confirms the program relationship and copyright permissions.
+            curriculum until church leadership confirms the program relationship and permissions.
           </span>
         </section>
       ) : null}
 
       <section className="module-guide">
-        <div><strong>✦ Recovery Guide</strong><span>Find this week’s lesson, the private group, leader tools, or professional resources.</span></div>
-        <div><input value={guideQuestion} onChange={(event) => setGuideQuestion(event.target.value)} placeholder="Example: Where can I find this week’s Scripture and meeting plan?" /><button type="button" onClick={guide}>Guide me</button></div>
+        <div>
+          <strong>✦ Recovery Guide</strong>
+          <span>
+            Find this week’s lesson, the private group, access settings, leader tools, or professional
+            resources.
+          </span>
+        </div>
+        <div>
+          <input
+            value={guideQuestion}
+            onChange={(event) => setGuideQuestion(event.target.value)}
+            placeholder="Example: Where can I find this week’s Scripture and meeting plan?"
+          />
+          <button type="button" onClick={guide}>
+            Guide me
+          </button>
+        </div>
       </section>
 
       <nav className="module-tabs" aria-label="Recovery Ministry sections">
-        {([
-          ["week", "This week"],
-          ["journey", "Weekly journey"],
-          ["group", "Private group"],
-          ["resources", "Get support"],
-          ["leader", "Leader tools"],
-        ] as const)
-          .filter(([value]) => value !== "leader" || canLead)
-          .map(([value, label]) => <button key={value} type="button" className={activeTab === value ? "active" : ""} onClick={() => setActiveTab(value)}>{label}</button>)}
+        {tabs.map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={activeTab === value ? "active" : ""}
+            onClick={() => setActiveTab(value)}
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
-      {notice ? <p className="module-notice" role="status">{notice}</p> : null}
-      {loading ? <p className="module-empty">Loading the private ministry workspace…</p> : null}
+      {notice ? (
+        <p className="module-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
 
-      {!loading && activeTab === "week" ? (
+      {activeTab === "week" ? (
         <section className="recovery-week-layout">
           <article className="recovery-current-card">
             <span>Week {currentSession?.week ?? "—"}</span>
             <h3>{currentSession?.title ?? "No published session"}</h3>
-            <p>{currentSession?.summary ?? "A leader has not published this week’s participant guide."}</p>
-            {currentSession?.scriptureReferences.length ? <div className="tag-row">{currentSession.scriptureReferences.map((reference) => <span key={reference}>{reference}</span>)}</div> : null}
-            {currentSession?.resourceUrl ? <a href={currentSession.resourceUrl} target="_blank" rel="noreferrer">Open approved curriculum resource ↗</a> : null}
-            {currentSession ? <div className="recovery-actions"><button type="button" onClick={() => void setProgress(currentSession, "in_progress")}>Start this week</button><button type="button" className="success" onClick={() => void setProgress(currentSession, "completed")}>Mark complete</button></div> : null}
+            <p>
+              {currentSession?.summary ?? "A leader has not published this week’s participant guide."}
+            </p>
+            {currentSession?.scriptureReferences.length ? (
+              <div className="tag-row">
+                {currentSession.scriptureReferences.map((reference) => (
+                  <span key={reference}>{reference}</span>
+                ))}
+              </div>
+            ) : null}
+            {currentSession?.resourceUrl ? (
+              <a href={currentSession.resourceUrl} target="_blank" rel="noreferrer">
+                Open approved curriculum resource ↗
+              </a>
+            ) : null}
+            {currentSession ? (
+              <div className="recovery-actions">
+                <button
+                  type="button"
+                  onClick={() => void setProgress(currentSession, "in_progress")}
+                >
+                  Start this week
+                </button>
+                <button
+                  type="button"
+                  className="success"
+                  onClick={() => void setProgress(currentSession, "completed")}
+                >
+                  Mark complete
+                </button>
+              </div>
+            ) : null}
           </article>
           <aside className="recovery-meeting-card">
-            <p>Sunday gathering</p><h3>8:30 AM before worship</h3><span>Approved participants receive exact room directions privately.</span>
-            <ul><li>Welcome and safety reminder</li><li>Approved teaching or testimony</li><li>Small-group discussion</li><li>Next-step and support plan</li></ul>
+            <p>Private gathering</p>
+            <h3>
+              {program.meetingDay ?? "Approved day"} · {program.meetingTime ?? "Time shared privately"}
+            </h3>
+            <span>{program.generalLocation ?? "Approved participants receive room directions privately."}</span>
+            <ul>
+              <li>Welcome and confidentiality reminder</li>
+              <li>Approved teaching or testimony</li>
+              <li>Small-group discussion</li>
+              <li>Next-step and support plan</li>
+            </ul>
           </aside>
         </section>
       ) : null}
 
-      {!loading && activeTab === "journey" ? (
+      {activeTab === "journey" ? (
         <section className="module-workspace">
-          <div className="section-heading"><div><p>Participant-controlled progress</p><h3>Weekly recovery ministry path</h3></div></div>
+          <div className="section-heading">
+            <div>
+              <p>Participant-controlled progress</p>
+              <h3>Weekly recovery ministry path</h3>
+            </div>
+          </div>
           <div className="recovery-journey-list">
             {sessions.map((session) => (
-              <article key={session.id} className={`recovery-session recovery-session--${session.progress}`}>
+              <article
+                key={session.id}
+                className={`recovery-session recovery-session--${session.progress}`}
+              >
                 <span>{session.progress === "completed" ? "✓" : session.week}</span>
-                <div><strong>{session.title}</strong><p>{session.summary}</p><small>{session.scriptureReferences.join(" · ")}</small></div>
-                <select value={session.progress} onChange={(event) => void setProgress(session, event.target.value as ProgressStatus)} aria-label={`Progress for ${session.title}`}>
-                  <option value="not_started">Not started</option><option value="in_progress">In progress</option><option value="completed">Completed</option><option value="skipped">Skip for now</option>
+                <div>
+                  <strong>{session.title}</strong>
+                  <p>{session.summary}</p>
+                  <small>{session.scriptureReferences.join(" · ")}</small>
+                </div>
+                <select
+                  value={session.progress}
+                  onChange={(event) =>
+                    void setProgress(session, event.target.value as ProgressStatus)
+                  }
+                  aria-label={`Progress for ${session.title}`}
+                >
+                  <option value="not_started">Not started</option>
+                  <option value="in_progress">In progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="skipped">Skip for now</option>
                 </select>
               </article>
             ))}
           </div>
-          <p className="module-boundary">The Hub records only the progress status you choose. It does not require a sobriety date, diagnosis, substance history, relapse narrative, medication record, or private journal entry.</p>
+          <p className="module-boundary">
+            The Hub records only the progress status you choose. It does not require a sobriety date,
+            diagnosis, substance history, setback narrative, medication record, or private journal.
+          </p>
         </section>
       ) : null}
 
-      {!loading && activeTab === "group" ? (
+      {activeTab === "group" ? (
         <section className="recovery-group-layout">
           <div className="recovery-posts">
-            {posts.filter((post) => !post.leaderOnly || canLead).map((post) => (
+            {posts.map((post) => (
               <article key={post.id}>
-                <header><span>{post.type.replaceAll("_", " ")}</span><small>{post.authorName} · {new Date(post.createdAt).toLocaleString()}</small></header>
-                <h3>{post.title}</h3><p>{post.body}</p>
-                <div className="recovery-comments">{post.comments.map((entry) => <p key={entry.id}><strong>{entry.authorName}</strong>{entry.body}<small>{new Date(entry.createdAt).toLocaleString()}</small></p>)}</div>
-                <button type="button" onClick={() => void comment(post)}>Respond in group</button>
+                <header>
+                  <span>{post.type.replaceAll("_", " ")}</span>
+                  <small>
+                    {post.authorName} · {new Date(post.createdAt).toLocaleString()}
+                  </small>
+                </header>
+                <h3>{post.title}</h3>
+                <p>{post.body}</p>
+                <div className="recovery-comments">
+                  {post.comments.map((entry) => (
+                    <p key={entry.id}>
+                      <strong>{entry.authorName}</strong>
+                      {entry.body}
+                      <small>{new Date(entry.createdAt).toLocaleString()}</small>
+                    </p>
+                  ))}
+                </div>
+                <button type="button" onClick={() => void comment(post)}>
+                  Respond in group
+                </button>
               </article>
             ))}
           </div>
           <form className="module-form recovery-post-form" onSubmit={(event) => void createPost(event)}>
             <h3>Share with the group</h3>
-            <label>Type<select name="type" defaultValue="encouragement"><option value="encouragement">Encouragement</option><option value="discussion">Discussion</option><option value="resource">Resource</option>{canLead ? <option value="announcement">Announcement</option> : null}{canLead ? <option value="meeting_update">Meeting update</option> : null}</select></label>
-            <label>Title<input name="title" required maxLength={180} /></label>
-            <label>Message<textarea name="body" rows={5} required maxLength={5000} /></label>
-            {canLead ? <label className="check-label"><input name="leaderOnly" type="checkbox" /> Leader-only planning note</label> : null}
+            <label>
+              Type
+              <select name="type" defaultValue="encouragement">
+                <option value="encouragement">Encouragement</option>
+                <option value="discussion">Discussion</option>
+                <option value="resource">Resource</option>
+                {effectiveCanLead ? <option value="announcement">Announcement</option> : null}
+                {effectiveCanLead ? <option value="meeting_update">Meeting update</option> : null}
+              </select>
+            </label>
+            <label>
+              Title
+              <input name="title" required maxLength={180} />
+            </label>
+            <label>
+              Message
+              <textarea name="body" rows={5} required maxLength={5000} />
+            </label>
+            {effectiveCanLead ? (
+              <label className="check-label">
+                <input name="leaderOnly" type="checkbox" /> Leader-only planning note
+              </label>
+            ) : null}
             <button type="submit">Post privately</button>
-            <small>Do not post another person’s name, treatment history, medication, legal matter, or confidential share.</small>
+            <small>
+              Do not post another person’s identity, treatment history, medication, legal matter, or
+              confidential share.
+            </small>
           </form>
         </section>
       ) : null}
 
-      {!loading && activeTab === "resources" ? (
+      {activeTab === "resources" ? (
         <section className="module-workspace recovery-resources">
-          <div className="section-heading"><div><p>Peer ministry plus appropriate care</p><h3>Recovery and treatment resources</h3></div></div>
-          <div className="resource-card-grid">
-            <a href="https://www.samhsa.gov/substance-use/treatment/find-treatment" target="_blank" rel="noreferrer"><strong>SAMHSA treatment resources</strong><span>Find licensed treatment and national referral options.</span><b>Open official resource ↗</b></a>
-            <a href="https://www.mass.gov/info-details/resources-for-substance-use-disorder-treatment-recovery-services" target="_blank" rel="noreferrer"><strong>Massachusetts treatment and recovery resources</strong><span>State resources for treatment, recovery support, and families.</span><b>Open Mass.gov ↗</b></a>
-            <a href="https://celebraterecovery.com/find-help-2/" target="_blank" rel="noreferrer"><strong>Celebrate Recovery group and online help</strong><span>Official group finder and approved online resources.</span><b>Open official site ↗</b></a>
-            <a href="https://findtreatment.gov" target="_blank" rel="noreferrer"><strong>FindTreatment.gov</strong><span>Search for licensed mental health and substance-use treatment.</span><b>Search providers ↗</b></a>
+          <div className="section-heading">
+            <div>
+              <p>Peer ministry plus appropriate care</p>
+              <h3>Recovery and treatment resources</h3>
+            </div>
           </div>
-          <p className="module-boundary">This church ministry offers spiritual community and peer support. It does not diagnose, detox, prescribe medication, replace treatment, or promise recovery outcomes.</p>
+          <div className="resource-card-grid">
+            <a
+              href="https://www.samhsa.gov/find-help/helplines/national-helpline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <strong>SAMHSA National Helpline</strong>
+              <span>Official information and treatment referral resources.</span>
+              <b>Open official resource ↗</b>
+            </a>
+            <a href="https://findtreatment.gov" target="_blank" rel="noreferrer">
+              <strong>FindTreatment.gov</strong>
+              <span>Search for licensed mental-health and substance-use treatment.</span>
+              <b>Search providers ↗</b>
+            </a>
+            <a
+              href="https://www.mass.gov/info-details/resources-for-substance-use-disorder-treatment-recovery-services"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <strong>Massachusetts treatment and recovery resources</strong>
+              <span>State resources for treatment, recovery support, and families.</span>
+              <b>Open Mass.gov ↗</b>
+            </a>
+            <a
+              href="https://celebraterecovery.com/find-help-2/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <strong>Celebrate Recovery official group finder</strong>
+              <span>Official group-finder and online-resource information.</span>
+              <b>Open official site ↗</b>
+            </a>
+          </div>
+          <p className="module-boundary">
+            This church ministry offers spiritual community and peer support. It does not diagnose,
+            detox, prescribe medication, replace treatment, or promise recovery outcomes.
+          </p>
         </section>
       ) : null}
 
-      {!loading && activeTab === "leader" && canLead ? (
-        <section className="recovery-leader-layout">
-          <form className="module-form" onSubmit={(event) => void createSession(event)}>
-            <h3>Publish a weekly participant guide</h3>
-            <label>Week<input name="week" type="number" min={1} max={260} required /></label>
-            <label>Title<input name="title" required maxLength={180} /></label>
-            <label className="span-2">Participant summary<textarea name="summary" rows={5} required minLength={20} maxLength={3000} /></label>
-            <label>Scripture references<input name="scriptureReferences" placeholder="Psalm 34:18, Galatians 6:2" /></label>
-            <label>Licensed resource URL<input name="resourceUrl" type="url" placeholder="https://approved-provider.example/resource" /></label>
-            <label>Scheduled date/time<input name="scheduledFor" type="datetime-local" /></label>
-            <button type="submit">Publish participant guide</button>
-          </form>
-          <aside className="leader-checklist"><h3>Leader release checklist</h3><label><input type="checkbox" /> Approved curriculum or original church content</label><label><input type="checkbox" /> Copyright and program-name permission verified</label><label><input type="checkbox" /> Crisis and treatment referral resources current</label><label><input type="checkbox" /> Confidentiality reminder prepared</label><label><input type="checkbox" /> No participant testimony published without written consent</label><label><input type="checkbox" /> No private group data sent to Outreach or advertising systems</label></aside>
-          {mode === "showcase" ? <button type="button" className="module-secondary" onClick={resetShowcase}>Reset showcase</button> : null}
+      {activeTab === "access" ? (
+        <section className="module-workspace recovery-access-settings">
+          <div className="section-heading">
+            <div>
+              <p>Confidentiality and access</p>
+              <h3>Your private ministry access</h3>
+            </div>
+          </div>
+          <dl>
+            <div>
+              <dt>Current role</dt>
+              <dd>{membershipRole.replaceAll("_", " ")}</dd>
+            </div>
+            <div>
+              <dt>Program</dt>
+              <dd>{program.displayName}</dd>
+            </div>
+            <div>
+              <dt>Participant directory</dt>
+              <dd>Visible only inside the approved program and according to each member’s display setting.</dd>
+            </div>
+            <div>
+              <dt>Outreach and advertising</dt>
+              <dd>Recovery membership, posts, progress, and private discussion are excluded.</dd>
+            </div>
+            <div>
+              <dt>AI use</dt>
+              <dd>Private recovery content is unavailable to AI unless a separate approved policy explicitly permits a narrowly defined function.</dd>
+            </div>
+          </dl>
+          <p className="module-boundary">
+            Ask an authorized leader to change your display preference, end access, or address a
+            privacy concern. Leaving the group must revoke private-program access promptly.
+          </p>
+        </section>
+      ) : null}
+
+      {activeTab === "leader" && effectiveCanLead ? (
+        <section className="recovery-leader-stack">
+          <div className="recovery-leader-layout">
+            <form className="module-form" onSubmit={(event) => void createSession(event)}>
+              <h3>Publish a weekly participant guide</h3>
+              <label>
+                Week
+                <input name="week" type="number" min={1} max={260} required />
+              </label>
+              <label>
+                Title
+                <input name="title" required maxLength={180} />
+              </label>
+              <label className="span-2">
+                Participant summary
+                <textarea name="summary" rows={5} required minLength={20} maxLength={3000} />
+              </label>
+              <label>
+                Scripture references
+                <input name="scriptureReferences" placeholder="Psalm 34:18, Galatians 6:2" />
+              </label>
+              <label>
+                Licensed resource URL
+                <input name="resourceUrl" type="url" placeholder="https://approved-provider.example/resource" />
+              </label>
+              <label>
+                Scheduled date/time
+                <input name="scheduledFor" type="datetime-local" />
+              </label>
+              <button type="submit">Publish participant guide</button>
+            </form>
+            <aside className="leader-checklist">
+              <h3>Leader release checklist</h3>
+              <label><input type="checkbox" /> Approved curriculum or original church content</label>
+              <label><input type="checkbox" /> Copyright and program-name permission verified</label>
+              <label><input type="checkbox" /> Crisis and treatment referral resources current</label>
+              <label><input type="checkbox" /> Confidentiality reminder prepared</label>
+              <label><input type="checkbox" /> No testimony published without written consent</label>
+              <label><input type="checkbox" /> No private data sent to Outreach or advertising</label>
+            </aside>
+          </div>
+
+          <section className="module-workspace recovery-access-review">
+            <div className="section-heading">
+              <div>
+                <p>Leader-reviewed admission</p>
+                <h3>Pending recovery access requests</h3>
+              </div>
+            </div>
+            <div className="recovery-request-list">
+              {pendingMembershipRequests.map((request) => (
+                <article key={request.id}>
+                  <div>
+                    <strong>{request.displayName}</strong>
+                    <span>
+                      {request.requestedRole.replaceAll("_", " ")} · display: {request.displayMode.replaceAll("_", " ")}
+                    </span>
+                    {request.reason ? <p>{request.reason}</p> : null}
+                    <small>Requested {new Date(request.createdAt).toLocaleString()}</small>
+                  </div>
+                  <div>
+                    <button type="button" onClick={() => void reviewRequest(request, "approved")}>
+                      Approve access
+                    </button>
+                    <button type="button" onClick={() => void reviewRequest(request, "declined")}>
+                      Decline
+                    </button>
+                  </div>
+                </article>
+              ))}
+              {!pendingMembershipRequests.length ? (
+                <p className="module-empty">No access requests are waiting for review.</p>
+              ) : null}
+            </div>
+          </section>
+          {mode === "showcase" ? (
+            <button type="button" className="module-secondary" onClick={resetShowcase}>
+              Reset showcase
+            </button>
+          ) : null}
         </section>
       ) : null}
     </div>
