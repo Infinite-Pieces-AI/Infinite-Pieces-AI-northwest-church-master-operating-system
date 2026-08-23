@@ -1,0 +1,74 @@
+name: Temporary Ministry Test Plan V19
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-test-plans:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: finalize ministry release candidate')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out release candidate
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Correct final pgTAP plan and verify release files
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          test_path = Path('supabase/tests/0013_ministry_interaction_identity.test.sql')
+          test = test_path.read_text(encoding='utf-8').replace('select plan(9);', 'select plan(11);')
+          if 'select plan(11);' not in test:
+              raise RuntimeError('Interaction-identity test must contain eleven assertions')
+          test_path.write_text(test, encoding='utf-8')
+
+          verify_path = Path('scripts/verify-structure.mjs')
+          verify = verify_path.read_text(encoding='utf-8')
+          required = [
+              'supabase/migrations/0038_gift_moderation_notes.sql',
+              'supabase/tests/0013_ministry_interaction_identity.test.sql',
+          ]
+          for item in required:
+              if item not in verify:
+                  verify = verify.replace('const required = [', f"const required = [\n  {item!r},", 1)
+          verify_path.write_text(verify, encoding='utf-8')
+          PY
+
+      - name: Remove temporary V19 workflow
+        run: rm -f .github/workflows/temporary-ministry-test-plan-v19.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install, format, and verify structure
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+          pnpm verify:structure
+
+      - name: Commit final test plan
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "test: finalize ministry authorization plans"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
