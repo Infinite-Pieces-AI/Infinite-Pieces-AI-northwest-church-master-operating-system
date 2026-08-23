@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import {
   destinationsForScope,
+  expansionDestinationsForScope,
+  expansionNavigationSafetyNote,
   navigationSafetyNote,
+  recommendExpansionDestinations,
   recommendMinistryDestinations,
+  type ExpandedMinistryDestination,
 } from "@church/church-content";
 import { generatePublicGuideSelection, isPublicGeminiGuideEnabled } from "@/lib/gemini-guide";
 
@@ -24,13 +28,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const safetyNote = navigationSafetyNote(question);
-  const destinations = destinationsForScope("public");
-  const deterministic = recommendMinistryDestinations({
-    query: question,
-    scope: "public",
-    limit: 3,
-  });
+  const safetyNote = navigationSafetyNote(question) ?? expansionNavigationSafetyNote(question);
+  const destinations: ExpandedMinistryDestination[] = [
+    ...destinationsForScope("public"),
+    ...expansionDestinationsForScope("public"),
+  ];
+  const deterministic = [
+    ...recommendMinistryDestinations({ query: question, scope: "public", limit: 3 }),
+    ...recommendExpansionDestinations({ query: question, scope: "public", limit: 3 }),
+  ]
+    .sort((a, b) => b.score - a.score || a.destination.title.localeCompare(b.destination.title))
+    .slice(0, 3);
 
   if (isPublicGeminiGuideEnabled() && !safetyNote) {
     try {
