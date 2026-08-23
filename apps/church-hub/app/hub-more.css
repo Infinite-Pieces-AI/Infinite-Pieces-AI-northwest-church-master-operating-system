@@ -1,0 +1,89 @@
+.hub-more-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hub-more-card {
+  min-height: 150px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  color: inherit;
+  background: white;
+  box-shadow: 0 8px 28px rgba(7, 25, 43, 0.04);
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.hub-more-card:hover {
+  transform: translateY(-2px);
+  border-color: #9bc4d7;
+  box-shadow: 0 14px 34px rgba(7, 25, 43, 0.08);
+}
+
+.hub-more-card > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--blue);
+  background: var(--sky);
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.hub-more-card strong,
+.hub-more-card p {
+  display: block;
+  margin: 0;
+}
+
+.hub-more-card strong {
+  font-size: 1rem;
+}
+
+.hub-more-card p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.hub-more-card > b {
+  color: var(--blue);
+  font-size: 1.6rem;
+}
+
+.hub-more-card--admin {
+  border-color: #ead58a;
+  background: #fffaf0;
+}
+
+@media (max-width: 760px) {
+  .hub-more-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-more-card {
+    min-height: 128px;
+  }
+
+  .bottom-nav--six {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .bottom-nav--six a {
+    min-width: 0;
+    padding-inline: 2px;
+  }
+
+  .bottom-nav--six a small {
+    font-size: 0.56rem;
+  }
+}
