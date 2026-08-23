@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import { hasPermission } from "@church/authorization";
 import {
   destinationsForScope,
+  expansionDestinationsForScope,
+  expansionNavigationSafetyNote,
   navigationSafetyNote,
+  recommendExpansionDestinations,
   recommendMinistryDestinations,
+  type ExpandedMinistryDestination,
 } from "@church/church-content";
 import { generateGeminiText, isGeminiEnabled, parseJsonText } from "@/lib/ai/gemini";
 import { getViewer } from "@/lib/auth/viewer";
@@ -49,14 +53,27 @@ export async function POST(request: Request) {
     hasPermission(viewer.roles, "content.draft") ||
     hasPermission(viewer.roles, "outreach.manage") ||
     hasPermission(viewer.roles, "moderation.review");
-  const destinations = destinationsForScope("member", includePrivileged);
-  const safetyNote = navigationSafetyNote(question);
-  const deterministic = recommendMinistryDestinations({
-    query: question,
-    scope: "member",
-    includePrivileged,
-    limit: 3,
-  });
+  const destinations: ExpandedMinistryDestination[] = [
+    ...destinationsForScope("member", includePrivileged),
+    ...expansionDestinationsForScope("member", includePrivileged),
+  ];
+  const safetyNote = navigationSafetyNote(question) ?? expansionNavigationSafetyNote(question);
+  const deterministic = [
+    ...recommendMinistryDestinations({
+      query: question,
+      scope: "member",
+      includePrivileged,
+      limit: 3,
+    }),
+    ...recommendExpansionDestinations({
+      query: question,
+      scope: "member",
+      includePrivileged,
+      limit: 3,
+    }),
+  ]
+    .sort((a, b) => b.score - a.score || a.destination.title.localeCompare(b.destination.title))
+    .slice(0, 3);
 
   if (isGeminiEnabled() && !safetyNote) {
     try {
@@ -65,8 +82,9 @@ export async function POST(request: Request) {
         systemInstruction: [
           "You are a route-selection assistant inside an authenticated church member application.",
           "Choose only from the supplied approved destination IDs.",
-          "Do not infer loneliness, vulnerability, beliefs, mental state, diagnosis, family status, or private facts.",
-          "Do not give emergency, safeguarding, legal, medical, or pastoral decisions.",
+          "Do not infer loneliness, vulnerability, beliefs, mental state, diagnosis, family status, recovery status, or private facts.",
+          "Do not give emergency, safeguarding, legal, medical, treatment, or pastoral decisions.",
+          "Prayer content, recovery participation, and private messages are never navigation signals unless the member explicitly asks about the related page.",
           "Return JSON only with destinationIds (one to three IDs) and explanation (one sentence).",
         ].join(" "),
         prompt: [
