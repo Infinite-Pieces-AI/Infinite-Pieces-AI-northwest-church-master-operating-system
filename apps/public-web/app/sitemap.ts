@@ -28,6 +28,7 @@ const paths = [
   "/online-bible-study",
   "/young-adults-lowell",
   "/serve-lowell",
+  "/recovery-support-lowell",
   "/can-i-come-to-church-alone",
   "/what-happens-at-a-church-service",
   "/how-to-start-reading-the-bible",
@@ -42,6 +43,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
     changeFrequency:
       path === "/" || path === "/events" || path === "/sermons" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : path === "/plan-a-visit" || path === "/what-to-expect" ? 0.9 : 0.7,
+    priority:
+      path === "/"
+        ? 1
+        : path === "/plan-a-visit" ||
+            path === "/what-to-expect" ||
+            path === "/recovery-support-lowell"
+          ? 0.9
+          : 0.7,
   }));
 }
