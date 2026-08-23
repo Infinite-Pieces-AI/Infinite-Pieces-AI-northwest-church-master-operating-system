@@ -9,6 +9,9 @@ export default async function GiftsPage() {
     hasPermission(viewer.roles, "content.draft") ||
     hasPermission(viewer.roles, "group.manage_assigned") ||
     hasPermission(viewer.roles, "outreach.manage");
+  const canModerate =
+    hasPermission(viewer.roles, "moderation.review") ||
+    hasPermission(viewer.roles, "content.publish");
 
   return (
     <>
@@ -20,6 +23,7 @@ export default async function GiftsPage() {
       <GiftsOfChurch
         mode={viewer.demo ? "showcase" : "live"}
         canLead={canLead}
+        canModerate={canModerate}
         assessmentUrl={process.env.NEXT_PUBLIC_SPIRITUAL_GIFTS_ASSESSMENT_URL}
       />
     </>
