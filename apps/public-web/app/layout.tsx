@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 import "./journey.css";
 import "./production-ready.css";
+import "./recovery-support.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
