@@ -1,0 +1,46 @@
+name: Temporary Normalize Ministry Release
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-normalize-ministry-release
+  cancel-in-progress: true
+
+jobs:
+  normalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out ministry branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Normalize migrations and prayer domain
+        run: node scripts/normalize-ministry-release.mjs
+
+      - name: Commit normalized release candidate
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No normalization changes were produced."
+            exit 0
+          fi
+          git commit -m "fix: normalize ministry migrations and release workflows"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
