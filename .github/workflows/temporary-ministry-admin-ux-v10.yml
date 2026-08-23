@@ -1,0 +1,110 @@
+name: Temporary Ministry Admin UX V10
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finish-admin-ux:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: finalize Recovery Outreach API')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out final API branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Finish MFA and role-aware administration UX
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          gift_api_path = Path('apps/church-hub/app/api/admin/gifts/route.ts')
+          gift_api = gift_api_path.read_text(encoding='utf-8')
+          gift_api = re.sub(
+              r'''async function authorizedViewer\(\) \{.*?\n\}''',
+              '''async function authorizedViewer() {
+  const viewer = await getViewer();
+  if (
+    !viewer ||
+    viewer.demo ||
+    viewer.aal !== "aal2" ||
+    !hasPermission(viewer.roles, "moderation.review")
+  ) {
+    return null;
+  }
+  return viewer;
+}''',
+              gift_api,
+              count=1,
+              flags=re.S,
+          )
+          gift_api_path.write_text(gift_api, encoding='utf-8')
+
+          shell_path = Path('apps/church-hub/components/app-shell.tsx')
+          shell = shell_path.read_text(encoding='utf-8')
+          if 'from "@/lib/recovery/leadership"' not in shell:
+              shell = shell.replace(
+                  'import type { Viewer } from "@/lib/auth/viewer";',
+                  'import type { Viewer } from "@/lib/auth/viewer";\nimport { isRecoveryLeader } from "@/lib/recovery/leadership";',
+              )
+          shell = shell.replace(
+              'export function AppShell({ viewer, children }: { viewer: Viewer; children: ReactNode }) {',
+              'export async function AppShell({\n  viewer,\n  children,\n}: {\n  viewer: Viewer;\n  children: ReactNode;\n}) {',
+          )
+          shell = re.sub(
+              r'''  const canReviewPrayer =\n(?:    .*\n){1,8}?    hasPermission\(viewer\.roles, "content\.publish"\);''',
+              '''  const canReviewPrayer = viewer.roles.some((role) =>
+    ["minister", "safety_admin", "super_admin"].includes(role),
+  );''',
+              shell,
+              count=1,
+          )
+          shell = re.sub(
+              r'''  const canManageRecovery =\n(?:    .*\n){1,8}?    hasPermission\(viewer\.roles, "safeguarding\.review"\);''',
+              '''  const canManageRecovery = await isRecoveryLeader(
+    viewer.id,
+    viewer.roles,
+    viewer.demo,
+  );''',
+              shell,
+              count=1,
+          )
+          shell_path.write_text(shell, encoding='utf-8')
+          PY
+
+      - name: Remove temporary V10 workflow
+        run: rm -f .github/workflows/temporary-ministry-admin-ux-v10.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit final administration UX
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: finish role-aware ministry administration UX"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
