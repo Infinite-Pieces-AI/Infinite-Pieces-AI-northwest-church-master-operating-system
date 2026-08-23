@@ -1,0 +1,208 @@
+name: Temporary Ministry Expansion Hardening V3
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-ministry-expansion-hardening-v3
+  cancel-in-progress: true
+
+jobs:
+  harden:
+    if: github.actor == 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out finalized branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Apply final API and authorization hardening
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, content: str) -> None:
+              Path(path).write_text(content, encoding="utf-8")
+
+          overload_paths = [
+              "apps/church-hub/app/api/gifts/route.ts",
+              "apps/church-hub/app/api/recovery/route.ts",
+              "apps/church-hub/app/api/prayer-well-complete/route.ts",
+              "apps/church-hub/app/api/admin/gifts/route.ts",
+              "apps/church-hub/app/api/admin/prayer/route.ts",
+              "apps/church-hub/app/api/admin/recovery/route.ts",
+              "apps/outreach-command/app/api/recovery-outreach/route.ts",
+          ]
+          signature = "function text(value: unknown, maximum: number, required = false): string | null {"
+          overload = """function text(value: unknown, maximum: number, required: true): string;
+          function text(value: unknown, maximum: number, required?: false): string | null;
+          function text(value: unknown, maximum: number, required = false): string | null {"""
+          for path in overload_paths:
+              content = read(path)
+              if "required: true): string;" not in content:
+                  if signature not in content:
+                      raise RuntimeError(f"Expected text helper signature not found in {path}")
+                  content = content.replace(signature, overload, 1)
+                  write(path, content)
+
+          navigation_path = "apps/church-hub/lib/ministry-navigation.ts"
+          navigation = read(navigation_path)
+          navigation = navigation.replace(
+              "return [ministryRouteCatalog[0], ministryRouteCatalog[2], ministryRouteCatalog[1]];",
+              "return [ministryRouteCatalog[0]!, ministryRouteCatalog[2]!, ministryRouteCatalog[1]!];",
+          )
+          write(navigation_path, navigation)
+
+          nav_api_path = "apps/church-hub/app/api/ai/navigation/route.ts"
+          nav_api = read(nav_api_path)
+          nav_api = nav_api.replace(
+              "const recommendations = (aiRoutes.length ? aiRoutes : deterministic).map(\n    ({ keywords: _keywords, protected: _protected, ...route }) => route,\n  );",
+              "const recommendations = (aiRoutes.length ? aiRoutes : deterministic).map((route) => ({\n    id: route.id,\n    title: route.title,\n    description: route.description,\n    href: route.href,\n    reason: route.reason,\n  }));",
+          )
+          write(nav_api_path, nav_api)
+
+          for path in [
+              "apps/church-hub/app/api/admin/gifts/route.ts",
+              "apps/church-hub/app/api/admin/prayer/route.ts",
+              "apps/church-hub/app/api/admin/recovery/route.ts",
+          ]:
+              content = read(path)
+              content = content.replace(
+                  "if (!viewer || viewer.demo)",
+                  'if (!viewer || viewer.demo || viewer.aal !== "aal2")',
+              )
+              write(path, content)
+
+          helper_path = "apps/church-hub/lib/auth/require-admin-permission.ts"
+          helper = read(helper_path)
+          if "viewer.aal" not in helper:
+              helper = helper.replace(
+                  "if (!hasPermission(viewer.roles, permission)) redirect(\"/this-week?error=forbidden\");",
+                  'if (!hasPermission(viewer.roles, permission)) redirect("/this-week?error=forbidden");\n  if (!viewer.demo && viewer.aal !== "aal2") {\n    redirect(`/mfa?next=${encodeURIComponent("/admin")}`);\n  }',
+              )
+              write(helper_path, helper)
+
+          inquiry_component_path = "apps/outreach-command/components/recovery-outreach-workspace.tsx"
+          inquiry_component = read(inquiry_component_path)
+          if "email?: string;" not in inquiry_component:
+              inquiry_component = inquiry_component.replace(
+                  "preferredContact: string;\n  requestedNextStep: string;",
+                  "preferredContact: string;\n  email?: string;\n  phone?: string;\n  message?: string;\n  consentedAt?: string;\n  requestedNextStep: string;",
+                  1,
+              )
+          inquiry_component = inquiry_component.replace(
+              "const counts = payload.counts ?? {\n    publicOrganizations: payload.partners.length,\n    publicTopics: payload.topics.length,\n    newInquiries: payload.inquiries.filter((inquiry) => inquiry.status === \"new\").length,\n    approvedPartners: payload.partners.filter((partner) => partner.partnershipStatus === \"partner\").length,\n  };",
+              "const counts = {\n    publicOrganizations: payload.partners.length,\n    publicTopics: payload.topics.length,\n    newInquiries: payload.inquiries.filter((inquiry) => inquiry.status === \"new\").length,\n    approvedPartners: payload.partners.filter(\n      (partner) => partner.partnershipStatus === \"partner\",\n    ).length,\n  };",
+          )
+          if "Contact detail" not in inquiry_component:
+              inquiry_component = inquiry_component.replace(
+                  "<div><dt>Contact preference</dt><dd>{selectedInquiry.preferredContact}</dd></div>",
+                  "<div><dt>Contact preference</dt><dd>{selectedInquiry.preferredContact}</dd></div><div><dt>Contact detail</dt><dd>{selectedInquiry.email ?? selectedInquiry.phone ?? \"Not supplied\"}</dd></div>",
+              )
+              inquiry_component = inquiry_component.replace(
+                  "</dl><div><button type=\"button\" onClick={() => void updateInquiry(selectedInquiry, \"assigned\")}",
+                  "</dl>{selectedInquiry.message ? <blockquote>{selectedInquiry.message}</blockquote> : null}<div><button type=\"button\" onClick={() => void updateInquiry(selectedInquiry, \"assigned\")}",
+              )
+          write(inquiry_component_path, inquiry_component)
+
+          outreach_api_path = "apps/outreach-command/app/api/recovery-outreach/route.ts"
+          outreach_api = read(outreach_api_path)
+          outreach_api = outreach_api.replace(
+              'select("id,first_name,preferred_contact,requested_next_step,source_path,status,assigned_to,created_at")',
+              'select("id,first_name,email,phone,preferred_contact,requested_next_step,message,source_path,status,assigned_to,consented_at,created_at")',
+          )
+          if "email: typeof inquiry.email" not in outreach_api:
+              outreach_api = outreach_api.replace(
+                  "preferredContact: String(inquiry.preferred_contact),\n    requestedNextStep:",
+                  "preferredContact: String(inquiry.preferred_contact),\n    email: typeof inquiry.email === \"string\" ? inquiry.email : undefined,\n    phone: typeof inquiry.phone === \"string\" ? inquiry.phone : undefined,\n    message: typeof inquiry.message === \"string\" ? inquiry.message : undefined,\n    consentedAt:\n      typeof inquiry.consented_at === \"string\" ? inquiry.consented_at : undefined,\n    requestedNextStep:",
+              )
+          write(outreach_api_path, outreach_api)
+
+          verify_path = "scripts/verify-structure.mjs"
+          verify = read(verify_path)
+          if "0032_harden_prayer_updates" not in verify:
+              verify = verify.replace(
+                  "  'supabase/migrations/0031_fix_gift_risk_classification.sql',",
+                  "  'supabase/migrations/0031_fix_gift_risk_classification.sql',\n  'supabase/migrations/0032_harden_prayer_updates_and_recovery_leader_mfa.sql',",
+              )
+              verify = verify.replace(
+                  '  "supabase/migrations/0031_fix_gift_risk_classification.sql",',
+                  '  "supabase/migrations/0031_fix_gift_risk_classification.sql",\n  "supabase/migrations/0032_harden_prayer_updates_and_recovery_leader_mfa.sql",',
+              )
+              write(verify_path, verify)
+
+          docs_path = "docs/GIFTS_PRAYER_RECOVERY_MINISTRIES.md"
+          docs = read(docs_path).replace("Migrations 0027–0031", "Migrations 0027–0032")
+          write(docs_path, docs)
+
+          checklist_path = "docs/RELEASE_CHECKLIST_GIFTS_PRAYER_RECOVERY.md"
+          checklist = read(checklist_path)
+          if "MFA/AAL2" not in checklist:
+              checklist = checklist.replace(
+                  "- [ ] Recovery leader and backup are named.",
+                  "- [ ] Recovery leader and backup are named.\n- [ ] Gift, prayer, and recovery administration require MFA/AAL2.",
+              )
+              write(checklist_path, checklist)
+
+          test_path = "supabase/tests/0008_gifts_prayer_recovery_ministries.test.sql"
+          test = read(test_path).replace("select plan(33);", "select plan(37);")
+          if "A recovery leader without AAL2 cannot approve" not in test:
+              marker = "set local role authenticated;\nselect set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000403', true);\nselect set_config('request.jwt.claims', '{\"sub\":\"00000000-0000-4000-8000-000000000403\",\"role\":\"authenticated\",\"aal\":\"aal2\"}', true);"
+              replacement = "set local role authenticated;\nselect set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000403', true);\nselect set_config('request.jwt.claims', '{\"sub\":\"00000000-0000-4000-8000-000000000403\",\"role\":\"authenticated\",\"aal\":\"aal1\"}', true);\nselect throws_ok(\n  $$select public.review_recovery_access_request(\n      (select id from public.recovery_access_requests where profile_id = '00000000-0000-4000-8000-000000000401'),\n      'approved',\n      'This must fail without MFA.'\n    )$$,\n  null,\n  null,\n  'A recovery leader without AAL2 cannot approve a private access request'\n);\nselect set_config('request.jwt.claims', '{\"sub\":\"00000000-0000-4000-8000-000000000403\",\"role\":\"authenticated\",\"aal\":\"aal2\"}', true);"
+              if marker not in test:
+                  raise RuntimeError("Unable to find recovery leader test insertion point")
+              test = test.replace(marker, replacement, 1)
+
+              marker2 = "select is(\n  (select count(*)::integer from public.prayer_requests where sensitivity = 'pastoral' and visibility = 'leaders_only'),\n  1,\n  'Pastoral requests are forced to leaders-only visibility'\n);"
+              replacement2 = marker2 + "\nselect lives_ok(\n  $$update public.prayer_requests\n    set sensitivity = 'normal', visibility = 'church', allow_encouragement = true\n    where sensitivity = 'pastoral'$$,\n  'The owner update is accepted but constrained by the database boundary'\n);\nselect is(\n  (select sensitivity from public.prayer_requests where title = 'Restricted pastoral prayer'),\n  'pastoral',\n  'An ordinary owner cannot declassify a restricted pastoral request'\n);\nselect is(\n  (select visibility from public.prayer_requests where title = 'Restricted pastoral prayer'),\n  'leaders_only',\n  'An ordinary owner cannot widen a restricted request to the church feed'\n);"
+              if marker2 not in test:
+                  raise RuntimeError("Unable to find prayer hardening test insertion point")
+              test = test.replace(marker2, replacement2, 1)
+              write(test_path, test)
+
+          old_prayer_route = Path("apps/church-hub/app/api/prayer-well/route.ts")
+          if old_prayer_route.exists():
+              old_prayer_route.unlink()
+          PY
+
+      - name: Remove hardening workflow
+        shell: bash
+        run: rm -f .github/workflows/temporary-ministry-hardening-v3.yml
+
+      - name: Install dependencies
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Refresh lockfile and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Commit hardening pass
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: harden ministry APIs and confidential workflows"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
