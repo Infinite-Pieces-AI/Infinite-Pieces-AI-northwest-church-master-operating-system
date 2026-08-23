@@ -83,7 +83,7 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
             <span>{viewer.displayName.slice(0, 1)}</span>
             <div>
               <strong>{viewer.displayName}</strong>
-              <small>{viewer.demo ? "Explicit local preview" : viewer.email}</small>
+              <small>{viewer.demo ? "Interactive showcase member" : viewer.email}</small>
             </div>
             <Link href="/profile" aria-label="Open profile settings">
               ›
@@ -92,8 +92,8 @@ export function AppShell({ viewer, children }: { viewer: Viewer; children: React
         </header>
         {viewer.demo ? (
           <div className="preview-banner">
-            <strong>Local preview mode:</strong> authentication, persistent records, external
-            integrations, and live AI provider calls are not production operations.
+            <strong>Interactive showcase mode:</strong> the finished workflows are clickable and
+            save only inside this browser. Nothing changes real church records.
           </div>
         ) : null}
         <main className="hub-content">

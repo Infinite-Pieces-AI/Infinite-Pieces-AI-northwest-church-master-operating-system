@@ -1,3 +1,4 @@
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
@@ -5,6 +6,8 @@ import { updateHouseholdNameAction } from "../actions";
 
 export default async function HouseholdPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="household" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (

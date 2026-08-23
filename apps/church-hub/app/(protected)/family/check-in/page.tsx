@@ -1,9 +1,12 @@
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
 
 export default async function CheckInPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="checkin" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (

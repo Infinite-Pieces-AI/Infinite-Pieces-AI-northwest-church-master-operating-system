@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
 
 export default async function ParentCommunityPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="parents" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (

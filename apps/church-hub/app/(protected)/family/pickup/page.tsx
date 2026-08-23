@@ -1,3 +1,4 @@
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
@@ -5,6 +6,8 @@ import { addAuthorizedPickupAction, setAuthorizedPickupStatusAction } from "../a
 
 export default async function PickupPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="pickup" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (

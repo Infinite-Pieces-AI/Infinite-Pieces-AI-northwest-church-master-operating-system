@@ -1,3 +1,4 @@
+import { FamilyShowcase } from "@/components/family-showcase";
 import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 import { loadFamilyWorkspace } from "@/lib/family";
@@ -19,6 +20,8 @@ function labelForScope(scope: string) {
 
 export default async function MediaConsentPage() {
   const viewer = await requireViewer();
+  if (viewer.demo) return <FamilyShowcase initialView="media" />;
+
   const workspace = await loadFamilyWorkspace(viewer);
 
   return (
