@@ -15,6 +15,11 @@ type PrayerCategory =
   | "thanksgiving"
   | "other";
 
+interface PrayerContextOption {
+  id: string;
+  name: string;
+}
+
 interface PrayerInteraction {
   id: string;
   type: "prayed" | "encouragement" | "scripture" | "update";
@@ -31,6 +36,7 @@ interface PrayerRequest {
   isMine: boolean;
   anonymous: boolean;
   visibility: PrayerVisibility;
+  audienceLabel: string;
   category: PrayerCategory;
   sensitivity: "normal" | "pastoral" | "safeguarding";
   allowEncouragement: boolean;
@@ -44,7 +50,22 @@ interface PrayerRequest {
 
 interface PrayerPayload {
   requests: PrayerRequest[];
+  contexts: {
+    ministries: PrayerContextOption[];
+    groups: PrayerContextOption[];
+  };
 }
+
+const previewContexts: PrayerPayload["contexts"] = {
+  ministries: [
+    { id: "ministry-parents", name: "Parents Ministry" },
+    { id: "ministry-young-adults", name: "Young Adults" },
+  ],
+  groups: [
+    { id: "group-northwest-family", name: "Northwest Family Group" },
+    { id: "group-sunday-team", name: "Sunday Welcome Team" },
+  ],
+};
 
 const previewRequests: PrayerRequest[] = [
   {
@@ -55,6 +76,7 @@ const previewRequests: PrayerRequest[] = [
     isMine: false,
     anonymous: true,
     visibility: "church",
+    audienceLabel: "Approved church members",
     category: "family",
     sensitivity: "normal",
     allowEncouragement: true,
@@ -79,6 +101,7 @@ const previewRequests: PrayerRequest[] = [
     isMine: false,
     anonymous: false,
     visibility: "church",
+    audienceLabel: "Approved church members",
     category: "thanksgiving",
     sensitivity: "normal",
     allowEncouragement: true,
@@ -111,6 +134,7 @@ const previewRequests: PrayerRequest[] = [
     isMine: true,
     anonymous: false,
     visibility: "group",
+    audienceLabel: "Northwest Family Group",
     category: "faith",
     sensitivity: "normal",
     allowEncouragement: true,
@@ -121,7 +145,7 @@ const previewRequests: PrayerRequest[] = [
   },
 ];
 
-const storageKey = "church-hub-prayer-well-v1";
+const storageKey = "church-hub-prayer-well-v2";
 const categoryLabels: Record<PrayerCategory, string> = {
   general: "General",
   health: "Health",
@@ -134,14 +158,32 @@ const categoryLabels: Record<PrayerCategory, string> = {
   other: "Other",
 };
 
+function audienceLabel(
+  visibility: PrayerVisibility,
+  contextId: string,
+  contexts: PrayerPayload["contexts"],
+): string {
+  if (visibility === "ministry") {
+    return contexts.ministries.find((context) => context.id === contextId)?.name ?? "Selected ministry";
+  }
+  if (visibility === "group") {
+    return contexts.groups.find((context) => context.id === contextId)?.name ?? "Selected group";
+  }
+  if (visibility === "church") return "Approved church members";
+  if (visibility === "leaders_only") return "Authorized ministry leaders";
+  return "Private";
+}
+
 export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLead: boolean }) {
   const [activeTab, setActiveTab] = useState<"feed" | "mine" | "answered" | "create">("feed");
   const [requests, setRequests] = useState<PrayerRequest[]>(previewRequests);
+  const [contexts, setContexts] = useState<PrayerPayload["contexts"]>(previewContexts);
   const [filter, setFilter] = useState<"all" | PrayerCategory>("all");
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(mode === "live");
   const [selectedId, setSelectedId] = useState<string | null>(previewRequests[0]?.id ?? null);
+  const [createVisibility, setCreateVisibility] = useState<PrayerVisibility>("church");
 
   useEffect(() => {
     if (mode === "showcase") {
@@ -150,6 +192,7 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
         try {
           const payload = JSON.parse(stored) as PrayerPayload;
           if (Array.isArray(payload.requests)) setRequests(payload.requests);
+          if (payload.contexts) setContexts(payload.contexts);
         } catch {
           window.localStorage.removeItem(storageKey);
         }
@@ -161,8 +204,8 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
 
   useEffect(() => {
     if (mode !== "showcase") return;
-    window.localStorage.setItem(storageKey, JSON.stringify({ requests } satisfies PrayerPayload));
-  }, [mode, requests]);
+    window.localStorage.setItem(storageKey, JSON.stringify({ requests, contexts } satisfies PrayerPayload));
+  }, [contexts, mode, requests]);
 
   async function refreshLive() {
     setLoading(true);
@@ -171,7 +214,12 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
       const payload = (await response.json()) as PrayerPayload & { message?: string };
       if (!response.ok) throw new Error(payload.message ?? "Unable to load the Prayer Well.");
       setRequests(payload.requests ?? []);
-      setSelectedId(payload.requests?.[0]?.id ?? null);
+      setContexts(payload.contexts ?? { ministries: [], groups: [] });
+      setSelectedId((current) =>
+        payload.requests?.some((request) => request.id === current)
+          ? current
+          : (payload.requests?.[0]?.id ?? null),
+      );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Unable to load the Prayer Well.");
     } finally {
@@ -198,26 +246,41 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
       if (activeTab === "feed" && request.status !== "open") return false;
       if (filter !== "all" && request.category !== filter) return false;
       if (!normalized) return true;
-      return `${request.title} ${request.text} ${request.authorName}`.toLowerCase().includes(normalized);
+      return `${request.title} ${request.text} ${request.authorName} ${request.audienceLabel}`
+        .toLowerCase()
+        .includes(normalized);
     });
   }, [activeTab, filter, requests, search]);
 
   const selected = requests.find((request) => request.id === selectedId) ?? visible[0] ?? null;
+  const selectedContexts =
+    createVisibility === "ministry"
+      ? contexts.ministries
+      : createVisibility === "group"
+        ? contexts.groups
+        : [];
 
   async function createRequest(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const visibility = String(data.get("visibility")) as PrayerVisibility;
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const sensitivity = String(data.get("sensitivity")) as PrayerRequest["sensitivity"];
+    const visibility = sensitivity === "normal" ? createVisibility : "leaders_only";
     const anonymous = data.get("anonymous") === "on";
-    const request: PrayerRequest = {
+    const contextId = String(data.get("contextId") ?? "");
+    if ((visibility === "ministry" || visibility === "group") && !contextId) {
+      setNotice(`Choose the ${visibility} that should receive this request.`);
+      return;
+    }
+    const newRequest: PrayerRequest = {
       id: crypto.randomUUID(),
       title: String(data.get("title") ?? "").trim(),
       text: String(data.get("text") ?? "").trim(),
       authorName: anonymous ? "Anonymous member" : "You",
       isMine: true,
       anonymous,
-      visibility: sensitivity === "normal" ? visibility : "leaders_only",
+      visibility,
+      audienceLabel: audienceLabel(visibility, contextId, contexts),
       category: String(data.get("category")) as PrayerCategory,
       sensitivity,
       allowEncouragement: data.get("allowEncouragement") === "on",
@@ -228,26 +291,29 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
     };
     try {
       if (mode === "showcase") {
-        setRequests((current) => [request, ...current]);
+        setRequests((current) => [newRequest, ...current]);
+        setSelectedId(newRequest.id);
       } else {
         await sendLive("create_request", {
-          title: request.title,
-          requestText: request.text,
-          displayAnonymous: request.anonymous,
-          visibility: request.visibility,
-          category: request.category,
-          sensitivity: request.sensitivity,
-          allowEncouragement: request.allowEncouragement,
-          allowPrayedEvents: request.allowPrayed,
+          title: newRequest.title,
+          requestText: newRequest.text,
+          displayAnonymous: newRequest.anonymous,
+          visibility: newRequest.visibility,
+          ministryId: newRequest.visibility === "ministry" ? contextId : null,
+          groupId: newRequest.visibility === "group" ? contextId : null,
+          category: newRequest.category,
+          sensitivity: newRequest.sensitivity,
+          allowEncouragement: newRequest.allowEncouragement,
+          allowPrayedEvents: newRequest.allowPrayed,
         });
       }
-      event.currentTarget.reset();
+      form.reset();
+      setCreateVisibility("church");
       setActiveTab("mine");
-      setSelectedId(request.id);
       setNotice(
         sensitivity === "normal"
-          ? "Your prayer request was added with the visibility you selected."
-          : "Sensitive requests are routed only to the restricted leader workflow.",
+          ? `Your request was added for ${newRequest.audienceLabel}.`
+          : "The request was routed only to the restricted leader workflow.",
       );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The prayer request could not be created.");
@@ -290,14 +356,20 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
       } else {
         await sendLive("add_interaction", { requestId: request.id, type, body });
       }
-      setNotice(type === "prayed" ? "The requester can see that another member prayed." : "Your response was added.");
+      setNotice(
+        type === "prayed"
+          ? "The requester can see that another member prayed."
+          : "Your response was added.",
+      );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The response could not be added.");
     }
   }
 
   async function markAnswered(request: PrayerRequest) {
-    const summary = window.prompt("How was this prayer answered? Share only what is appropriate for the selected audience:")?.trim();
+    const summary = window
+      .prompt("How was this prayer answered? Share only what is appropriate for the selected audience:")
+      ?.trim();
     if (!summary) return;
     try {
       if (mode === "showcase") {
@@ -335,6 +407,7 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
 
   function resetShowcase() {
     setRequests(previewRequests);
+    setContexts(previewContexts);
     window.localStorage.removeItem(storageKey);
     setSelectedId(previewRequests[0]?.id ?? null);
     setNotice("Prayer Well showcase restored.");
@@ -372,32 +445,66 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
           ["answered", "Answered"],
           ["create", "Add request"],
         ] as const).map(([value, label]) => (
-          <button key={value} type="button" className={activeTab === value ? "active" : ""} onClick={() => setActiveTab(value)}>
+          <button
+            key={value}
+            type="button"
+            className={activeTab === value ? "active" : ""}
+            onClick={() => setActiveTab(value)}
+          >
             {label}
           </button>
         ))}
       </nav>
 
-      {notice ? <p className="module-notice" role="status">{notice}</p> : null}
+      {notice ? (
+        <p className="module-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
       {loading ? <p className="module-empty">Loading the Prayer Well…</p> : null}
 
       {!loading && activeTab !== "create" ? (
         <section className="prayer-layout">
           <div className="prayer-list-panel">
             <div className="module-toolbar">
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search requests you are authorized to see…" />
-              <select value={filter} onChange={(event) => setFilter(event.target.value as typeof filter)}>
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search requests you are authorized to see…"
+              />
+              <select
+                value={filter}
+                onChange={(event) => setFilter(event.target.value as typeof filter)}
+              >
                 <option value="all">All categories</option>
-                {Object.entries(categoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                {Object.entries(categoryLabels).map(([value, label]) => (
+                  <option value={value} key={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="prayer-request-list">
               {visible.map((request) => {
-                const prayedCount = request.interactions.filter((interaction) => interaction.type === "prayed").length;
+                const prayedCount = request.interactions.filter(
+                  (interaction) => interaction.type === "prayed",
+                ).length;
                 return (
-                  <button type="button" key={request.id} className={selected?.id === request.id ? "active" : ""} onClick={() => setSelectedId(request.id)}>
-                    <span className={`prayer-icon prayer-icon--${request.status}`}>{request.status === "answered" ? "✓" : "◌"}</span>
-                    <span><strong>{request.title}</strong><small>{request.authorName} · {categoryLabels[request.category]} · {prayedCount} prayed</small></span>
+                  <button
+                    type="button"
+                    key={request.id}
+                    className={selected?.id === request.id ? "active" : ""}
+                    onClick={() => setSelectedId(request.id)}
+                  >
+                    <span className={`prayer-icon prayer-icon--${request.status}`}>
+                      {request.status === "answered" ? "✓" : "◌"}
+                    </span>
+                    <span>
+                      <strong>{request.title}</strong>
+                      <small>
+                        {request.authorName} · {categoryLabels[request.category]} · {prayedCount} prayed
+                      </small>
+                    </span>
                   </button>
                 );
               })}
@@ -409,65 +516,177 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
             {selected ? (
               <>
                 <header>
-                  <div><span>{categoryLabels[selected.category]}</span><span>{selected.visibility.replaceAll("_", " ")}</span></div>
+                  <div>
+                    <span>{categoryLabels[selected.category]}</span>
+                    <span>{selected.audienceLabel}</span>
+                  </div>
                   <h3>{selected.title}</h3>
-                  <p>{selected.authorName} · {new Date(selected.createdAt).toLocaleString()}</p>
+                  <p>
+                    {selected.authorName} · {new Date(selected.createdAt).toLocaleString()}
+                  </p>
                 </header>
                 <blockquote>{selected.text}</blockquote>
                 {selected.status === "answered" && selected.answeredSummary ? (
-                  <div className="answered-card"><strong>Answered prayer</strong><p>{selected.answeredSummary}</p></div>
+                  <div className="answered-card">
+                    <strong>Answered prayer</strong>
+                    <p>{selected.answeredSummary}</p>
+                  </div>
                 ) : null}
                 <div className="prayer-actions">
-                  {selected.allowPrayed && selected.status === "open" ? <button type="button" onClick={() => void addInteraction(selected, "prayed")}>I prayed</button> : null}
-                  {selected.allowEncouragement && selected.status === "open" ? <button type="button" onClick={() => void addInteraction(selected, "encouragement")}>Encourage</button> : null}
-                  {selected.allowEncouragement && selected.status === "open" ? <button type="button" onClick={() => void addInteraction(selected, "scripture")}>Share Scripture</button> : null}
-                  {selected.isMine && selected.status === "open" ? <button type="button" onClick={() => void addInteraction(selected, "update")}>Post update</button> : null}
-                  {(selected.isMine || canLead) && selected.status === "open" ? <button type="button" className="success" onClick={() => void markAnswered(selected)}>Mark answered</button> : null}
+                  {selected.allowPrayed && selected.status === "open" ? (
+                    <button type="button" onClick={() => void addInteraction(selected, "prayed")}>
+                      I prayed
+                    </button>
+                  ) : null}
+                  {selected.allowEncouragement && selected.status === "open" ? (
+                    <button
+                      type="button"
+                      onClick={() => void addInteraction(selected, "encouragement")}
+                    >
+                      Encourage
+                    </button>
+                  ) : null}
+                  {selected.allowEncouragement && selected.status === "open" ? (
+                    <button type="button" onClick={() => void addInteraction(selected, "scripture")}>
+                      Share Scripture
+                    </button>
+                  ) : null}
+                  {selected.isMine && selected.status === "open" ? (
+                    <button type="button" onClick={() => void addInteraction(selected, "update")}>
+                      Post update
+                    </button>
+                  ) : null}
+                  {(selected.isMine || canLead) && selected.status === "open" ? (
+                    <button
+                      type="button"
+                      className="success"
+                      onClick={() => void markAnswered(selected)}
+                    >
+                      Mark answered
+                    </button>
+                  ) : null}
                 </div>
                 <div className="prayer-timeline">
                   {selected.interactions.map((interaction) => (
                     <article key={interaction.id}>
-                      <span>{interaction.type === "prayed" ? "🙏" : interaction.type === "scripture" ? "✦" : interaction.type === "update" ? "↗" : "♡"}</span>
-                      <div><strong>{interaction.type === "prayed" ? `${interaction.authorName} prayed` : interaction.authorName}</strong>{interaction.body ? <p>{interaction.body}</p> : null}<small>{new Date(interaction.createdAt).toLocaleString()}</small></div>
+                      <span>
+                        {interaction.type === "prayed"
+                          ? "🙏"
+                          : interaction.type === "scripture"
+                            ? "✦"
+                            : interaction.type === "update"
+                              ? "↗"
+                              : "♡"}
+                      </span>
+                      <div>
+                        <strong>
+                          {interaction.type === "prayed"
+                            ? `${interaction.authorName} prayed`
+                            : interaction.authorName}
+                        </strong>
+                        {interaction.body ? <p>{interaction.body}</p> : null}
+                        <small>{new Date(interaction.createdAt).toLocaleString()}</small>
+                      </div>
                     </article>
                   ))}
-                  {!selected.interactions.length ? <p>No responses yet. Members may pray quietly without commenting.</p> : null}
+                  {!selected.interactions.length ? (
+                    <p>No responses yet. Members may pray quietly without commenting.</p>
+                  ) : null}
                 </div>
               </>
-            ) : <p className="module-empty">Choose a prayer request.</p>}
+            ) : (
+              <p className="module-empty">Choose a prayer request.</p>
+            )}
           </article>
         </section>
       ) : null}
 
       {!loading && activeTab === "create" ? (
         <section className="module-workspace">
-          <div className="section-heading"><div><p>Member-controlled privacy</p><h3>Add a prayer request</h3></div></div>
+          <div className="section-heading">
+            <div>
+              <p>Member-controlled privacy</p>
+              <h3>Add a prayer request</h3>
+            </div>
+          </div>
           <form className="module-form" onSubmit={(event) => void createRequest(event)}>
-            <label>Short title<input name="title" required minLength={2} maxLength={180} /></label>
-            <label>Category<select name="category" defaultValue="general">{Object.entries(categoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-            <label className="span-2">Prayer request<textarea name="text" rows={6} required minLength={3} maxLength={5000} /></label>
-            <label>Who may see it?<select name="visibility" defaultValue="church">
-              <option value="church">Approved church members</option>
-              <option value="group">My selected group</option>
-              <option value="ministry">My selected ministry</option>
-              <option value="leaders_only">Authorized ministry leaders only</option>
-              <option value="private">Private to me</option>
-            </select></label>
-            <label>Routing<select name="sensitivity" defaultValue="normal">
-              <option value="normal">Normal prayer request</option>
-              <option value="pastoral">Pastoral and restricted</option>
-              <option value="safeguarding">Safeguarding concern—restricted workflow</option>
-            </select></label>
-            <label className="check-label"><input type="checkbox" name="anonymous" /> Hide my name from the selected audience</label>
-            <label className="check-label"><input type="checkbox" name="allowPrayed" defaultChecked /> Let members mark that they prayed</label>
-            <label className="check-label"><input type="checkbox" name="allowEncouragement" defaultChecked /> Allow encouragement and Scripture comments</label>
+            <label>
+              Short title
+              <input name="title" required minLength={2} maxLength={180} />
+            </label>
+            <label>
+              Category
+              <select name="category" defaultValue="general">
+                {Object.entries(categoryLabels).map(([value, label]) => (
+                  <option value={value} key={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="span-2">
+              Prayer request
+              <textarea name="text" rows={6} required minLength={3} maxLength={5000} />
+            </label>
+            <label>
+              Who may see it?
+              <select
+                name="visibility"
+                value={createVisibility}
+                onChange={(event) => setCreateVisibility(event.target.value as PrayerVisibility)}
+              >
+                <option value="church">Approved church members</option>
+                {contexts.groups.length ? <option value="group">One of my groups</option> : null}
+                {contexts.ministries.length ? (
+                  <option value="ministry">One of my ministries</option>
+                ) : null}
+                <option value="leaders_only">Authorized ministry leaders only</option>
+                <option value="private">Private to me</option>
+              </select>
+            </label>
+            <label>
+              Routing
+              <select name="sensitivity" defaultValue="normal">
+                <option value="normal">Normal prayer request</option>
+                <option value="pastoral">Pastoral and restricted</option>
+                <option value="safeguarding">Safeguarding concern—restricted workflow</option>
+              </select>
+            </label>
+            {createVisibility === "group" || createVisibility === "ministry" ? (
+              <label className="span-2">
+                Choose {createVisibility}
+                <select name="contextId" required defaultValue="">
+                  <option value="" disabled>
+                    Select an authorized {createVisibility}
+                  </option>
+                  {selectedContexts.map((context) => (
+                    <option value={context.id} key={context.id}>
+                      {context.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+            <label className="check-label">
+              <input type="checkbox" name="anonymous" /> Hide my name from the selected audience
+            </label>
+            <label className="check-label">
+              <input type="checkbox" name="allowPrayed" defaultChecked /> Let members mark that they prayed
+            </label>
+            <label className="check-label">
+              <input type="checkbox" name="allowEncouragement" defaultChecked /> Allow encouragement and Scripture comments
+            </label>
             <button type="submit">Add to Prayer Well</button>
           </form>
           <p className="module-boundary">
             Prayer content is excluded from advertising, search targeting, visitor profiling, and
             default AI processing. Anonymous requests separate the owner mapping from the member feed.
           </p>
-          {mode === "showcase" ? <button type="button" className="module-secondary" onClick={resetShowcase}>Reset showcase</button> : null}
+          {mode === "showcase" ? (
+            <button type="button" className="module-secondary" onClick={resetShowcase}>
+              Reset showcase
+            </button>
+          ) : null}
         </section>
       ) : null}
     </div>
