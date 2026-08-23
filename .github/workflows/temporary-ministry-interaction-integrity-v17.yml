@@ -1,0 +1,120 @@
+name: Temporary Ministry Interaction Integrity V17
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+jobs:
+  finish-interaction-integrity:
+    if: github.actor == 'github-actions[bot]' && contains(github.event.head_commit.message, 'security: prevent live fallback to showcase data')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out live-data-safe branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Integrate final interaction-integrity release artifacts
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+
+          def read(path: str) -> str:
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path: str, content: str) -> None:
+              Path(path).write_text(content, encoding="utf-8")
+
+          verify_path = "scripts/verify-structure.mjs"
+          verify = read(verify_path)
+          required = [
+              "supabase/migrations/0036_enforce_ministry_interaction_integrity.sql",
+              "supabase/tests/0012_ministry_interaction_integrity.test.sql",
+          ]
+          for item in required:
+              if item not in verify:
+                  verify = verify.replace("const required = [", f"const required = [\n  {item!r},", 1)
+          write(verify_path, verify)
+
+          docs_path = "docs/GIFTS_PRAYER_RECOVERY_MINISTRIES.md"
+          docs = read(docs_path).replace("Migrations 0027–0035", "Migrations 0027–0036")
+          if "## Interaction integrity" not in docs:
+              docs += '''
+
+## Interaction integrity
+
+- A gift responder may express or withdraw interest; only the post owner or an authorized moderator may accept, decline, or complete that response.
+- A prayer request owner or restricted leader may publish an update; another member may pray, encourage, or share Scripture only when the request permits it.
+- A recovery participant cannot transform a discussion into an announcement or leader-only post, and cannot access or comment on leader-only threads through a record identifier.
+- These boundaries are enforced by database policies and triggers in addition to the interface.
+'''
+          write(docs_path, docs)
+
+          checklist_path = "docs/RELEASE_CHECKLIST_GIFTS_PRAYER_RECOVERY.md"
+          checklist = read(checklist_path)
+          additions = [
+              "- [ ] Gift responders cannot accept or complete their own responses.",
+              "- [ ] Only a prayer owner or restricted leader can publish an owner update.",
+              "- [ ] Recovery participants cannot access or comment on leader-only threads by record ID.",
+              "- [ ] Recovery participants cannot convert their posts into announcements or leader-only content.",
+          ]
+          anchor = "- [ ] Private gift responses are visible only to the responder, post owner, and authorized moderators."
+          if additions[0] not in checklist:
+              if anchor in checklist:
+                  checklist = checklist.replace(anchor, anchor + "\n" + "\n".join(additions), 1)
+              else:
+                  checklist += "\n" + "\n".join(additions) + "\n"
+          write(checklist_path, checklist)
+
+          gifts_api_path = "apps/church-hub/app/api/gifts/route.ts"
+          gifts_api = read(gifts_api_path)
+          if "hasPermission(" not in gifts_api:
+              gifts_api = gifts_api.replace(
+                  'import { hasPermission } from "@church/authorization";\n',
+                  "",
+              )
+          write(gifts_api_path, gifts_api)
+
+          test_path = "supabase/tests/0012_ministry_interaction_integrity.test.sql"
+          test = read(test_path)
+          if "select plan(11);" not in test:
+              raise RuntimeError("Ministry interaction test plan must remain 11 assertions")
+          PY
+
+      - name: Remove temporary V17 workflow
+        run: rm -f .github/workflows/temporary-ministry-interaction-integrity-v17.yml
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies and format
+        run: |
+          pnpm install --no-frozen-lockfile
+          pnpm format
+
+      - name: Verify required architecture
+        run: pnpm verify:structure
+
+      - name: Commit final interaction-integrity release candidate
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "security: finish ministry interaction integrity"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
