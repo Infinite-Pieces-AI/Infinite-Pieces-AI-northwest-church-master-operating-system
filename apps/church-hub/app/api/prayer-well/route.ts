@@ -30,11 +30,76 @@ function text(value: unknown, maximum: number, required = false): string | null 
   return normalized || null;
 }
 
+async function loadContexts(client: SupabaseClient, viewerId: string) {
+  const [ministryMembershipResult, groupMembershipResult] = await Promise.all([
+    client
+      .from("ministry_memberships")
+      .select("ministry_id")
+      .eq("profile_id", viewerId)
+      .is("ended_at", null),
+    client
+      .from("group_memberships")
+      .select("group_id")
+      .eq("profile_id", viewerId)
+      .is("ended_at", null),
+  ]);
+  if (ministryMembershipResult.error) throw ministryMembershipResult.error;
+  if (groupMembershipResult.error) throw groupMembershipResult.error;
+
+  const ministryIds = Array.from(
+    new Set(
+      ((ministryMembershipResult.data ?? []) as Row[])
+        .map((row) => String(row.ministry_id ?? ""))
+        .filter(Boolean),
+    ),
+  );
+  const groupIds = Array.from(
+    new Set(
+      ((groupMembershipResult.data ?? []) as Row[])
+        .map((row) => String(row.group_id ?? ""))
+        .filter(Boolean),
+    ),
+  );
+
+  const [ministriesResult, groupsResult] = await Promise.all([
+    ministryIds.length
+      ? client
+          .from("ministries")
+          .select("id,name")
+          .in("id", ministryIds)
+          .eq("active", true)
+          .order("name")
+      : Promise.resolve({ data: [], error: null }),
+    groupIds.length
+      ? client
+          .from("groups")
+          .select("id,name")
+          .in("id", groupIds)
+          .eq("status", "active")
+          .order("name")
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (ministriesResult.error) throw ministriesResult.error;
+  if (groupsResult.error) throw groupsResult.error;
+
+  return {
+    ministries: ((ministriesResult.data ?? []) as Row[]).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? "Ministry"),
+    })),
+    groups: ((groupsResult.data ?? []) as Row[]).map((row) => ({
+      id: String(row.id),
+      name: String(row.name ?? "Group"),
+    })),
+  };
+}
+
 async function loadPayload(client: SupabaseClient, viewerId: string) {
+  const contexts = await loadContexts(client, viewerId);
   const { data: requestData, error: requestError } = await client
     .from("prayer_requests")
     .select(
-      "id,title,request_text,submitted_by_display,display_anonymous,visibility,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at",
+      "id,title,request_text,submitted_by_display,display_anonymous,visibility,ministry_id,group_id,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at",
     )
     .in("status", ["open", "answered", "archived"])
     .order("created_at", { ascending: false })
@@ -77,41 +142,58 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       .filter((owner) => String(owner.profile_id) === viewerId)
       .map((owner) => String(owner.request_id)),
   );
+  const ministryMap = new Map(contexts.ministries.map((row) => [row.id, row.name]));
+  const groupMap = new Map(contexts.groups.map((row) => [row.id, row.name]));
 
   return {
-    requests: requests.map((request) => ({
-      id: String(request.id),
-      title: String(request.title),
-      text: String(request.request_text),
-      authorName:
-        request.display_anonymous === true
-          ? "Anonymous member"
-          : String(request.submitted_by_display ?? "Church member"),
-      isMine: ownedIds.has(String(request.id)),
-      anonymous: request.display_anonymous === true,
-      visibility: String(request.visibility),
-      category: String(request.category),
-      sensitivity: String(request.sensitivity),
-      allowEncouragement: request.allow_encouragement === true,
-      allowPrayed: request.allow_prayed_events === true,
-      status: String(request.status),
-      answeredSummary:
-        typeof request.answered_summary === "string" ? request.answered_summary : undefined,
-      answeredAt: typeof request.answered_at === "string" ? request.answered_at : undefined,
-      createdAt: String(request.created_at),
-      interactions: interactions
-        .filter((interaction) => String(interaction.request_id) === String(request.id))
-        .map((interaction) => ({
-          id: String(interaction.id),
-          type: String(interaction.interaction_type),
-          authorName:
-            String(interaction.created_by) === viewerId
-              ? "You"
-              : profileMap.get(String(interaction.created_by)) ?? "Church member",
-          body: typeof interaction.body === "string" ? interaction.body : undefined,
-          createdAt: String(interaction.created_at),
-        })),
-    })),
+    contexts,
+    requests: requests.map((request) => {
+      const visibility = String(request.visibility);
+      const audienceLabel =
+        visibility === "ministry"
+          ? ministryMap.get(String(request.ministry_id ?? "")) ?? "Assigned ministry"
+          : visibility === "group"
+            ? groupMap.get(String(request.group_id ?? "")) ?? "Assigned group"
+            : visibility === "church"
+              ? "Approved church members"
+              : visibility === "leaders_only"
+                ? "Authorized ministry leaders"
+                : "Private";
+      return {
+        id: String(request.id),
+        title: String(request.title),
+        text: String(request.request_text),
+        authorName:
+          request.display_anonymous === true
+            ? "Anonymous member"
+            : String(request.submitted_by_display ?? "Church member"),
+        isMine: ownedIds.has(String(request.id)),
+        anonymous: request.display_anonymous === true,
+        visibility,
+        audienceLabel,
+        category: String(request.category),
+        sensitivity: String(request.sensitivity),
+        allowEncouragement: request.allow_encouragement === true,
+        allowPrayed: request.allow_prayed_events === true,
+        status: String(request.status),
+        answeredSummary:
+          typeof request.answered_summary === "string" ? request.answered_summary : undefined,
+        answeredAt: typeof request.answered_at === "string" ? request.answered_at : undefined,
+        createdAt: String(request.created_at),
+        interactions: interactions
+          .filter((interaction) => String(interaction.request_id) === String(request.id))
+          .map((interaction) => ({
+            id: String(interaction.id),
+            type: String(interaction.interaction_type),
+            authorName:
+              String(interaction.created_by) === viewerId
+                ? "You"
+                : profileMap.get(String(interaction.created_by)) ?? "Church member",
+            body: typeof interaction.body === "string" ? interaction.body : undefined,
+            createdAt: String(interaction.created_at),
+          })),
+      };
+    }),
   };
 }
 
@@ -149,13 +231,22 @@ export async function POST(request: Request) {
       if (!visibilities.has(visibility) || !categories.has(category) || !sensitivities.has(sensitivity)) {
         throw new Error("Unsupported prayer setting.");
       }
+      const contexts = await loadContexts(client, viewer.id);
+      const ministryId = typeof row.ministryId === "string" ? row.ministryId : null;
+      const groupId = typeof row.groupId === "string" ? row.groupId : null;
+      if (visibility === "ministry" && !contexts.ministries.some((context) => context.id === ministryId)) {
+        throw new Error("Choose a ministry you currently belong to.");
+      }
+      if (visibility === "group" && !contexts.groups.some((context) => context.id === groupId)) {
+        throw new Error("Choose a group you currently belong to.");
+      }
       const { error } = await client.rpc("submit_member_prayer_request", {
         p_title: text(row.title, 180, true),
         p_request_text: text(row.requestText, 5000, true),
         p_display_anonymous: row.displayAnonymous === true,
         p_visibility: visibility,
-        p_ministry_id: typeof row.ministryId === "string" ? row.ministryId : null,
-        p_group_id: typeof row.groupId === "string" ? row.groupId : null,
+        p_ministry_id: visibility === "ministry" ? ministryId : null,
+        p_group_id: visibility === "group" ? groupId : null,
         p_category: category,
         p_sensitivity: sensitivity,
         p_allow_encouragement: row.allowEncouragement === true,
