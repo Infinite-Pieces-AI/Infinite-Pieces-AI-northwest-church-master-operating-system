@@ -221,17 +221,11 @@ create table public.service_impact_updates (
   reviewed_at timestamptz,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now()),
-  check ((approved_for_members or approved_for_public) implies (reviewed_by is not null and reviewed_at is not null))
-);
-
--- PostgreSQL does not support an IMPLIES operator; replace the intended check.
-alter table public.service_impact_updates
-  drop constraint if exists service_impact_updates_check;
-alter table public.service_impact_updates
-  add constraint service_impact_updates_approval_check check (
+  constraint service_impact_updates_approval_check check (
     (not approved_for_members and not approved_for_public)
     or (reviewed_by is not null and reviewed_at is not null)
-  );
+  )
+);
 
 create trigger service_location_catalog_set_updated_at
   before update on public.service_location_catalog
