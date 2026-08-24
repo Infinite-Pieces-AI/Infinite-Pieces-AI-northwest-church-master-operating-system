@@ -1,3 +1,4 @@
+// Triggered after the normalization workflow was present on the source branch.
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
@@ -24,13 +25,9 @@ function replaceInFile(path, replacements) {
   }
 }
 
-// Remove the superseded parallel implementation. The canonical implementation
-// is 0028_gifts_prayer_recovery_hardening.sql and its later hardening migrations.
 remove("supabase/migrations/0028_recovery_access_moderation_and_public_interest.sql");
 remove("supabase/migrations/0029_ministry_operational_indexes_and_prayer_routing.sql");
 
-// Keep the original community prayer table intact. The expanded Prayer Well is
-// a separate domain with stronger anonymity, audience, and pastoral routing.
 const migrationFiles = readdirSync(migrationsDir)
   .filter((name) => /^00(?:2[7-9]|3\d|4\d)_.*\.sql$/.test(name))
   .map((name) => join("supabase", "migrations", name));
@@ -129,8 +126,6 @@ writeFileSync(
 );
 console.log("rewrote supabase/migrations/0030_recovery_access_option_rpc.sql");
 
-// Remove one-time workflows so only the permanent CI, database, CodeQL, and
-// production-promotion workflows remain in the pull request.
 const workflowsDir = join(root, ".github", "workflows");
 for (const name of readdirSync(workflowsDir)) {
   if (name.startsWith("temporary-") && name.endsWith(".yml")) {
