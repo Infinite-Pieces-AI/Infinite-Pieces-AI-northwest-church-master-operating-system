@@ -12,6 +12,7 @@ import "./family-showcase.css";
 import "./ministry-expansion.css";
 import "./recovery-access.css";
 import "./hub-more.css";
+import "./service-hub.css";
 
 export const metadata: Metadata = {
   title: { default: "Church Hub", template: "%s | Church Hub" },
