@@ -18,6 +18,13 @@ const tools: ReadonlyArray<{
     permission: "content.draft",
   },
   {
+    title: "Service Hub",
+    description:
+      "Review member-led ideas, verify public sources and partner locations, create volunteer shifts, publish opportunities, and protect sponsorship and safety boundaries.",
+    slug: "service",
+    permission: "content.draft",
+  },
+  {
     title: "Access",
     description:
       "Review applicants, verify identity, issue single-use invitations, and audit role assignments.",
@@ -85,7 +92,7 @@ export default async function AdminPage() {
       <PageHeading
         eyebrow="Role-limited operations"
         title="Ministry Administration"
-        description="Administrative access is divided by responsibility; a developer does not automatically gain pastoral, child, or safeguarding visibility."
+        description="Administrative access is divided by responsibility; a developer does not automatically gain pastoral, child, prayer, recovery, or safeguarding visibility."
       />
       <div className="admin-grid">
         {visibleTools.map((tool) => (
@@ -99,14 +106,15 @@ export default async function AdminPage() {
       </div>
       <section className="hub-panel release-panel">
         <p className="hub-kicker">Production boundary</p>
-        <h2>Real child or member data remains blocked until release gates pass.</h2>
-        <div className="release-meter" aria-label="Illustrative starter readiness: 18 percent">
-          <span style={{ width: "18%" }} />
+        <h2>The complete interfaces can be explored now; live records require approved production connections.</h2>
+        <div className="release-meter" aria-label="Production governance and integration work remains">
+          <span style={{ width: viewer.demo ? "58%" : "82%" }} />
         </div>
         <p>
-          This starter shows architecture and synthetic workflows. Leadership approvals, RLS tests,
-          safeguarding drills, restore tests, accessibility testing, vendor ownership, and Sunday
-          fallback must be completed before production.
+          Interactive showcase mode saves only inside this browser. Production operation requires
+          church-owned Supabase configuration, approved roles, database migrations, moderation and
+          safeguarding owners, restore testing, provider credentials, accessibility review, and
+          Sunday fallback procedures.
         </p>
       </section>
     </>
