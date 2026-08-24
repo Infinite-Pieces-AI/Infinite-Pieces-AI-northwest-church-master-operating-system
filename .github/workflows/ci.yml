@@ -6,18 +6,49 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  normalize-ministry-release:
+    if: github.event_name == 'pull_request' && github.head_ref == 'feature/gifts-prayer-recovery-ministries' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Normalize ministry release candidate
+        run: node scripts/normalize-ministry-release.mjs
+      - name: Commit normalized ministry release
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No normalization changes were produced."
+            exit 0
+          fi
+          git commit -m "fix: normalize ministry migrations and release workflows"
+          git push origin HEAD:${{ github.head_ref }}
+
   validate:
+    needs: normalize-ministry-release
+    if: always() && (needs.normalize-ministry-release.result == 'success' || needs.normalize-ministry-release.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10.14.0
@@ -55,6 +86,8 @@ jobs:
     needs: validate
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10.14.0
