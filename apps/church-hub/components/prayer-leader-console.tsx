@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface RestrictedPrayer {
   id: string;
@@ -16,13 +16,80 @@ interface RestrictedPrayer {
   createdAt: string;
 }
 
-export function PrayerLeaderConsole() {
-  const [requests, setRequests] = useState<RestrictedPrayer[]>([]);
-  const [loading, setLoading] = useState(true);
+const previewRequests: RestrictedPrayer[] = [
+  {
+    id: "prayer-restricted-1",
+    title: "Please pray for wisdom in a difficult family season",
+    requestText:
+      "I would appreciate prayer and a private conversation with a ministry leader. Please do not place the details in the church-wide feed.",
+    ownerName: "Member requesting pastoral follow-up",
+    displayAnonymous: true,
+    sensitivity: "pastoral",
+    category: "family",
+    workflowStatus: "open",
+    createdAt: new Date(Date.now() - 75 * 60_000).toISOString(),
+  },
+  {
+    id: "prayer-restricted-2",
+    title: "Private safety-related follow-up requested",
+    requestText:
+      "This request was intentionally routed outside the member Prayer Well so an authorized safety leader can follow the church's written protocol.",
+    ownerName: "Restricted member identity",
+    displayAnonymous: true,
+    sensitivity: "safeguarding",
+    category: "safety",
+    workflowStatus: "safeguarding_followup",
+    assignedTo: "Safety Leader",
+    leaderNote: "Use the church's approved safeguarding process; do not copy details into ordinary channels.",
+    createdAt: new Date(Date.now() - 5 * 60 * 60_000).toISOString(),
+  },
+  {
+    id: "prayer-restricted-3",
+    title: "Pastoral encouragement after a loss",
+    requestText:
+      "The member asked for prayer and for someone from the ministry team to check in privately this week.",
+    ownerName: "Member requesting pastoral follow-up",
+    displayAnonymous: false,
+    sensitivity: "pastoral",
+    category: "grief",
+    workflowStatus: "pastoral_followup",
+    assignedTo: "Ministry Leader",
+    createdAt: new Date(Date.now() - 26 * 60 * 60_000).toISOString(),
+  },
+];
+
+const storageKey = "church-hub-prayer-leader-showcase-v1";
+
+export function PrayerLeaderConsole({ mode }: { mode: "showcase" | "live" }) {
+  const [requests, setRequests] = useState<RestrictedPrayer[]>(
+    mode === "showcase" ? previewRequests : [],
+  );
+  const [loading, setLoading] = useState(mode === "live");
   const [notice, setNotice] = useState("");
   const [filter, setFilter] = useState("open");
 
-  async function load() {
+  useEffect(() => {
+    if (mode === "showcase") {
+      const saved = window.localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as RestrictedPrayer[];
+          if (Array.isArray(parsed)) setRequests(parsed);
+        } catch {
+          window.localStorage.removeItem(storageKey);
+        }
+      }
+      setLoading(false);
+      return;
+    }
+    void loadLive();
+  }, [mode, filter]);
+
+  useEffect(() => {
+    if (mode === "showcase") window.localStorage.setItem(storageKey, JSON.stringify(requests));
+  }, [mode, requests]);
+
+  async function loadLive() {
     setLoading(true);
     try {
       const response = await fetch(`/api/admin/prayer?filter=${encodeURIComponent(filter)}`, {
@@ -44,9 +111,14 @@ export function PrayerLeaderConsole() {
     }
   }
 
-  useEffect(() => {
-    void load();
-  }, [filter]);
+  const visibleRequests = useMemo(() => {
+    if (mode !== "showcase") return requests;
+    if (filter === "pastoral") return requests.filter((request) => request.sensitivity === "pastoral");
+    if (filter === "safeguarding")
+      return requests.filter((request) => request.sensitivity === "safeguarding");
+    if (filter === "closed") return requests.filter((request) => request.workflowStatus === "closed");
+    return requests.filter((request) => request.workflowStatus !== "closed");
+  }, [filter, mode, requests]);
 
   async function update(request: RestrictedPrayer, workflowStatus: string) {
     const note = window.prompt(
@@ -54,6 +126,22 @@ export function PrayerLeaderConsole() {
       request.leaderNote ?? "",
     );
     if (note === null) return;
+    if (mode === "showcase") {
+      setRequests((current) =>
+        current.map((row) =>
+          row.id === request.id
+            ? {
+                ...row,
+                workflowStatus,
+                leaderNote: note || undefined,
+                assignedTo: workflowStatus === "assigned" ? "Local Preview Leader" : row.assignedTo,
+              }
+            : row,
+        ),
+      );
+      setNotice("Showcase workflow updated in this browser only.");
+      return;
+    }
     try {
       const response = await fetch("/api/admin/prayer", {
         method: "POST",
@@ -64,7 +152,7 @@ export function PrayerLeaderConsole() {
       if (!response.ok)
         throw new Error(payload.message ?? "The restricted prayer workflow could not be updated.");
       setNotice("Restricted prayer workflow updated.");
-      await load();
+      await loadLive();
     } catch (error) {
       setNotice(
         error instanceof Error
@@ -72,6 +160,13 @@ export function PrayerLeaderConsole() {
           : "The restricted prayer workflow could not be updated.",
       );
     }
+  }
+
+  function resetShowcase() {
+    setRequests(previewRequests);
+    window.localStorage.removeItem(storageKey);
+    setFilter("open");
+    setNotice("Prayer leader showcase restored.");
   }
 
   return (
@@ -95,6 +190,11 @@ export function PrayerLeaderConsole() {
           an in-app note as the only report or response.
         </span>
       </p>
+      {mode === "showcase" ? (
+        <p className="module-notice">
+          Interactive showcase: these restricted examples and workflow changes stay in this browser.
+        </p>
+      ) : null}
       {notice ? (
         <p className="module-notice" role="status">
           {notice}
@@ -103,7 +203,7 @@ export function PrayerLeaderConsole() {
       {loading ? <p className="module-empty">Loading restricted requests…</p> : null}
       {!loading ? (
         <div className="prayer-leader-list">
-          {requests.map((request) => (
+          {visibleRequests.map((request) => (
             <article key={request.id}>
               <header>
                 <div>
@@ -153,10 +253,15 @@ export function PrayerLeaderConsole() {
               </div>
             </article>
           ))}
-          {!requests.length ? (
+          {!visibleRequests.length ? (
             <p className="module-empty">No restricted prayer requests match this queue.</p>
           ) : null}
         </div>
+      ) : null}
+      {mode === "showcase" ? (
+        <button type="button" className="module-secondary" onClick={resetShowcase}>
+          Reset prayer leader showcase
+        </button>
       ) : null}
     </section>
   );
