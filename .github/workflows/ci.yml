@@ -28,7 +28,22 @@ jobs:
       - name: Normalize ministry release candidate
         shell: bash
         run: |
-          node -e "const fs=require('node:fs');const p='scripts/normalize-ministry-release.mjs';const s=fs.readFileSync(p,'utf8').replaceAll('0039_recovery_outreach_partner_actions.sql','0041_recovery_outreach_partner_actions.sql');fs.writeFileSync(p,s);"
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = "scripts/normalize-ministry-release.mjs";
+          let source = fs.readFileSync(path, "utf8");
+          source = source.replaceAll(
+            "0039_recovery_outreach_partner_actions.sql",
+            "0041_recovery_outreach_partner_actions.sql",
+          );
+          const needle = `  replaceInFile(path, canonicalReplacements);\n}\n`;
+          const restoration = `${needle}\n// Keep the original community prayer-intake table and its policies/tests.\n// The richer Prayer Well uses member_prayer_requests from migration 0027.\nfor (const path of [\n  "supabase/migrations/0005_community.sql",\n  "supabase/migrations/0008_rls_helpers_and_policies.sql",\n  "supabase/tests/0002_rls_boundaries.test.sql",\n]) {\n  replaceInFile(path, [["member_prayer_requests", "prayer_requests"]]);\n}\n`;
+          if (!source.includes("Keep the original community prayer-intake table")) {
+            if (!source.includes(needle)) throw new Error("Normalizer insertion point was not found");
+            source = source.replace(needle, restoration);
+          }
+          fs.writeFileSync(path, source);
+          NODE
           node scripts/normalize-ministry-release.mjs
       - name: Commit normalized ministry release
         shell: bash
