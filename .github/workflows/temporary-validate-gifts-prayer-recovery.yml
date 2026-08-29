@@ -1,0 +1,108 @@
+name: Temporary Validate Gifts Prayer Recovery
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-validate-gifts-prayer-recovery
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Verify architecture and safety
+        run: |
+          pnpm verify:structure
+          pnpm verify:no-real-data
+          pnpm verify:sql-static
+          pnpm verify:workspace
+      - name: Formatting
+        run: pnpm format:check
+      - name: Lint
+        run: pnpm lint
+      - name: Type check
+        run: pnpm typecheck
+      - name: Unit and integration tests
+        run: pnpm test:unit
+      - name: Production builds
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_PUBLIC_HUB_URL: http://localhost:3001
+          NEXT_PUBLIC_CHURCH_HUB_URL: http://localhost:3001
+          NEXT_PUBLIC_OUTREACH_URL: http://localhost:3002
+          NEXT_PUBLIC_ENABLE_DEMO: "false"
+          ALLOW_LOCAL_PREVIEW_MODE: "false"
+
+  database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start and reset local Supabase
+        run: |
+          pnpm supabase:start
+          pnpm supabase:reset
+      - name: Run pgTAP and RLS tests
+        run: pnpm supabase:test
+      - name: Verify generated types are reproducible
+        run: |
+          cp packages/database/src/generated.types.ts /tmp/generated.types.before.ts
+          pnpm supabase:types
+          diff -u /tmp/generated.types.before.ts packages/database/src/generated.types.ts
+      - name: Stop local Supabase
+        if: always()
+        run: pnpm supabase:stop --no-backup || true
+
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Browser and accessibility tests
+        run: pnpm test:e2e
+        env:
+          NEXT_PUBLIC_ENABLE_DEMO: "true"
+          ALLOW_LOCAL_PREVIEW_MODE: "true"
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: gifts-prayer-recovery-playwright-report
+          path: playwright-report/
+          retention-days: 7
