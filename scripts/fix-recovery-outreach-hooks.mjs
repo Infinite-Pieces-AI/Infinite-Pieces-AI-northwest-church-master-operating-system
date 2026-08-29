@@ -32,11 +32,11 @@ if (firstEffectStart < 0 || firstEffectCloseStart < 0) {
 const firstEffectEnd = firstEffectCloseStart + firstEffectClose.length;
 
 const safeModeEffect = `  useEffect(() => {
-    if (mode === "showcase") {
-      const stored = window.localStorage.getItem(storageKey);
-      if (!stored) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      if (mode === "showcase") {
+        const stored = window.localStorage.getItem(storageKey);
+        if (!stored) return;
 
-      const frame = window.requestAnimationFrame(() => {
         try {
           const parsed = JSON.parse(stored) as RecoveryOutreachPayload;
           if (
@@ -50,16 +50,16 @@ const safeModeEffect = `  useEffect(() => {
         } catch {
           window.localStorage.removeItem(storageKey);
         }
-      });
+        return;
+      }
 
-      return () => window.cancelAnimationFrame(frame);
-    }
+      void refreshLive();
+    });
 
-    void refreshLive();
-    return undefined;
+    return () => window.cancelAnimationFrame(frame);
   }, [mode, refreshLive]);`;
 
 source = `${source.slice(0, firstEffectStart)}${refreshCallback}\n\n${safeModeEffect}${source.slice(firstEffectEnd)}`;
 
 writeFileSync(path, source, "utf8");
-console.log("Recovery Outreach hooks were rewritten with stable callback and asynchronous storage hydration.");
+console.log("Recovery Outreach hooks were rewritten with stable callback and scheduled storage/live hydration.");
