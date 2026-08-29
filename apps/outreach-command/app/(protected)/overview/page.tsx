@@ -20,11 +20,7 @@ const commandLinks: ReadonlyArray<readonly [string, string, string]> = [
     "Search Intelligence",
     "See aggregate query, page, and AI-visibility evidence.",
   ],
-  [
-    "/visitor-crm",
-    "Visitor CRM",
-    "Coordinate consented follow-up after a person submits a form.",
-  ],
+  ["/visitor-crm", "Visitor CRM", "Coordinate consented follow-up after a person submits a form."],
   [
     "/production-readiness",
     "Production readiness",

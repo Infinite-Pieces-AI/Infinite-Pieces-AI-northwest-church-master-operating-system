@@ -1,11 +1,5 @@
 export type RecoveryInterestStatus =
-  | "new"
-  | "assigned"
-  | "contacted"
-  | "conversation"
-  | "closed"
-  | "opted_out"
-  | "removed";
+  "new" | "assigned" | "contacted" | "conversation" | "closed" | "opted_out" | "removed";
 
 export interface RecoveryInterestRecord {
   id: string;
@@ -31,12 +25,7 @@ export interface RecoveryInterestRecord {
 }
 
 export type RecoveryTopicStatus =
-  | "new"
-  | "review"
-  | "content_queued"
-  | "partner_research"
-  | "dismissed"
-  | "expired";
+  "new" | "review" | "content_queued" | "partner_research" | "dismissed" | "expired";
 
 export interface RecoveryPublicTopic {
   id: string;
