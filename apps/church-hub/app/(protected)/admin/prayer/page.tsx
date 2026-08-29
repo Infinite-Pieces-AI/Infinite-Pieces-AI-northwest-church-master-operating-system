@@ -19,7 +19,7 @@ export default async function PrayerLeaderPage() {
         title="Restricted prayer routing"
         description="Coordinate authorized pastoral and safeguarding follow-up without exposing sensitive requests in the member Prayer Well, ordinary channels, AI tools, or Outreach OS."
       />
-      <PrayerLeaderConsole />
+      <PrayerLeaderConsole mode={viewer.demo ? "showcase" : "live"} />
     </>
   );
 }
