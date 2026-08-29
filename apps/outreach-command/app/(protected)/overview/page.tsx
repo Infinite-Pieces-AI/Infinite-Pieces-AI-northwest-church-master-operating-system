@@ -3,6 +3,35 @@ import { LiveDataNotice, LiveMetric } from "@/components/live-data-ui";
 import { PageHeading } from "@/components/page-heading";
 import { loadOutreachOverview, outreachBackendConfigured } from "@/lib/live-intelligence";
 
+const commandLinks: ReadonlyArray<readonly [string, string, string]> = [
+  [
+    "/member-access",
+    "Member access",
+    "Review Church Hub invitation requests and voluntary public inquiries.",
+  ],
+  ["/morning-brief", "Morning brief", "See the highest-priority human actions for the day."],
+  [
+    "/radar",
+    "Command Radar",
+    "Review approved public conversation signals without private-group monitoring.",
+  ],
+  [
+    "/search-intelligence",
+    "Search Intelligence",
+    "See aggregate query, page, and AI-visibility evidence.",
+  ],
+  [
+    "/visitor-crm",
+    "Visitor CRM",
+    "Coordinate consented follow-up after a person submits a form.",
+  ],
+  [
+    "/production-readiness",
+    "Production readiness",
+    "See which integrations and governance gates are configured.",
+  ],
+];
+
 export default async function OverviewPage() {
   const overview = await loadOutreachOverview();
 
@@ -67,38 +96,7 @@ export default async function OverviewPage() {
         />
       </div>
       <section className="live-command-grid">
-        {[
-          [
-            "/member-access",
-            "Member access",
-            "Review Church Hub invitation requests and voluntary public inquiries.",
-          ],
-          [
-            "/morning-brief",
-            "Morning brief",
-            "See the highest-priority human actions for the day.",
-          ],
-          [
-            "/radar",
-            "Command Radar",
-            "Review approved public conversation signals without private-group monitoring.",
-          ],
-          [
-            "/search-intelligence",
-            "Search Intelligence",
-            "See aggregate query, page, and AI-visibility evidence.",
-          ],
-          [
-            "/visitor-crm",
-            "Visitor CRM",
-            "Coordinate consented follow-up after a person submits a form.",
-          ],
-          [
-            "/production-readiness",
-            "Production readiness",
-            "See which integrations and governance gates are configured.",
-          ],
-        ].map(([href, title, description]) => (
+        {commandLinks.map(([href, title, description]) => (
           <Link href={href} key={href}>
             <span aria-hidden="true">↗</span>
             <strong>{title}</strong>
