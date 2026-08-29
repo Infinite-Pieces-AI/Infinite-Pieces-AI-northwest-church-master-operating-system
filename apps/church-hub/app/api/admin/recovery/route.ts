@@ -31,7 +31,9 @@ async function authorizedViewer() {
 async function loadPayload(client: SupabaseClient) {
   const { data: programData, error: programError } = await client
     .from("recovery_programs")
-    .select("id,display_name,program_type,official_program_confirmation,public_summary,meeting_day,meeting_time,general_location,status")
+    .select(
+      "id,display_name,program_type,official_program_confirmation,public_summary,meeting_day,meeting_time,general_location,status",
+    )
     .order("created_at", { ascending: false });
   if (programError) throw programError;
   const programs = (programData ?? []) as Row[];
@@ -46,10 +48,7 @@ async function loadPayload(client: SupabaseClient) {
           .is("ended_at", null)
       : Promise.resolve({ data: [], error: null }),
     programIds.length
-      ? client
-          .from("recovery_sessions")
-          .select("program_id,id,status")
-          .in("program_id", programIds)
+      ? client.from("recovery_sessions").select("program_id,id,status").in("program_id", programIds)
       : Promise.resolve({ data: [], error: null }),
     programIds.length
       ? client
@@ -108,8 +107,7 @@ async function loadPayload(client: SupabaseClient) {
       programId: String(request.program_id),
       programName: programNameMap.get(String(request.program_id)) ?? "Recovery Ministry",
       profileName: profileMap.get(String(request.profile_id)) ?? "Member",
-      requestMessage:
-        typeof request.reason === "string" ? request.reason : undefined,
+      requestMessage: typeof request.reason === "string" ? request.reason : undefined,
       status: String(request.status),
       createdAt: String(request.created_at),
     })),
@@ -118,19 +116,25 @@ async function loadPayload(client: SupabaseClient) {
 
 export async function GET() {
   const viewer = await authorizedViewer();
-  if (!viewer) return NextResponse.json({ message: "Recovery leader access is required." }, { status: 403 });
+  if (!viewer)
+    return NextResponse.json({ message: "Recovery leader access is required." }, { status: 403 });
   try {
     return NextResponse.json(await loadPayload(dynamicClient(await createClient())));
   } catch {
-    return NextResponse.json({ message: "Recovery administration could not be loaded." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Recovery administration could not be loaded." },
+      { status: 503 },
+    );
   }
 }
 
 export async function POST(request: Request) {
   const viewer = await authorizedViewer();
-  if (!viewer) return NextResponse.json({ message: "Recovery leader access is required." }, { status: 403 });
+  if (!viewer)
+    return NextResponse.json({ message: "Recovery leader access is required." }, { status: 403 });
   const body: unknown = await request.json().catch(() => null);
-  if (!body || typeof body !== "object") return NextResponse.json({ message: "Invalid request." }, { status: 400 });
+  if (!body || typeof body !== "object")
+    return NextResponse.json({ message: "Invalid request." }, { status: 400 });
   const row = body as Row;
   const action = text(row.action, 80, true);
   const client = dynamicClient(await createClient());

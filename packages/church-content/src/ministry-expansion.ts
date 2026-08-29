@@ -68,7 +68,9 @@ const memberExpansionDestinations: readonly ExpandedMinistryDestination[] = [
       "lend",
       "marketplace",
     ],
-    reasons: ["You asked about spiritual gifts, practical skills, offering help, or finding a need."],
+    reasons: [
+      "You asked about spiritual gifts, practical skills, offering help, or finding a need.",
+    ],
   },
   {
     id: "prayer-well",
@@ -87,7 +89,9 @@ const memberExpansionDestinations: readonly ExpandedMinistryDestination[] = [
       "thanksgiving prayer",
       "post prayer",
     ],
-    reasons: ["You asked about a prayer request, the prayer list, encouragement, or answered prayer."],
+    reasons: [
+      "You asked about a prayer request, the prayer list, encouragement, or answered prayer.",
+    ],
   },
   {
     id: "recovery-ministry",
@@ -110,7 +114,9 @@ const memberExpansionDestinations: readonly ExpandedMinistryDestination[] = [
       "celebrate recovery",
       "treatment resources",
     ],
-    reasons: ["You asked about the private recovery ministry, its weekly journey, group, or resources."],
+    reasons: [
+      "You asked about the private recovery ministry, its weekly journey, group, or resources.",
+    ],
   },
 ] as const;
 
@@ -155,7 +161,8 @@ export function expansionDestinationsForScope(
   scope: MinistryNavigationScope,
   includePrivileged = false,
 ): ExpandedMinistryDestination[] {
-  const destinations = scope === "public" ? publicExpansionDestinations : memberExpansionDestinations;
+  const destinations =
+    scope === "public" ? publicExpansionDestinations : memberExpansionDestinations;
   return destinations.filter((destination) => includePrivileged || !destination.privileged);
 }
 
@@ -173,6 +180,7 @@ export function recommendExpansionDestinations(input: {
     .slice(0, limit)
     .map((row) => ({
       ...row,
-      explanation: row.destination.reasons[0] ?? `This destination matches the question you entered.`,
+      explanation:
+        row.destination.reasons[0] ?? `This destination matches the question you entered.`,
     }));
 }

@@ -5,7 +5,17 @@ import { createClient } from "@/lib/supabase/server";
 
 type Row = Record<string, unknown>;
 const visibilities = new Set(["church", "ministry", "group", "leaders_only", "private"]);
-const categories = new Set(["general", "health", "family", "work", "grief", "faith", "recovery", "thanksgiving", "other"]);
+const categories = new Set([
+  "general",
+  "health",
+  "family",
+  "work",
+  "grief",
+  "faith",
+  "recovery",
+  "thanksgiving",
+  "other",
+]);
 const sensitivities = new Set(["normal", "pastoral", "safeguarding"]);
 const interactionTypes = new Set(["prayed", "encouragement", "scripture", "update"]);
 
@@ -57,7 +67,9 @@ async function loadAudiences(client: SupabaseClient, viewerId: string) {
 async function loadPayload(client: SupabaseClient, viewerId: string) {
   const { data: requestData, error: requestError } = await client
     .from("member_prayer_requests")
-    .select("id,title,request_text,submitted_by_display,display_anonymous,visibility,ministry_id,group_id,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at")
+    .select(
+      "id,title,request_text,submitted_by_display,display_anonymous,visibility,ministry_id,group_id,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at",
+    )
     .in("status", ["open", "answered", "archived"])
     .order("created_at", { ascending: false })
     .limit(200);
@@ -70,7 +82,11 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       ? client.from("prayer_request_owners").select("request_id,profile_id").in("request_id", ids)
       : Promise.resolve({ data: [], error: null }),
     ids.length
-      ? client.from("prayer_interactions").select("id,request_id,created_by,interaction_type,body,created_at").in("request_id", ids).order("created_at", { ascending: true })
+      ? client
+          .from("prayer_interactions")
+          .select("id,request_id,created_by,interaction_type,body,created_at")
+          .in("request_id", ids)
+          .order("created_at", { ascending: true })
       : Promise.resolve({ data: [], error: null }),
     loadAudiences(client, viewerId),
   ]);
@@ -78,13 +94,26 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
   if (interactionResult.error) throw interactionResult.error;
 
   const interactions = (interactionResult.data ?? []) as Row[];
-  const authorIds = Array.from(new Set(interactions.map((interaction) => String(interaction.created_by ?? "")).filter(Boolean)));
+  const authorIds = Array.from(
+    new Set(
+      interactions.map((interaction) => String(interaction.created_by ?? "")).filter(Boolean),
+    ),
+  );
   const profileResult = authorIds.length
     ? await client.from("profiles").select("id,display_name").in("id", authorIds)
     : { data: [], error: null };
   if (profileResult.error) throw profileResult.error;
-  const profileMap = new Map(((profileResult.data ?? []) as Row[]).map((profile) => [String(profile.id), String(profile.display_name ?? "Member")]));
-  const ownedIds = new Set(((ownerResult.data ?? []) as Row[]).filter((owner) => String(owner.profile_id) === viewerId).map((owner) => String(owner.request_id)));
+  const profileMap = new Map(
+    ((profileResult.data ?? []) as Row[]).map((profile) => [
+      String(profile.id),
+      String(profile.display_name ?? "Member"),
+    ]),
+  );
+  const ownedIds = new Set(
+    ((ownerResult.data ?? []) as Row[])
+      .filter((owner) => String(owner.profile_id) === viewerId)
+      .map((owner) => String(owner.request_id)),
+  );
 
   return {
     audiences,
@@ -92,7 +121,10 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       id: String(request.id),
       title: String(request.title),
       text: String(request.request_text),
-      authorName: request.display_anonymous === true ? "Anonymous member" : String(request.submitted_by_display ?? "Church member"),
+      authorName:
+        request.display_anonymous === true
+          ? "Anonymous member"
+          : String(request.submitted_by_display ?? "Church member"),
       isMine: ownedIds.has(String(request.id)),
       anonymous: request.display_anonymous === true,
       visibility: String(request.visibility),
@@ -107,7 +139,8 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       allowEncouragement: request.allow_encouragement === true,
       allowPrayed: request.allow_prayed_events === true,
       status: String(request.status),
-      answeredSummary: typeof request.answered_summary === "string" ? request.answered_summary : undefined,
+      answeredSummary:
+        typeof request.answered_summary === "string" ? request.answered_summary : undefined,
       answeredAt: typeof request.answered_at === "string" ? request.answered_at : undefined,
       createdAt: String(request.created_at),
       interactions: interactions
@@ -115,7 +148,10 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
         .map((interaction) => ({
           id: String(interaction.id),
           type: String(interaction.interaction_type),
-          authorName: String(interaction.created_by) === viewerId ? "You" : profileMap.get(String(interaction.created_by)) ?? "Church member",
+          authorName:
+            String(interaction.created_by) === viewerId
+              ? "You"
+              : (profileMap.get(String(interaction.created_by)) ?? "Church member"),
           body: typeof interaction.body === "string" ? interaction.body : undefined,
           createdAt: String(interaction.created_at),
         })),
@@ -125,7 +161,11 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
 
 export async function GET() {
   const viewer = await getViewer();
-  if (!viewer || viewer.demo) return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+  if (!viewer || viewer.demo)
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   try {
     return NextResponse.json(await loadPayload(dynamicClient(await createClient()), viewer.id));
   } catch {
@@ -135,9 +175,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const viewer = await getViewer();
-  if (!viewer || viewer.demo) return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+  if (!viewer || viewer.demo)
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   const body: unknown = await request.json().catch(() => null);
-  if (!body || typeof body !== "object") return NextResponse.json({ message: "Invalid request." }, { status: 400 });
+  if (!body || typeof body !== "object")
+    return NextResponse.json({ message: "Invalid request." }, { status: 400 });
   const row = body as Row;
   const action = text(row.action, 80, true);
   const client = dynamicClient(await createClient());
@@ -147,7 +192,12 @@ export async function POST(request: Request) {
       const visibility = text(row.visibility, 40, true);
       const category = text(row.category, 40, true);
       const sensitivity = text(row.sensitivity, 40, true);
-      if (!visibilities.has(visibility) || !categories.has(category) || !sensitivities.has(sensitivity)) throw new Error("Unsupported prayer setting.");
+      if (
+        !visibilities.has(visibility) ||
+        !categories.has(category) ||
+        !sensitivities.has(sensitivity)
+      )
+        throw new Error("Unsupported prayer setting.");
       const groupId = visibility === "group" ? text(row.audienceId, 80, true) : null;
       const ministryId = visibility === "ministry" ? text(row.audienceId, 80, true) : null;
       const { error } = await client.rpc("submit_member_prayer_request", {
@@ -173,17 +223,31 @@ export async function POST(request: Request) {
         body: type === "prayed" ? null : text(row.body, 2500, true),
       });
       if (error) {
-        if (String(error.code) === "23505" && type === "prayed") throw new Error("You already marked that you prayed for this request today.");
+        if (String(error.code) === "23505" && type === "prayed")
+          throw new Error("You already marked that you prayed for this request today.");
         throw error;
       }
     } else if (action === "mark_answered") {
-      const { error } = await client.from("member_prayer_requests").update({ status: "answered", answered_summary: text(row.answeredSummary, 3000, true), answered_at: new Date().toISOString() }).eq("id", text(row.requestId, 80, true));
+      const { error } = await client
+        .from("member_prayer_requests")
+        .update({
+          status: "answered",
+          answered_summary: text(row.answeredSummary, 3000, true),
+          answered_at: new Date().toISOString(),
+        })
+        .eq("id", text(row.requestId, 80, true));
       if (error) throw error;
     } else {
       return NextResponse.json({ message: "Unsupported action." }, { status: 400 });
     }
     return NextResponse.json({ ok: true });
   } catch (error) {
-    return NextResponse.json({ message: error instanceof Error ? error.message : "The prayer action could not be completed." }, { status: 400 });
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : "The prayer action could not be completed.",
+      },
+      { status: 400 },
+    );
   }
 }

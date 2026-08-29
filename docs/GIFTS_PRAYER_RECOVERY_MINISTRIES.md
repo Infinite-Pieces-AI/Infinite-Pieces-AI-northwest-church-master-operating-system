@@ -147,18 +147,18 @@ Every public reply, organization contact, partnership, content claim, campaign, 
 
 ## Required production owners
 
-| Responsibility | Required owner |
-| --- | --- |
-| Gifts marketplace moderation | Trained moderator and ministry administrator |
-| Prayer Well moderation | Trained community moderator |
-| Pastoral prayer queue | Ministerial owner |
-| Safeguarding prayer routing | Safeguarding authority |
-| Recovery program | Named recovery ministry leader and backup |
-| Treatment resource review | Recovery leader plus administrative/legal review |
-| Public recovery inquiries | Approved outreach/welcome owner |
-| Recovery Outreach partners | Ministry and outreach leadership |
-| Program naming and curriculum | Central church and ministry leadership |
-| Security and incident response | Technical/security owner |
+| Responsibility                 | Required owner                                   |
+| ------------------------------ | ------------------------------------------------ |
+| Gifts marketplace moderation   | Trained moderator and ministry administrator     |
+| Prayer Well moderation         | Trained community moderator                      |
+| Pastoral prayer queue          | Ministerial owner                                |
+| Safeguarding prayer routing    | Safeguarding authority                           |
+| Recovery program               | Named recovery ministry leader and backup        |
+| Treatment resource review      | Recovery leader plus administrative/legal review |
+| Public recovery inquiries      | Approved outreach/welcome owner                  |
+| Recovery Outreach partners     | Ministry and outreach leadership                 |
+| Program naming and curriculum  | Central church and ministry leadership           |
+| Security and incident response | Technical/security owner                         |
 
 ## Release gates
 

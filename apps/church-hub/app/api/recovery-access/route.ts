@@ -18,12 +18,18 @@ function text(value: unknown, maximum: number): string | null {
 export async function GET() {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   const client = dynamicClient(await createClient());
   const { data, error } = await client.rpc("list_recovery_access_options");
   if (error) {
-    return NextResponse.json({ message: "Recovery access options could not be loaded." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Recovery access options could not be loaded." },
+      { status: 503 },
+    );
   }
   return NextResponse.json({
     programs: ((data ?? []) as Row[]).map((row) => ({
@@ -44,7 +50,10 @@ export async function GET() {
 export async function POST(request: Request) {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   const body: unknown = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -53,13 +62,16 @@ export async function POST(request: Request) {
   const row = body as Row;
   const action = text(row.action, 40);
   const programId = text(row.programId, 80);
-  if (!programId) return NextResponse.json({ message: "Choose a recovery program." }, { status: 400 });
+  if (!programId)
+    return NextResponse.json({ message: "Choose a recovery program." }, { status: 400 });
   const client = dynamicClient(await createClient());
 
   if (action === "request") {
     if (row.privacyAgreementAccepted !== true) {
       return NextResponse.json(
-        { message: "Accept the confidentiality and privacy expectations before requesting access." },
+        {
+          message: "Accept the confidentiality and privacy expectations before requesting access.",
+        },
         { status: 400 },
       );
     }
@@ -68,9 +80,14 @@ export async function POST(request: Request) {
       p_message: text(row.message, 1500),
     });
     if (error) {
-      return NextResponse.json({ message: error.message || "The access request could not be submitted." }, { status: 400 });
+      return NextResponse.json(
+        { message: error.message || "The access request could not be submitted." },
+        { status: 400 },
+      );
     }
-    return NextResponse.json({ message: "Your private access request was sent to approved recovery leaders." });
+    return NextResponse.json({
+      message: "Your private access request was sent to approved recovery leaders.",
+    });
   }
 
   if (action === "withdraw") {
@@ -80,13 +97,21 @@ export async function POST(request: Request) {
       .eq("program_id", programId)
       .eq("profile_id", viewer.id)
       .eq("status", "pending");
-    if (error) return NextResponse.json({ message: "The access request could not be withdrawn." }, { status: 400 });
+    if (error)
+      return NextResponse.json(
+        { message: "The access request could not be withdrawn." },
+        { status: 400 },
+      );
     return NextResponse.json({ message: "Your pending access request was withdrawn." });
   }
 
   if (action === "leave") {
     const { error } = await client.rpc("leave_recovery_program", { p_program_id: programId });
-    if (error) return NextResponse.json({ message: "Recovery membership could not be ended." }, { status: 400 });
+    if (error)
+      return NextResponse.json(
+        { message: "Recovery membership could not be ended." },
+        { status: 400 },
+      );
     return NextResponse.json({ message: "Your private recovery membership was ended." });
   }
 

@@ -237,7 +237,9 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
         await sendLive("add_partner", partner as unknown as Record<string, unknown>);
       }
       event.currentTarget.reset();
-      setNotice("The public organization was added to the research queue. No patient or member data was imported.");
+      setNotice(
+        "The public organization was added to the research queue. No patient or member data was imported.",
+      );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The organization could not be added.");
     }
@@ -257,7 +259,9 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
       }
       setNotice("Partnership status updated. Contact remains a human-led church decision.");
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "The partner status could not be updated.");
+      setNotice(
+        error instanceof Error ? error.message : "The partner status could not be updated.",
+      );
     }
   }
 
@@ -319,7 +323,8 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
     publicOrganizations: payload.partners.length,
     publicTopics: payload.topics.length,
     newInquiries: payload.inquiries.filter((inquiry) => inquiry.status === "new").length,
-    approvedPartners: payload.partners.filter((partner) => partner.partnershipStatus === "partner").length,
+    approvedPartners: payload.partners.filter((partner) => partner.partnershipStatus === "partner")
+      .length,
   };
 
   return (
@@ -338,71 +343,170 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
       </section>
 
       <div className="recovery-outreach-metrics">
-        <article><span>Public organizations</span><strong>{counts.publicOrganizations}</strong><small>Research and approved partners only</small></article>
-        <article><span>Public topics</span><strong>{counts.publicTopics}</strong><small>Aggregate or genuinely public sources</small></article>
-        <article><span>New inquiries</span><strong>{counts.newInquiries}</strong><small>Voluntary forms, not identified searchers</small></article>
-        <article><span>Active partnerships</span><strong>{counts.approvedPartners}</strong><small>Church-approved relationships</small></article>
+        <article>
+          <span>Public organizations</span>
+          <strong>{counts.publicOrganizations}</strong>
+          <small>Research and approved partners only</small>
+        </article>
+        <article>
+          <span>Public topics</span>
+          <strong>{counts.publicTopics}</strong>
+          <small>Aggregate or genuinely public sources</small>
+        </article>
+        <article>
+          <span>New inquiries</span>
+          <strong>{counts.newInquiries}</strong>
+          <small>Voluntary forms, not identified searchers</small>
+        </article>
+        <article>
+          <span>Active partnerships</span>
+          <strong>{counts.approvedPartners}</strong>
+          <small>Church-approved relationships</small>
+        </article>
       </div>
 
       <nav className="recovery-outreach-tabs" aria-label="Recovery Outreach sections">
-        {([
-          ["overview", "Overview"],
-          ["topics", "Public needs"],
-          ["partners", "Partners"],
-          ["content", "Content plan"],
-          ["inquiries", "Inquiries"],
-          ["policy", "Policy gate"],
-        ] as const).map(([value, label]) => (
-          <button key={value} type="button" className={tab === value ? "active" : ""} onClick={() => setTab(value)}>{label}</button>
+        {(
+          [
+            ["overview", "Overview"],
+            ["topics", "Public needs"],
+            ["partners", "Partners"],
+            ["content", "Content plan"],
+            ["inquiries", "Inquiries"],
+            ["policy", "Policy gate"],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={tab === value ? "active" : ""}
+            onClick={() => setTab(value)}
+          >
+            {label}
+          </button>
         ))}
       </nav>
 
-      {notice ? <p className="recovery-outreach-notice" role="status">{notice}</p> : null}
-      {loading ? <p className="recovery-outreach-empty">Loading connected recovery intelligence…</p> : null}
+      {notice ? (
+        <p className="recovery-outreach-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
+      {loading ? (
+        <p className="recovery-outreach-empty">Loading connected recovery intelligence…</p>
+      ) : null}
 
       {!loading && tab === "overview" ? (
         <section className="recovery-overview-grid">
           <article>
             <h3>What the workstation can find</h3>
-            <ul><li>Aggregate Search Console queries and landing-page gaps</li><li>Public treatment and recovery-support organizations</li><li>Publicly accessible recovery questions where platform terms permit review</li><li>Voluntary conversation and resource requests from the public website</li><li>Content opportunities for accurate, sourced recovery-support information</li></ul>
+            <ul>
+              <li>Aggregate Search Console queries and landing-page gaps</li>
+              <li>Public treatment and recovery-support organizations</li>
+              <li>Publicly accessible recovery questions where platform terms permit review</li>
+              <li>Voluntary conversation and resource requests from the public website</li>
+              <li>Content opportunities for accurate, sourced recovery-support information</li>
+            </ul>
           </article>
           <article>
             <h3>What it must never create</h3>
-            <ul><li>An individual addiction or vulnerability score</li><li>A list of private Google searchers</li><li>A scraped private recovery-group directory</li><li>An advertising audience based on treatment or recovery interest</li><li>A connection between Church Hub recovery membership and Outreach data</li></ul>
+            <ul>
+              <li>An individual addiction or vulnerability score</li>
+              <li>A list of private Google searchers</li>
+              <li>A scraped private recovery-group directory</li>
+              <li>An advertising audience based on treatment or recovery interest</li>
+              <li>A connection between Church Hub recovery membership and Outreach data</li>
+            </ul>
           </article>
           <article className="recovery-daily-actions">
             <h3>Today’s human-review queue</h3>
-            {payload.topics.slice(0, 3).map((topic) => <p key={topic.id}><strong>{topic.opportunityScore}</strong><span>{topic.topic}</span></p>)}
+            {payload.topics.slice(0, 3).map((topic) => (
+              <p key={topic.id}>
+                <strong>{topic.opportunityScore}</strong>
+                <span>{topic.topic}</span>
+              </p>
+            ))}
           </article>
         </section>
       ) : null}
 
       {!loading && tab === "topics" ? (
         <section className="recovery-outreach-panel">
-          <div className="recovery-topic-toolbar"><input value={topicQuery} onChange={(event) => setTopicQuery(event.target.value)} placeholder="Search aggregate or public topics…" /></div>
+          <div className="recovery-topic-toolbar">
+            <input
+              value={topicQuery}
+              onChange={(event) => setTopicQuery(event.target.value)}
+              placeholder="Search aggregate or public topics…"
+            />
+          </div>
           <div className="recovery-topic-layout">
             <div className="recovery-topic-list">
               {visibleTopics.map((topic) => (
                 <article key={topic.id}>
-                  <div><span>{topic.sourceKind.replaceAll("_", " ")}</span><b>Priority {topic.opportunityScore}</b></div>
-                  <h3>{topic.topic}</h3><p>{topic.locality}</p>
-                  {typeof topic.impressions === "number" ? <small>{topic.impressions} aggregate impressions · {topic.clicks ?? 0} clicks</small> : null}
+                  <div>
+                    <span>{topic.sourceKind.replaceAll("_", " ")}</span>
+                    <b>Priority {topic.opportunityScore}</b>
+                  </div>
+                  <h3>{topic.topic}</h3>
+                  <p>{topic.locality}</p>
+                  {typeof topic.impressions === "number" ? (
+                    <small>
+                      {topic.impressions} aggregate impressions · {topic.clicks ?? 0} clicks
+                    </small>
+                  ) : null}
                   <blockquote>{topic.recommendedAction ?? "Awaiting human review."}</blockquote>
-                  {topic.publicUrl ? <a href={topic.publicUrl} target="_blank" rel="noreferrer">Open public source ↗</a> : null}
+                  {topic.publicUrl ? (
+                    <a href={topic.publicUrl} target="_blank" rel="noreferrer">
+                      Open public source ↗
+                    </a>
+                  ) : null}
                 </article>
               ))}
             </div>
             <form className="recovery-outreach-form" onSubmit={(event) => void addTopic(event)}>
               <h3>Add public or aggregate evidence</h3>
-              <label>Source<select name="sourceKind" defaultValue="aggregate_search"><option value="aggregate_search">Aggregate search</option><option value="public_forum">Public forum</option><option value="public_web">Public web</option><option value="public_rss">Public RSS</option><option value="community_partner">Community partner</option></select></label>
-              <label>Topic<input name="topic" required maxLength={300} /></label>
-              <label>Locality<input name="locality" defaultValue="Lowell, Massachusetts" required /></label>
-              <label>Public URL<input name="publicUrl" type="url" /></label>
-              <label>Aggregate impressions<input name="impressions" type="number" min={0} /></label>
-              <label>Aggregate clicks<input name="clicks" type="number" min={0} /></label>
-              <label>Opportunity 0–100<input name="opportunityScore" type="number" min={0} max={100} defaultValue={50} /></label>
-              <label>Sensitivity 0–100<input name="sensitivityScore" type="number" min={0} max={100} defaultValue={70} /></label>
-              <label>Recommended action<textarea name="recommendedAction" rows={4} maxLength={2000} /></label>
+              <label>
+                Source
+                <select name="sourceKind" defaultValue="aggregate_search">
+                  <option value="aggregate_search">Aggregate search</option>
+                  <option value="public_forum">Public forum</option>
+                  <option value="public_web">Public web</option>
+                  <option value="public_rss">Public RSS</option>
+                  <option value="community_partner">Community partner</option>
+                </select>
+              </label>
+              <label>
+                Topic
+                <input name="topic" required maxLength={300} />
+              </label>
+              <label>
+                Locality
+                <input name="locality" defaultValue="Lowell, Massachusetts" required />
+              </label>
+              <label>
+                Public URL
+                <input name="publicUrl" type="url" />
+              </label>
+              <label>
+                Aggregate impressions
+                <input name="impressions" type="number" min={0} />
+              </label>
+              <label>
+                Aggregate clicks
+                <input name="clicks" type="number" min={0} />
+              </label>
+              <label>
+                Opportunity 0–100
+                <input name="opportunityScore" type="number" min={0} max={100} defaultValue={50} />
+              </label>
+              <label>
+                Sensitivity 0–100
+                <input name="sensitivityScore" type="number" min={0} max={100} defaultValue={70} />
+              </label>
+              <label>
+                Recommended action
+                <textarea name="recommendedAction" rows={4} maxLength={2000} />
+              </label>
               <button type="submit">Queue for review</button>
             </form>
           </div>
@@ -414,22 +518,65 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
           <div className="recovery-partner-list">
             {payload.partners.map((partner) => (
               <article key={partner.id}>
-                <header><span>{partner.organizationType.replaceAll("_", " ")}</span><b>{partner.partnershipStatus.replaceAll("_", " ")}</b></header>
-                <h3>{partner.organizationName}</h3><p>{partner.locality}</p>
+                <header>
+                  <span>{partner.organizationType.replaceAll("_", " ")}</span>
+                  <b>{partner.partnershipStatus.replaceAll("_", " ")}</b>
+                </header>
+                <h3>{partner.organizationName}</h3>
+                <p>{partner.locality}</p>
                 {partner.notes ? <blockquote>{partner.notes}</blockquote> : null}
-                <a href={partner.publicUrl} target="_blank" rel="noreferrer">Verify public organization ↗</a>
-                <select value={partner.partnershipStatus} onChange={(event) => void updatePartner(partner, event.target.value)}><option value="research">Research</option><option value="approved_for_contact">Approved for contact</option><option value="contacted">Contacted</option><option value="conversation">Conversation</option><option value="partner">Partner</option><option value="declined">Declined</option><option value="do_not_contact">Do not contact</option></select>
+                <a href={partner.publicUrl} target="_blank" rel="noreferrer">
+                  Verify public organization ↗
+                </a>
+                <select
+                  value={partner.partnershipStatus}
+                  onChange={(event) => void updatePartner(partner, event.target.value)}
+                >
+                  <option value="research">Research</option>
+                  <option value="approved_for_contact">Approved for contact</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="conversation">Conversation</option>
+                  <option value="partner">Partner</option>
+                  <option value="declined">Declined</option>
+                  <option value="do_not_contact">Do not contact</option>
+                </select>
               </article>
             ))}
           </div>
           <form className="recovery-outreach-form" onSubmit={(event) => void addPartner(event)}>
             <h3>Add a public organization</h3>
-            <label>Name<input name="organizationName" required maxLength={180} /></label>
-            <label>Type<select name="organizationType" defaultValue="recovery_support"><option value="treatment_provider">Treatment provider</option><option value="recovery_support">Recovery support</option><option value="community_health">Community health</option><option value="sober_living">Sober living</option><option value="public_agency">Public agency</option><option value="church">Church</option><option value="other">Other</option></select></label>
-            <label>Public website<input name="publicUrl" type="url" required /></label>
-            <label>Public contact<input name="publicContact" maxLength={300} /></label>
-            <label>Locality<input name="locality" defaultValue="Lowell, Massachusetts" required /></label>
-            <label>Research note<textarea name="notes" rows={4} maxLength={2000} /></label>
+            <label>
+              Name
+              <input name="organizationName" required maxLength={180} />
+            </label>
+            <label>
+              Type
+              <select name="organizationType" defaultValue="recovery_support">
+                <option value="treatment_provider">Treatment provider</option>
+                <option value="recovery_support">Recovery support</option>
+                <option value="community_health">Community health</option>
+                <option value="sober_living">Sober living</option>
+                <option value="public_agency">Public agency</option>
+                <option value="church">Church</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>
+              Public website
+              <input name="publicUrl" type="url" required />
+            </label>
+            <label>
+              Public contact
+              <input name="publicContact" maxLength={300} />
+            </label>
+            <label>
+              Locality
+              <input name="locality" defaultValue="Lowell, Massachusetts" required />
+            </label>
+            <label>
+              Research note
+              <textarea name="notes" rows={4} maxLength={2000} />
+            </label>
             <button type="submit">Add research record</button>
           </form>
         </section>
@@ -437,32 +584,180 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
 
       {!loading && tab === "content" ? (
         <section className="recovery-outreach-panel recovery-content-plan">
-          <article><span>01</span><div><strong>Public recovery-support page</strong><p>Answer location, privacy, meeting, church-ministry, and treatment-boundary questions using approved facts.</p></div></article>
-          <article><span>02</span><div><strong>Professional resource guide</strong><p>Link to current public government and licensed-treatment resources without ranking providers as clinical recommendations.</p></div></article>
-          <article><span>03</span><div><strong>Questions people ask before reaching out</strong><p>Explain confidentiality, voluntary participation, cost, church attendance, online options, and what information is not required.</p></div></article>
-          <article><span>04</span><div><strong>Partnership communication</strong><p>Prepare transparent church outreach to public organizations only after a leader approves the organization and message.</p></div></article>
-          <article><span>05</span><div><strong>AI visibility checks</strong><p>Check whether public answer systems find accurate church and treatment-boundary information. Never guarantee placement.</p></div></article>
+          <article>
+            <span>01</span>
+            <div>
+              <strong>Public recovery-support page</strong>
+              <p>
+                Answer location, privacy, meeting, church-ministry, and treatment-boundary questions
+                using approved facts.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>02</span>
+            <div>
+              <strong>Professional resource guide</strong>
+              <p>
+                Link to current public government and licensed-treatment resources without ranking
+                providers as clinical recommendations.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>03</span>
+            <div>
+              <strong>Questions people ask before reaching out</strong>
+              <p>
+                Explain confidentiality, voluntary participation, cost, church attendance, online
+                options, and what information is not required.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>04</span>
+            <div>
+              <strong>Partnership communication</strong>
+              <p>
+                Prepare transparent church outreach to public organizations only after a leader
+                approves the organization and message.
+              </p>
+            </div>
+          </article>
+          <article>
+            <span>05</span>
+            <div>
+              <strong>AI visibility checks</strong>
+              <p>
+                Check whether public answer systems find accurate church and treatment-boundary
+                information. Never guarantee placement.
+              </p>
+            </div>
+          </article>
         </section>
       ) : null}
 
       {!loading && tab === "inquiries" ? (
         <section className="recovery-inquiry-layout">
           <div className="recovery-inquiry-list">
-            {payload.inquiries.map((inquiry) => <button type="button" key={inquiry.id} className={selectedInquiry?.id === inquiry.id ? "active" : ""} onClick={() => setSelectedInquiryId(inquiry.id)}><span>{inquiry.firstName.slice(0, 1)}</span><div><strong>{inquiry.firstName}</strong><small>{nextStepLabels[inquiry.requestedNextStep] ?? inquiry.requestedNextStep} · {inquiry.status}</small></div></button>)}
-            {!payload.inquiries.length ? <p className="recovery-outreach-empty">No voluntary recovery inquiries have been submitted.</p> : null}
+            {payload.inquiries.map((inquiry) => (
+              <button
+                type="button"
+                key={inquiry.id}
+                className={selectedInquiry?.id === inquiry.id ? "active" : ""}
+                onClick={() => setSelectedInquiryId(inquiry.id)}
+              >
+                <span>{inquiry.firstName.slice(0, 1)}</span>
+                <div>
+                  <strong>{inquiry.firstName}</strong>
+                  <small>
+                    {nextStepLabels[inquiry.requestedNextStep] ?? inquiry.requestedNextStep} ·{" "}
+                    {inquiry.status}
+                  </small>
+                </div>
+              </button>
+            ))}
+            {!payload.inquiries.length ? (
+              <p className="recovery-outreach-empty">
+                No voluntary recovery inquiries have been submitted.
+              </p>
+            ) : null}
           </div>
           <article className="recovery-inquiry-detail">
-            {selectedInquiry ? <><span>VOLUNTARY PUBLIC REQUEST</span><h3>{selectedInquiry.firstName}</h3><dl><div><dt>Requested next step</dt><dd>{nextStepLabels[selectedInquiry.requestedNextStep] ?? selectedInquiry.requestedNextStep}</dd></div><div><dt>Contact preference</dt><dd>{selectedInquiry.preferredContact}</dd></div><div><dt>Source</dt><dd>{selectedInquiry.sourcePath}</dd></div><div><dt>Submitted</dt><dd>{new Date(selectedInquiry.createdAt).toLocaleString()}</dd></div></dl><div><button type="button" onClick={() => void updateInquiry(selectedInquiry, "assigned")}>Assign</button><button type="button" onClick={() => void updateInquiry(selectedInquiry, "contacted")}>Record contact</button><button type="button" onClick={() => void updateInquiry(selectedInquiry, "closed")}>Close</button></div><p>The Outreach OS deliberately does not show a diagnosis, substance, sobriety date, medication, treatment history, or inferred risk score.</p></> : <p>Choose an inquiry.</p>}
+            {selectedInquiry ? (
+              <>
+                <span>VOLUNTARY PUBLIC REQUEST</span>
+                <h3>{selectedInquiry.firstName}</h3>
+                <dl>
+                  <div>
+                    <dt>Requested next step</dt>
+                    <dd>
+                      {nextStepLabels[selectedInquiry.requestedNextStep] ??
+                        selectedInquiry.requestedNextStep}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Contact preference</dt>
+                    <dd>{selectedInquiry.preferredContact}</dd>
+                  </div>
+                  <div>
+                    <dt>Source</dt>
+                    <dd>{selectedInquiry.sourcePath}</dd>
+                  </div>
+                  <div>
+                    <dt>Submitted</dt>
+                    <dd>{new Date(selectedInquiry.createdAt).toLocaleString()}</dd>
+                  </div>
+                </dl>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => void updateInquiry(selectedInquiry, "assigned")}
+                  >
+                    Assign
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void updateInquiry(selectedInquiry, "contacted")}
+                  >
+                    Record contact
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void updateInquiry(selectedInquiry, "closed")}
+                  >
+                    Close
+                  </button>
+                </div>
+                <p>
+                  The Outreach OS deliberately does not show a diagnosis, substance, sobriety date,
+                  medication, treatment history, or inferred risk score.
+                </p>
+              </>
+            ) : (
+              <p>Choose an inquiry.</p>
+            )}
           </article>
         </section>
       ) : null}
 
       {!loading && tab === "policy" ? (
         <section className="recovery-policy-grid">
-          <article><strong>Allowed intelligence</strong><ul><li>Aggregate Search Console queries</li><li>Publicly accessible pages and discussions</li><li>Public organization websites and contact information</li><li>Voluntary website requests</li><li>Page quality, indexing, and factual-accuracy checks</li></ul></article>
-          <article><strong>Prohibited intelligence</strong><ul><li>Private searcher identity</li><li>Scraped treatment patients or private groups</li><li>Inferred addiction, relapse, or vulnerability</li><li>Recovery-member advertising audiences</li><li>Hub recovery posts, progress, attendance, or membership</li></ul></article>
-          <article><strong>Human approvals</strong><ul><li>Partner outreach</li><li>Public replies</li><li>Recovery ministry claims</li><li>Curriculum naming and licensing</li><li>Campaign targeting and conversion definitions</li></ul></article>
-          {mode === "showcase" ? <button type="button" onClick={resetShowcase}>Reset Recovery Outreach showcase</button> : null}
+          <article>
+            <strong>Allowed intelligence</strong>
+            <ul>
+              <li>Aggregate Search Console queries</li>
+              <li>Publicly accessible pages and discussions</li>
+              <li>Public organization websites and contact information</li>
+              <li>Voluntary website requests</li>
+              <li>Page quality, indexing, and factual-accuracy checks</li>
+            </ul>
+          </article>
+          <article>
+            <strong>Prohibited intelligence</strong>
+            <ul>
+              <li>Private searcher identity</li>
+              <li>Scraped treatment patients or private groups</li>
+              <li>Inferred addiction, relapse, or vulnerability</li>
+              <li>Recovery-member advertising audiences</li>
+              <li>Hub recovery posts, progress, attendance, or membership</li>
+            </ul>
+          </article>
+          <article>
+            <strong>Human approvals</strong>
+            <ul>
+              <li>Partner outreach</li>
+              <li>Public replies</li>
+              <li>Recovery ministry claims</li>
+              <li>Curriculum naming and licensing</li>
+              <li>Campaign targeting and conversion definitions</li>
+            </ul>
+          </article>
+          {mode === "showcase" ? (
+            <button type="button" onClick={resetShowcase}>
+              Reset Recovery Outreach showcase
+            </button>
+          ) : null}
         </section>
       ) : null}
     </div>

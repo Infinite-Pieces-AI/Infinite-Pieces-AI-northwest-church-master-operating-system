@@ -25,7 +25,10 @@ function toInterest(row: AnyRow): RecoveryInterestRecord {
   return {
     id: stringValue(row.id),
     firstName: stringValue(row.first_name, "Visitor"),
-    contactMethod: stringValue(row.contact_method, "email") as RecoveryInterestRecord["contactMethod"],
+    contactMethod: stringValue(
+      row.contact_method,
+      "email",
+    ) as RecoveryInterestRecord["contactMethod"],
     email: optionalString(row.email),
     phone: optionalString(row.phone),
     interestType: stringValue(
@@ -47,7 +50,10 @@ function toInterest(row: AnyRow): RecoveryInterestRecord {
 function toTopic(row: AnyRow): RecoveryPublicTopic {
   return {
     id: stringValue(row.id),
-    sourceKind: stringValue(row.source_kind, "manual_research") as RecoveryPublicTopic["sourceKind"],
+    sourceKind: stringValue(
+      row.source_kind,
+      "manual_research",
+    ) as RecoveryPublicTopic["sourceKind"],
     sourceLabel: stringValue(row.source_label, "Public research"),
     publicUrl: optionalString(row.public_url),
     topic: stringValue(row.topic, "Recovery support topic"),
@@ -75,7 +81,10 @@ function toPartner(row: AnyRow): RecoveryPartner {
   return {
     id: stringValue(row.id),
     organizationName: stringValue(row.organization_name, "Organization"),
-    organizationType: stringValue(row.organization_type, "other") as RecoveryPartner["organizationType"],
+    organizationType: stringValue(
+      row.organization_type,
+      "other",
+    ) as RecoveryPartner["organizationType"],
     publicUrl: stringValue(row.public_url),
     publicContact: optionalString(row.public_contact),
     locality: stringValue(row.locality, "Massachusetts"),

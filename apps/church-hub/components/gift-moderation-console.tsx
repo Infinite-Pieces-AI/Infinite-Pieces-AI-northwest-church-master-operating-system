@@ -78,7 +78,11 @@ export function GiftModerationConsole() {
           <option value="removed">Removed</option>
         </select>
       </div>
-      {notice ? <p className="module-notice" role="status">{notice}</p> : null}
+      {notice ? (
+        <p className="module-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
       {loading ? <p className="module-empty">Loading gift posts…</p> : null}
       {!loading ? (
         <div className="gift-moderation-list">
@@ -90,18 +94,28 @@ export function GiftModerationConsole() {
                   <span>{post.exchangeType}</span>
                   <span>{post.riskLevel} risk</span>
                 </div>
-                <small>{post.ownerName} · {new Date(post.createdAt).toLocaleString()}</small>
+                <small>
+                  {post.ownerName} · {new Date(post.createdAt).toLocaleString()}
+                </small>
               </header>
               <h4>{post.title}</h4>
               <p>{post.description}</p>
               <div className="tag-row">
-                {[...post.giftTags, ...post.skillTags].map((tag) => <span key={tag}>{tag}</span>)}
+                {[...post.giftTags, ...post.skillTags].map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
               </div>
               {post.moderationReason ? <blockquote>{post.moderationReason}</blockquote> : null}
               <div>
-                <button type="button" onClick={() => void decide(post, "approved")}>Approve</button>
-                <button type="button" onClick={() => void decide(post, "rejected")}>Reject</button>
-                <button type="button" onClick={() => void decide(post, "removed")}>Remove</button>
+                <button type="button" onClick={() => void decide(post, "approved")}>
+                  Approve
+                </button>
+                <button type="button" onClick={() => void decide(post, "rejected")}>
+                  Reject
+                </button>
+                <button type="button" onClick={() => void decide(post, "removed")}>
+                  Remove
+                </button>
               </div>
             </article>
           ))}

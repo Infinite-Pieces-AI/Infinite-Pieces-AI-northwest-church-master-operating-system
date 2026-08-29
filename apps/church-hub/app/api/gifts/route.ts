@@ -147,10 +147,8 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       skillTags: stringList(row.skill_tags),
       exchangeType: String(row.exchange_type),
       priceNote: typeof row.price_note === "string" ? row.price_note : undefined,
-      generalLocation:
-        typeof row.general_location === "string" ? row.general_location : undefined,
-      availability:
-        typeof row.availability_text === "string" ? row.availability_text : undefined,
+      generalLocation: typeof row.general_location === "string" ? row.general_location : undefined,
+      availability: typeof row.availability_text === "string" ? row.availability_text : undefined,
       status: String(row.status),
       moderationStatus: String(row.moderation_status),
       responses: responseRows

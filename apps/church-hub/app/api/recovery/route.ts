@@ -209,9 +209,7 @@ async function loadPrivateProgram(
   const commentRows = (commentResult.data ?? []) as Row[];
   const profileIds = Array.from(
     new Set(
-      [...postRows, ...commentRows]
-        .map((row) => String(row.created_by ?? ""))
-        .filter(Boolean),
+      [...postRows, ...commentRows].map((row) => String(row.created_by ?? "")).filter(Boolean),
     ),
   );
   const profileResult = profileIds.length
@@ -257,8 +255,7 @@ async function loadPrivateProgram(
         typeof session.licensed_resource_url === "string"
           ? session.licensed_resource_url
           : undefined,
-      scheduledFor:
-        typeof session.scheduled_for === "string" ? session.scheduled_for : undefined,
+      scheduledFor: typeof session.scheduled_for === "string" ? session.scheduled_for : undefined,
       status: String(session.status),
       progress: progressMap.get(String(session.id)) ?? "not_started",
     })),
@@ -325,12 +322,7 @@ async function loadPayload(
     };
   }
 
-  const privateProgram = await loadPrivateProgram(
-    client,
-    viewer.id,
-    programId,
-    membershipRole,
-  );
+  const privateProgram = await loadPrivateProgram(client, viewer.id, programId, membershipRole);
   const pendingMembershipRequests =
     membershipRole === "leader" || membershipRole === "admin"
       ? await loadPendingRequests(client, programId)

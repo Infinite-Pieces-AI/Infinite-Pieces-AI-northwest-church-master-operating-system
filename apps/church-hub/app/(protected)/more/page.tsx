@@ -4,15 +4,60 @@ import { PageHeading } from "@/components/page-heading";
 import { requireViewer } from "@/lib/auth/viewer";
 
 const destinations = [
-  ["Serve", "/serve", "◇", "Find approved service projects, volunteer shifts, requirements, and team communication."],
-  ["Recovery Ministry", "/recovery", "↺", "Open the private, opt-in recovery journey, group, resources, and leader tools."],
-  ["Community", "/community", "◌", "Open assigned church, ministry, parent, and group conversations."],
-  ["Events", "/events", "□", "Review events, registrations, volunteer opportunities, and calendar details."],
-  ["Connection Path", "/connection-path", "↗", "Choose a voluntary next step for fellowship, Scripture, Sunday, or service."],
-  ["Family", "/family", "⌁", "Manage household, children, check-in, pickup, media consent, and parent connections."],
-  ["Connection Preferences", "/connection-preferences", "◎", "Control the times, gathering types, family fit, and general areas used for suggestions."],
-  ["Notifications", "/notifications", "◉", "Set quiet hours and choose which reminders reach each device."],
-  ["Profile", "/profile", "○", "Manage account, privacy, authentication, and member profile settings."],
+  [
+    "Serve",
+    "/serve",
+    "◇",
+    "Find approved service projects, volunteer shifts, requirements, and team communication.",
+  ],
+  [
+    "Recovery Ministry",
+    "/recovery",
+    "↺",
+    "Open the private, opt-in recovery journey, group, resources, and leader tools.",
+  ],
+  [
+    "Community",
+    "/community",
+    "◌",
+    "Open assigned church, ministry, parent, and group conversations.",
+  ],
+  [
+    "Events",
+    "/events",
+    "□",
+    "Review events, registrations, volunteer opportunities, and calendar details.",
+  ],
+  [
+    "Connection Path",
+    "/connection-path",
+    "↗",
+    "Choose a voluntary next step for fellowship, Scripture, Sunday, or service.",
+  ],
+  [
+    "Family",
+    "/family",
+    "⌁",
+    "Manage household, children, check-in, pickup, media consent, and parent connections.",
+  ],
+  [
+    "Connection Preferences",
+    "/connection-preferences",
+    "◎",
+    "Control the times, gathering types, family fit, and general areas used for suggestions.",
+  ],
+  [
+    "Notifications",
+    "/notifications",
+    "◉",
+    "Set quiet hours and choose which reminders reach each device.",
+  ],
+  [
+    "Profile",
+    "/profile",
+    "○",
+    "Manage account, privacy, authentication, and member profile settings.",
+  ],
 ] as const;
 
 const adminPermissions: readonly Permission[] = [
@@ -53,7 +98,10 @@ export default async function MorePage() {
             <span aria-hidden="true">⚙</span>
             <div>
               <strong>Ministry Administration</strong>
-              <p>Open the authorized content, moderation, safety, access, rotation, and ministry operations console.</p>
+              <p>
+                Open the authorized content, moderation, safety, access, rotation, and ministry
+                operations console.
+              </p>
             </div>
             <b aria-hidden="true">›</b>
           </Link>

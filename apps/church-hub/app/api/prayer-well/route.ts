@@ -125,7 +125,9 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
 
   const interactions = (interactionResult.data ?? []) as Row[];
   const authorIds = Array.from(
-    new Set(interactions.map((interaction) => String(interaction.created_by ?? "")).filter(Boolean)),
+    new Set(
+      interactions.map((interaction) => String(interaction.created_by ?? "")).filter(Boolean),
+    ),
   );
   const profileResult = authorIds.length
     ? await client.from("profiles").select("id,display_name").in("id", authorIds)
@@ -151,9 +153,9 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
       const visibility = String(request.visibility);
       const audienceLabel =
         visibility === "ministry"
-          ? ministryMap.get(String(request.ministry_id ?? "")) ?? "Assigned ministry"
+          ? (ministryMap.get(String(request.ministry_id ?? "")) ?? "Assigned ministry")
           : visibility === "group"
-            ? groupMap.get(String(request.group_id ?? "")) ?? "Assigned group"
+            ? (groupMap.get(String(request.group_id ?? "")) ?? "Assigned group")
             : visibility === "church"
               ? "Approved church members"
               : visibility === "leaders_only"
@@ -188,7 +190,7 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
             authorName:
               String(interaction.created_by) === viewerId
                 ? "You"
-                : profileMap.get(String(interaction.created_by)) ?? "Church member",
+                : (profileMap.get(String(interaction.created_by)) ?? "Church member"),
             body: typeof interaction.body === "string" ? interaction.body : undefined,
             createdAt: String(interaction.created_at),
           })),
@@ -200,7 +202,10 @@ async function loadPayload(client: SupabaseClient, viewerId: string) {
 export async function GET() {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   try {
     const client = dynamicClient(await createClient());
@@ -213,7 +218,10 @@ export async function GET() {
 export async function POST(request: Request) {
   const viewer = await getViewer();
   if (!viewer || viewer.demo) {
-    return NextResponse.json({ message: "A real signed-in member account is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "A real signed-in member account is required." },
+      { status: 401 },
+    );
   }
   const body: unknown = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -228,13 +236,20 @@ export async function POST(request: Request) {
       const visibility = text(row.visibility, 40, true);
       const category = text(row.category, 40, true);
       const sensitivity = text(row.sensitivity, 40, true);
-      if (!visibilities.has(visibility) || !categories.has(category) || !sensitivities.has(sensitivity)) {
+      if (
+        !visibilities.has(visibility) ||
+        !categories.has(category) ||
+        !sensitivities.has(sensitivity)
+      ) {
         throw new Error("Unsupported prayer setting.");
       }
       const contexts = await loadContexts(client, viewer.id);
       const ministryId = typeof row.ministryId === "string" ? row.ministryId : null;
       const groupId = typeof row.groupId === "string" ? row.groupId : null;
-      if (visibility === "ministry" && !contexts.ministries.some((context) => context.id === ministryId)) {
+      if (
+        visibility === "ministry" &&
+        !contexts.ministries.some((context) => context.id === ministryId)
+      ) {
         throw new Error("Choose a ministry you currently belong to.");
       }
       if (visibility === "group" && !contexts.groups.some((context) => context.id === groupId)) {
@@ -284,7 +299,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "The prayer action could not be completed." },
+      {
+        message:
+          error instanceof Error ? error.message : "The prayer action could not be completed.",
+      },
       { status: 400 },
     );
   }

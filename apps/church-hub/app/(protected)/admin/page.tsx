@@ -106,8 +106,14 @@ export default async function AdminPage() {
       </div>
       <section className="hub-panel release-panel">
         <p className="hub-kicker">Production boundary</p>
-        <h2>The complete interfaces can be explored now; live records require approved production connections.</h2>
-        <div className="release-meter" aria-label="Production governance and integration work remains">
+        <h2>
+          The complete interfaces can be explored now; live records require approved production
+          connections.
+        </h2>
+        <div
+          className="release-meter"
+          aria-label="Production governance and integration work remains"
+        >
           <span style={{ width: viewer.demo ? "58%" : "82%" }} />
         </div>
         <p>

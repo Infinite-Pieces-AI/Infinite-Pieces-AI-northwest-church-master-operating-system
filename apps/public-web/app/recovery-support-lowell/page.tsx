@@ -34,8 +34,8 @@ export default function RecoverySupportLowellPage() {
           <p>Adult recovery support · Lowell, Massachusetts</p>
           <h1>You do not have to navigate recovery alone.</h1>
           <span>
-            Boston Church Lowell is developing a confidential adult peer-support ministry grounded in
-            Scripture, honest community, responsible next steps, and connections to appropriate
+            Boston Church Lowell is developing a confidential adult peer-support ministry grounded
+            in Scripture, honest community, responsible next steps, and connections to appropriate
             professional care.
           </span>
           <div className="recovery-public-hero__actions">
@@ -50,8 +50,8 @@ export default function RecoverySupportLowellPage() {
         <aside className="recovery-public-hero__boundary">
           <strong>Church peer support is not treatment.</strong>
           <p>
-            The ministry does not diagnose, detox, prescribe medication, replace a licensed provider,
-            or guarantee recovery outcomes.
+            The ministry does not diagnose, detox, prescribe medication, replace a licensed
+            provider, or guarantee recovery outcomes.
           </p>
           <p>
             Call <b>911</b> for an overdose or immediate danger. In the United States, call or text
@@ -82,8 +82,8 @@ export default function RecoverySupportLowellPage() {
           <h2>Start by meeting the church.</h2>
           <span>
             Sunday worship is currently listed for 10:00 AM at Butler Middle School, 1140 Gorham
-            Street, Lowell, Massachusetts. Recovery-ministry meeting details are shared only after the
-            ministry is approved and a leader confirms private access.
+            Street, Lowell, Massachusetts. Recovery-ministry meeting details are shared only after
+            the ministry is approved and a leader confirms private access.
           </span>
         </div>
         <div>
@@ -96,7 +96,10 @@ export default function RecoverySupportLowellPage() {
         </div>
       </section>
 
-      <section className="recovery-public-section recovery-public-resources" id="official-resources">
+      <section
+        className="recovery-public-section recovery-public-resources"
+        id="official-resources"
+      >
         <header>
           <p>Official support directories</p>
           <h2>Use licensed and public resources when treatment is needed.</h2>
@@ -138,8 +141,9 @@ export default function RecoverySupportLowellPage() {
           <p>Voluntary, consented follow-up</p>
           <h2>Ask for a private response.</h2>
           <span>
-            Your request begins only when you submit this form and choose a contact method. It is not
-            used to infer addiction status, build an advertising audience, or identify private searchers.
+            Your request begins only when you submit this form and choose a contact method. It is
+            not used to infer addiction status, build an advertising audience, or identify private
+            searchers.
           </span>
           <ul>
             <li>Only authorized church leaders should receive the request.</li>

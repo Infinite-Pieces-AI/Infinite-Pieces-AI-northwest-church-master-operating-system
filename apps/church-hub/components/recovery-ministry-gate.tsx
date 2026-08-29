@@ -67,11 +67,14 @@ export function RecoveryMinistryGate({
         }),
       });
       const payload = (await response.json()) as { message?: string };
-      if (!response.ok) throw new Error(payload.message ?? "The access action could not be completed.");
+      if (!response.ok)
+        throw new Error(payload.message ?? "The access action could not be completed.");
       setNotice(payload.message ?? "Recovery access updated.");
       await load();
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "The access action could not be completed.");
+      setNotice(
+        error instanceof Error ? error.message : "The access action could not be completed.",
+      );
     }
   }
 
@@ -94,7 +97,11 @@ export function RecoveryMinistryGate({
   if (currentMembership) {
     return (
       <>
-        {notice ? <p className="module-notice" role="status">{notice}</p> : null}
+        {notice ? (
+          <p className="module-notice" role="status">
+            {notice}
+          </p>
+        ) : null}
         <RecoveryMinistry
           mode="live"
           canLead={canLead}
@@ -104,10 +111,13 @@ export function RecoveryMinistryGate({
         <section className="recovery-membership-controls">
           <strong>Private membership controls</strong>
           <p>
-            Leaving ends your Hub access to the program. It does not erase required security or audit
-            records, and it does not replace a conversation with a leader or treatment provider.
+            Leaving ends your Hub access to the program. It does not erase required security or
+            audit records, and it does not replace a conversation with a leader or treatment
+            provider.
           </p>
-          <button type="button" onClick={() => void action(currentMembership, "leave")}>Leave private recovery program</button>
+          <button type="button" onClick={() => void action(currentMembership, "leave")}>
+            Leave private recovery program
+          </button>
         </section>
       </>
     );
@@ -124,9 +134,16 @@ export function RecoveryMinistryGate({
             website, prayer feed, Outreach OS, advertising systems, or general Church Hub channels.
           </p>
         </div>
-        <div className="module-hero__metric"><strong>↺</strong><span>Leader-approved access</span></div>
+        <div className="module-hero__metric">
+          <strong>↺</strong>
+          <span>Leader-approved access</span>
+        </div>
       </section>
-      {notice ? <p className="module-notice" role="status">{notice}</p> : null}
+      {notice ? (
+        <p className="module-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
       <section className="recovery-access-options">
         {programs.map((program) => (
           <RecoveryAccessOption key={program.id} program={program} onAction={action} />
@@ -138,13 +155,16 @@ export function RecoveryMinistryGate({
               Speak privately with an approved church leader or use the public recovery-support page
               for treatment resources and a voluntary conversation request.
             </p>
-            <a href="http://localhost:3000/recovery-support-lowell">Open public recovery support information ↗</a>
+            <a href="http://localhost:3000/recovery-support-lowell">
+              Open public recovery support information ↗
+            </a>
           </article>
         ) : null}
       </section>
       <p className="module-boundary">
         Requesting access does not diagnose you, enroll you automatically, reveal your request to
-        ordinary members, or authorize the Hub to send recovery information to AI or advertising systems.
+        ordinary members, or authorize the Hub to send recovery information to AI or advertising
+        systems.
       </p>
     </div>
   );
@@ -167,17 +187,53 @@ function RecoveryAccessOption({
   const pending = program.requestStatus === "pending";
   return (
     <article>
-      <header><span>{program.meetingDay ?? "Schedule shared by leader"}</span><b>{pending ? "Request pending" : program.acceptingAccessRequests ? "Accepting requests" : "Not accepting requests"}</b></header>
+      <header>
+        <span>{program.meetingDay ?? "Schedule shared by leader"}</span>
+        <b>
+          {pending
+            ? "Request pending"
+            : program.acceptingAccessRequests
+              ? "Accepting requests"
+              : "Not accepting requests"}
+        </b>
+      </header>
       <h3>{program.displayName}</h3>
       <p>{program.publicSummary}</p>
-      {!program.officialProgramConfirmation && program.programType === "custom" ? <small>This program does not claim official Celebrate Recovery affiliation.</small> : null}
+      {!program.officialProgramConfirmation && program.programType === "custom" ? (
+        <small>This program does not claim official Celebrate Recovery affiliation.</small>
+      ) : null}
       {pending ? (
-        <button type="button" onClick={() => void onAction(program, "withdraw")}>Withdraw pending request</button>
+        <button type="button" onClick={() => void onAction(program, "withdraw")}>
+          Withdraw pending request
+        </button>
       ) : program.acceptingAccessRequests ? (
         <>
-          <label>Optional note to approved leaders<textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={4} maxLength={1500} placeholder="You do not need to share a diagnosis, substance history, sobriety date, medication, treatment record, or detailed personal story." /></label>
-          <label className="check-label"><input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} /> I understand the confidentiality expectations and that church peer ministry does not replace medical or clinical treatment.</label>
-          <button type="button" disabled={!accepted} onClick={() => void onAction(program, "request", message, accepted)}>Send private access request</button>
+          <label>
+            Optional note to approved leaders
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              rows={4}
+              maxLength={1500}
+              placeholder="You do not need to share a diagnosis, substance history, sobriety date, medication, treatment record, or detailed personal story."
+            />
+          </label>
+          <label className="check-label">
+            <input
+              type="checkbox"
+              checked={accepted}
+              onChange={(event) => setAccepted(event.target.checked)}
+            />{" "}
+            I understand the confidentiality expectations and that church peer ministry does not
+            replace medical or clinical treatment.
+          </label>
+          <button
+            type="button"
+            disabled={!accepted}
+            onClick={() => void onAction(program, "request", message, accepted)}
+          >
+            Send private access request
+          </button>
         </>
       ) : null}
     </article>

@@ -30,7 +30,14 @@ const sourceKinds = new Set([
   "public_rss",
   "manual_research",
 ]);
-const inquiryStatuses = new Set(["new", "assigned", "contacted", "conversation", "closed", "opted_out"]);
+const inquiryStatuses = new Set([
+  "new",
+  "assigned",
+  "contacted",
+  "conversation",
+  "closed",
+  "opted_out",
+]);
 
 function dynamicClient(client: Awaited<ReturnType<typeof createClient>>): SupabaseClient {
   return client as unknown as SupabaseClient;
@@ -51,17 +58,23 @@ async function loadPayload(client: SupabaseClient) {
   const [partnersResult, topicsResult, inquiriesResult] = await Promise.all([
     client
       .from("recovery_outreach_partners")
-      .select("id,organization_name,organization_type,public_url,public_contact,locality,partnership_status,notes,verified_public_source_at")
+      .select(
+        "id,organization_name,organization_type,public_url,public_contact,locality,partnership_status,notes,verified_public_source_at",
+      )
       .order("updated_at", { ascending: false })
       .limit(250),
     client
       .from("recovery_public_topics")
-      .select("id,source_kind,topic,locality,public_url,aggregate_impressions,aggregate_clicks,priority_score,sensitivity_risk,recommended_action,status")
+      .select(
+        "id,source_kind,topic,locality,public_url,aggregate_impressions,aggregate_clicks,priority_score,sensitivity_risk,recommended_action,status",
+      )
       .order("priority_score", { ascending: false })
       .limit(500),
     client
       .from("recovery_interest_requests")
-      .select("id,first_name,contact_method,interest_type,source_path,status,assigned_to,created_at")
+      .select(
+        "id,first_name,contact_method,interest_type,source_path,status,assigned_to,created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(250),
   ]);
@@ -122,7 +135,7 @@ async function loadPayload(client: SupabaseClient) {
     status: String(inquiry.status),
     assignedTo:
       typeof inquiry.assigned_to === "string"
-        ? profileMap.get(inquiry.assigned_to) ?? "Assigned leader"
+        ? (profileMap.get(inquiry.assigned_to) ?? "Assigned leader")
         : undefined,
     createdAt: String(inquiry.created_at),
   }));
@@ -135,7 +148,8 @@ async function loadPayload(client: SupabaseClient) {
       publicOrganizations: partners.length,
       publicTopics: topics.length,
       newInquiries: inquiryRows.filter((inquiry) => inquiry.status === "new").length,
-      approvedPartners: partners.filter((partner) => partner.partnershipStatus === "partner").length,
+      approvedPartners: partners.filter((partner) => partner.partnershipStatus === "partner")
+        .length,
     },
   };
 }
@@ -143,19 +157,28 @@ async function loadPayload(client: SupabaseClient) {
 export async function GET() {
   const viewer = await getOutreachApiViewer();
   if (!viewer) {
-    return NextResponse.json({ message: "MFA-verified Outreach access is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "MFA-verified Outreach access is required." },
+      { status: 401 },
+    );
   }
   try {
     return NextResponse.json(await loadPayload(dynamicClient(await createClient())));
   } catch {
-    return NextResponse.json({ message: "Recovery Outreach could not be loaded." }, { status: 503 });
+    return NextResponse.json(
+      { message: "Recovery Outreach could not be loaded." },
+      { status: 503 },
+    );
   }
 }
 
 export async function POST(request: Request) {
   const viewer = await getOutreachApiViewer();
   if (!viewer) {
-    return NextResponse.json({ message: "MFA-verified Outreach access is required." }, { status: 401 });
+    return NextResponse.json(
+      { message: "MFA-verified Outreach access is required." },
+      { status: 401 },
+    );
   }
   const body: unknown = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
@@ -217,7 +240,8 @@ export async function POST(request: Request) {
       const sourceKind = text(row.sourceKind, 50, true);
       if (!sourceKinds.has(sourceKind)) throw new Error("Unsupported public source type.");
       const publicUrl = text(row.publicUrl, 2000);
-      if (publicUrl && !publicUrl.startsWith("https://")) throw new Error("Public sources must use HTTPS.");
+      if (publicUrl && !publicUrl.startsWith("https://"))
+        throw new Error("Public sources must use HTTPS.");
       const { error } = await client.from("recovery_public_topics").insert({
         source_kind: sourceKind,
         topic: text(row.topic, 300, true),

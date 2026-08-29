@@ -164,7 +164,9 @@ const postTypeLabels: Record<GiftPostType, string> = {
 
 const storageKey = "church-hub-gifts-showcase-v2";
 
-function isRiskyPost(post: Pick<GiftPost, "type" | "exchangeType" | "title" | "description" | "skillTags">) {
+function isRiskyPost(
+  post: Pick<GiftPost, "type" | "exchangeType" | "title" | "description" | "skillTags">,
+) {
   return (
     post.exchangeType === "paid" ||
     post.type === "member_need" ||
@@ -216,7 +218,10 @@ export function GiftsOfChurch({
 
   useEffect(() => {
     if (mode !== "showcase") return;
-    window.localStorage.setItem(storageKey, JSON.stringify({ scores, posts } satisfies GiftsPayload));
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ scores, posts } satisfies GiftsPayload),
+    );
   }, [mode, posts, scores]);
 
   async function refreshLive() {
@@ -269,10 +274,7 @@ export function GiftsOfChurch({
     );
     return posts
       .filter(
-        (post) =>
-          post.moderationStatus === "approved" &&
-          post.status === "open" &&
-          !post.isMine,
+        (post) => post.moderationStatus === "approved" && post.status === "open" && !post.isMine,
       )
       .map((post) => ({
         post,
@@ -471,9 +473,10 @@ export function GiftsOfChurch({
         </div>
         <div className="module-hero__metric">
           <strong>
-            {posts.filter(
-              (post) => post.status === "open" && post.moderationStatus === "approved",
-            ).length}
+            {
+              posts.filter((post) => post.status === "open" && post.moderationStatus === "approved")
+                .length
+            }
           </strong>
           <span>open approved opportunities</span>
         </div>
@@ -540,7 +543,9 @@ export function GiftsOfChurch({
               <article className="gift-post-card" key={post.id}>
                 <header>
                   <span>{postTypeLabels[post.type]}</span>
-                  <b>{post.moderationStatus === "pending" ? "Awaiting review" : post.exchangeType}</b>
+                  <b>
+                    {post.moderationStatus === "pending" ? "Awaiting review" : post.exchangeType}
+                  </b>
                 </header>
                 <h3>{post.title}</h3>
                 <p>{post.description}</p>
@@ -574,7 +579,9 @@ export function GiftsOfChurch({
                   ) : null}
                 </dl>
                 <footer>
-                  {post.moderationStatus === "approved" && post.status === "open" && !post.isMine ? (
+                  {post.moderationStatus === "approved" &&
+                  post.status === "open" &&
+                  !post.isMine ? (
                     <button type="button" onClick={() => void respond(post)}>
                       Respond privately
                     </button>
@@ -616,9 +623,7 @@ export function GiftsOfChurch({
                 <span>
                   {score} matching gift tag{score === 1 ? "" : "s"}:{" "}
                   {post.giftTags
-                    .filter((tag) =>
-                      scores.some((gift) => gift.label === tag && gift.score >= 50),
-                    )
+                    .filter((tag) => scores.some((gift) => gift.label === tag && gift.score >= 50))
                     .join(", ")}
                 </span>
                 <button type="button" onClick={() => void respond(post)}>
@@ -732,7 +737,10 @@ export function GiftsOfChurch({
             </label>
             <label>
               General area
-              <input name="generalLocation" placeholder="Lowell area; exact address shared privately" />
+              <input
+                name="generalLocation"
+                placeholder="Lowell area; exact address shared privately"
+              />
             </label>
             <label>
               Availability
@@ -757,9 +765,9 @@ export function GiftsOfChurch({
             </div>
           </div>
           <p className="module-boundary">
-            Review payment, home access, transportation, child-related activity, professional-service
-            claims, and item safety carefully. Approval does not certify a license, guarantee a service,
-            or transfer church liability.
+            Review payment, home access, transportation, child-related activity,
+            professional-service claims, and item safety carefully. Approval does not certify a
+            license, guarantee a service, or transfer church liability.
           </p>
           <div className="gift-board-grid">
             {pendingPosts.map((post) => (
@@ -801,7 +809,9 @@ export function GiftsOfChurch({
                 </footer>
               </article>
             ))}
-            {!pendingPosts.length ? <p className="module-empty">No posts are waiting for review.</p> : null}
+            {!pendingPosts.length ? (
+              <p className="module-empty">No posts are waiting for review.</p>
+            ) : null}
           </div>
         </section>
       ) : null}

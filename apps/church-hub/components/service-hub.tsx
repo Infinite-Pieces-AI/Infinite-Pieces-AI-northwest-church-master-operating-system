@@ -3,11 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type ServiceKind =
-  | "church_hosted"
-  | "approved_partner"
-  | "member_led"
-  | "self_guided"
-  | "public_lead";
+  "church_hosted" | "approved_partner" | "member_led" | "self_guided" | "public_lead";
 
 type ServiceCategory =
   | "hunger"
@@ -86,7 +82,8 @@ interface ServiceProposal {
   generalLocation: string;
   postalCode?: string;
   proposedKind: "member_led" | "self_guided" | "approved_partner";
-  status: "draft" | "pending" | "needs_changes" | "approved" | "declined" | "withdrawn" | "converted";
+  status:
+    "draft" | "pending" | "needs_changes" | "approved" | "declined" | "withdrawn" | "converted";
   riskLevel: "standard" | "review" | "restricted";
   reviewerNote?: string;
   createdAt: string;
@@ -132,8 +129,10 @@ const kindDescriptions: Record<ServiceKind, string> = {
   church_hosted: "Organized and supervised through an approved church leader.",
   approved_partner: "Hosted by an external organization the church has reviewed and approved.",
   member_led: "Approved for member discovery, but organized independently by the member host.",
-  self_guided: "An idea you may complete independently. The church does not supervise the activity.",
-  public_lead: "Publicly listed opportunity information. Availability and requirements must be confirmed with the source.",
+  self_guided:
+    "An idea you may complete independently. The church does not supervise the activity.",
+  public_lead:
+    "Publicly listed opportunity information. Availability and requirements must be confirmed with the source.",
 };
 
 const zipCentroids: Record<string, Coordinates> = {
@@ -188,7 +187,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     physicalRequirements: "Seated and standing roles available",
     skills: ["Packing", "Hospitality", "Organization"],
     accessibilityNotes: "Table-height packing and seated roles are available.",
-    safeguardingRequirements: "Children remain with their guardian; no direct recipient contact during packing.",
+    safeguardingRequirements:
+      "Children remain with their guardian; no direct recipient contact during packing.",
     whatToBring: "Optional unopened travel-size hygiene items from the approved list",
     indoorOutdoor: "indoor",
     commitmentLevel: "one_time",
@@ -282,7 +282,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     physicalRequirements: "Walking, bending, and light carrying; choose only safe litter",
     skills: ["Neighborhood care", "Prayer", "Cleanup"],
     accessibilityNotes: "A paved-loop prayer role is available without litter pickup.",
-    safeguardingRequirements: "Public-place gathering; guardians supervise children; no hazardous waste handling.",
+    safeguardingRequirements:
+      "Public-place gathering; guardians supervise children; no hazardous waste handling.",
     whatToBring: "Gloves, water, bright clothing; bags supplied by host",
     indoorOutdoor: "outdoor",
     commitmentLevel: "one_time",
@@ -330,7 +331,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     physicalRequirements: "Varies by opening",
     skills: ["Food access", "Packing", "Distribution", "Delivery"],
     accessibilityNotes: "Ask the organization about role-specific accommodations.",
-    safeguardingRequirements: "Register directly with the organization and follow its screening and safety rules.",
+    safeguardingRequirements:
+      "Register directly with the organization and follow its screening and safety rules.",
     whatToBring: "Confirm with the organization",
     indoorOutdoor: "either",
     commitmentLevel: "flexible",
@@ -338,7 +340,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     sourceUrl: "https://mvfb.org/how-to-help/group-volunteers-2/",
     sourceVerifiedAt: new Date().toISOString(),
     churchSponsored: false,
-    safetySummary: "Public lead only. Availability changes and must be confirmed on the official source page.",
+    safetySummary:
+      "Public lead only. Availability changes and must be confirmed on the official source page.",
     transportationAvailable: false,
     backgroundCheckRequired: false,
     bookmarked: false,
@@ -362,10 +365,12 @@ const previewOpportunities: ServiceOpportunity[] = [
     longitude: -71.3162,
     familyFriendly: false,
     ageRequirements: "Confirm driver, age, vehicle, and screening requirements with AgeSpan",
-    physicalRequirements: "Reliable transportation and repeated vehicle entry; role requirements vary",
+    physicalRequirements:
+      "Reliable transportation and repeated vehicle entry; role requirements vary",
     skills: ["Driving", "Consistency", "Older-adult support"],
     accessibilityNotes: "Ask AgeSpan about non-driving and accommodated roles.",
-    safeguardingRequirements: "Apply through AgeSpan and complete all required screening and training.",
+    safeguardingRequirements:
+      "Apply through AgeSpan and complete all required screening and training.",
     whatToBring: "Reliable vehicle if applying to drive",
     indoorOutdoor: "either",
     commitmentLevel: "recurring",
@@ -373,7 +378,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     sourceUrl: "https://agespan.org/volunteer/meals-on-wheels/",
     sourceVerifiedAt: new Date().toISOString(),
     churchSponsored: false,
-    safetySummary: "Public lead only. The church does not supervise routes or determine eligibility.",
+    safetySummary:
+      "Public lead only. The church does not supervise routes or determine eligibility.",
     transportationAvailable: false,
     backgroundCheckRequired: true,
     bookmarked: false,
@@ -400,7 +406,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     physicalRequirements: "Roles vary from sorting and cleanup to food service and conversation",
     skills: ["Hospitality", "Food service", "Sorting", "Conversation"],
     accessibilityNotes: "Ask the Day Center which roles can be adapted.",
-    safeguardingRequirements: "Contact the Day Center before arriving and follow its guest-privacy and safety practices.",
+    safeguardingRequirements:
+      "Contact the Day Center before arriving and follow its guest-privacy and safety practices.",
     whatToBring: "Only items or supplies the Day Center has confirmed it can use",
     indoorOutdoor: "indoor",
     commitmentLevel: "flexible",
@@ -408,7 +415,8 @@ const previewOpportunities: ServiceOpportunity[] = [
     sourceUrl: "https://eliotlowell.org/daycenter/",
     sourceVerifiedAt: new Date().toISOString(),
     churchSponsored: false,
-    safetySummary: "Public lead only. Never photograph or publish a guest without the organization’s explicit process and consent.",
+    safetySummary:
+      "Public lead only. Never photograph or publish a guest without the organization’s explicit process and consent.",
     transportationAvailable: false,
     backgroundCheckRequired: false,
     bookmarked: false,
@@ -502,13 +510,15 @@ const previewOpportunities: ServiceOpportunity[] = [
     physicalRequirements: "Seated activity",
     skills: ["Encouragement", "Writing", "Art"],
     accessibilityNotes: "Can be completed seated, with speech-to-text, or as a family project.",
-    safeguardingRequirements: "Do not include personal contact information or deliver directly to a private home without an approved partner process.",
+    safeguardingRequirements:
+      "Do not include personal contact information or deliver directly to a private home without an approved partner process.",
     whatToBring: "Cards, markers, envelopes, and the approved content guidance",
     indoorOutdoor: "indoor",
     commitmentLevel: "self_guided",
     registrationMode: "self_guided",
     churchSponsored: false,
-    safetySummary: "Independent idea. A partner or ministry leader should approve recipient distribution.",
+    safetySummary:
+      "Independent idea. A partner or ministry leader should approve recipient distribution.",
     transportationAvailable: false,
     backgroundCheckRequired: false,
     bookmarked: false,
@@ -534,17 +544,20 @@ const scriptureGuides = [
   {
     reference: "Mark 10:45",
     theme: "Jesus defines greatness through service",
-    reflection: "Choose a role that helps another person rather than one that mainly increases your visibility.",
+    reflection:
+      "Choose a role that helps another person rather than one that mainly increases your visibility.",
   },
   {
     reference: "John 13:12–17",
     theme: "Jesus models humble, practical care",
-    reflection: "Look for ordinary tasks others may overlook: setup, cleanup, listening, carrying, preparing, and welcoming.",
+    reflection:
+      "Look for ordinary tasks others may overlook: setup, cleanup, listening, carrying, preparing, and welcoming.",
   },
   {
     reference: "Matthew 25:35–40",
     theme: "Care for people in need matters deeply to Christ",
-    reflection: "Serve with dignity and without using another person’s hardship as content, proof, or publicity.",
+    reflection:
+      "Serve with dignity and without using another person’s hardship as content, proof, or publicity.",
   },
   {
     reference: "Galatians 5:13",
@@ -554,22 +567,26 @@ const scriptureGuides = [
   {
     reference: "1 Peter 4:10–11",
     theme: "Use your gifts as a faithful steward",
-    reflection: "Offer the ability you actually have, stay within your competence, and make room for others’ gifts too.",
+    reflection:
+      "Offer the ability you actually have, stay within your competence, and make room for others’ gifts too.",
   },
   {
     reference: "Philippians 2:3–4",
     theme: "Pay attention to the interests of others",
-    reflection: "Begin with the need identified by the community or partner, not the project you personally prefer to perform.",
+    reflection:
+      "Begin with the need identified by the community or partner, not the project you personally prefer to perform.",
   },
   {
     reference: "James 2:14–17",
     theme: "Faith becomes visible through practical care",
-    reflection: "Pair prayer and encouragement with a concrete, responsible next action when you are able.",
+    reflection:
+      "Pair prayer and encouragement with a concrete, responsible next action when you are able.",
   },
   {
     reference: "Hebrews 13:16",
     theme: "Do good and share",
-    reflection: "Consider time, skills, supplies, hospitality, transportation, advocacy, and consistent presence—not only money.",
+    reflection:
+      "Consider time, skills, supplies, hospitality, transportation, advocacy, and consistent presence—not only money.",
   },
   {
     reference: "Micah 6:8",
@@ -584,12 +601,14 @@ const scriptureGuides = [
   {
     reference: "Colossians 3:23–24",
     theme: "Work wholeheartedly for the Lord",
-    reflection: "Complete the task carefully, arrive prepared, and communicate if you can no longer serve.",
+    reflection:
+      "Complete the task carefully, arrive prepared, and communicate if you can no longer serve.",
   },
   {
     reference: "Ephesians 2:10",
     theme: "We are created for good works",
-    reflection: "Ask which prepared opportunity fits this season of your life, capacity, family, and gifts.",
+    reflection:
+      "Ask which prepared opportunity fits this season of your life, capacity, family, and gifts.",
   },
 ] as const;
 
@@ -618,7 +637,12 @@ function formatDateTime(value: string): string {
 }
 
 function directionsUrl(opportunity: ServiceOpportunity): string {
-  const query = [opportunity.generalLocation, opportunity.locality, opportunity.region, opportunity.postalCode]
+  const query = [
+    opportunity.generalLocation,
+    opportunity.locality,
+    opportunity.region,
+    opportunity.postalCode,
+  ]
     .filter(Boolean)
     .join(", ");
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -701,7 +725,8 @@ export function ServiceHub({
       body: JSON.stringify({ action, ...payload }),
     });
     const result = (await response.json()) as { message?: string };
-    if (!response.ok) throw new Error(result.message ?? "The service action could not be completed.");
+    if (!response.ok)
+      throw new Error(result.message ?? "The service action could not be completed.");
     await refreshLive(postalCode, radius);
   }
 
@@ -724,7 +749,11 @@ export function ServiceHub({
         if (category !== "all" && opportunity.category !== category) return false;
         if (kind !== "all" && opportunity.kind !== kind) return false;
         if (familyOnly && !opportunity.familyFriendly) return false;
-        if (activeTab === "nearby" && opportunity.distanceMiles != null && opportunity.distanceMiles > radius) {
+        if (
+          activeTab === "nearby" &&
+          opportunity.distanceMiles != null &&
+          opportunity.distanceMiles > radius
+        ) {
           return false;
         }
         if (!normalized) return true;
@@ -755,7 +784,9 @@ export function ServiceHub({
       nearbyOpportunities.filter(
         (opportunity) =>
           opportunity.bookmarked ||
-          opportunity.shifts.some((shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted"),
+          opportunity.shifts.some(
+            (shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted",
+          ),
       ),
     [nearbyOpportunities],
   );
@@ -794,7 +825,9 @@ export function ServiceHub({
           label: "your current location",
         });
         setActiveTab("nearby");
-        setNotice("Using your device location only for this page session. It is not saved to your profile.");
+        setNotice(
+          "Using your device location only for this page session. It is not saved to your profile.",
+        );
       },
       () => setNotice("Location permission was not granted. You can still search by ZIP code."),
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
@@ -805,7 +838,9 @@ export function ServiceHub({
     const question = guideQuestion.toLowerCase();
     if (/scripture|bible|verse|jesus|why serve|heart/.test(question)) {
       setActiveTab("scripture");
-      setNotice("Opened Serve in Scripture. References use short summaries rather than reproducing a copyrighted translation.");
+      setNotice(
+        "Opened Serve in Scripture. References use short summaries rather than reproducing a copyrighted translation.",
+      );
       return;
     }
     if (/near|zip|close|distance|lowell|chelmsford|dracut|tewksbury/.test(question)) {
@@ -821,7 +856,9 @@ export function ServiceHub({
     else if (/recovery|sober|addiction/.test(question)) setCategory("recovery_support");
     if (/my idea|propose|start|organize|unofficial|member-led/.test(question)) {
       setActiveTab("propose");
-      setNotice("Opened the member-led service proposal form. Proposals are reviewed before appearing to other members.");
+      setNotice(
+        "Opened the member-led service proposal form. Proposals are reviewed before appearing to other members.",
+      );
       return;
     }
     setActiveTab("discover");
@@ -841,7 +878,11 @@ export function ServiceHub({
           opportunityId: opportunity.id,
         });
       }
-      setNotice(opportunity.bookmarked ? "Removed from saved service opportunities." : "Saved to My commitments.");
+      setNotice(
+        opportunity.bookmarked
+          ? "Removed from saved service opportunities."
+          : "Saved to My commitments.",
+      );
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "The bookmark could not be updated.");
     }
@@ -849,11 +890,15 @@ export function ServiceHub({
 
   async function joinShift(opportunity: ServiceOpportunity, shift: ServiceShift) {
     if (shift.status === "cancelled" || shift.status === "completed") return;
-    const rawPartySize = window.prompt("How many people are you signing up, including yourself?", "1");
+    const rawPartySize = window.prompt(
+      "How many people are you signing up, including yourself?",
+      "1",
+    );
     if (rawPartySize == null) return;
     const partySize = Math.max(1, Math.min(20, Number.parseInt(rawPartySize, 10) || 1));
     const available = Math.max(0, shift.capacity - shift.signedUpCount);
-    const nextStatus: SignupStatus = partySize <= available ? "going" : shift.allowWaitlist ? "waitlisted" : null;
+    const nextStatus: SignupStatus =
+      partySize <= available ? "going" : shift.allowWaitlist ? "waitlisted" : null;
     if (!nextStatus) {
       setNotice("That shift is full and does not accept a waitlist.");
       return;
@@ -872,7 +917,9 @@ export function ServiceHub({
                           userStatus: nextStatus,
                           partySize,
                           signedUpCount:
-                            nextStatus === "going" ? item.signedUpCount + partySize : item.signedUpCount,
+                            nextStatus === "going"
+                              ? item.signedUpCount + partySize
+                              : item.signedUpCount,
                         }
                       : item,
                   ),
@@ -889,7 +936,9 @@ export function ServiceHub({
           : "The shift is full, so you were added to the waitlist.",
       );
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "The shift signup could not be completed.");
+      setNotice(
+        error instanceof Error ? error.message : "The shift signup could not be completed.",
+      );
     }
   }
 
@@ -931,7 +980,9 @@ export function ServiceHub({
       current.map((row) => (row.id === opportunity.id ? { ...row, bookmarked: true } : row)),
     );
     setActiveTab("commitments");
-    setNotice("Added the self-guided idea to My commitments. Review the safety and recipient-distribution boundaries before beginning.");
+    setNotice(
+      "Added the self-guided idea to My commitments. Review the safety and recipient-distribution boundaries before beginning.",
+    );
   }
 
   async function createProposal(event: FormEvent<HTMLFormElement>) {
@@ -1008,19 +1059,33 @@ export function ServiceHub({
     return (
       <article className="service-card" key={opportunity.id}>
         <header>
-          <span className={`service-kind service-kind--${opportunity.kind}`}>{kindLabels[opportunity.kind]}</span>
-          {opportunity.distanceMiles != null ? <b>{opportunity.distanceMiles.toFixed(1)} mi</b> : null}
+          <span className={`service-kind service-kind--${opportunity.kind}`}>
+            {kindLabels[opportunity.kind]}
+          </span>
+          {opportunity.distanceMiles != null ? (
+            <b>{opportunity.distanceMiles.toFixed(1)} mi</b>
+          ) : null}
         </header>
         <p className="service-card__category">{categoryLabels[opportunity.category]}</p>
         <h3>{opportunity.title}</h3>
         <p>{opportunity.needStatement}</p>
         <div className="service-card__meta">
-          <span>⌖ {opportunity.generalLocation}{opportunity.postalCode ? ` · ${opportunity.postalCode}` : ""}</span>
-          <span>{opportunity.familyFriendly ? "Family-friendly" : opportunity.ageRequirements}</span>
-          <span>{opportunity.indoorOutdoor.replace("_", " ")} · {opportunity.commitmentLevel.replace("_", " ")}</span>
+          <span>
+            ⌖ {opportunity.generalLocation}
+            {opportunity.postalCode ? ` · ${opportunity.postalCode}` : ""}
+          </span>
+          <span>
+            {opportunity.familyFriendly ? "Family-friendly" : opportunity.ageRequirements}
+          </span>
+          <span>
+            {opportunity.indoorOutdoor.replace("_", " ")} ·{" "}
+            {opportunity.commitmentLevel.replace("_", " ")}
+          </span>
         </div>
         <div className="tag-row">
-          {opportunity.skills.slice(0, 4).map((skill) => <span key={skill}>{skill}</span>)}
+          {opportunity.skills.slice(0, 4).map((skill) => (
+            <span key={skill}>{skill}</span>
+          ))}
         </div>
         {nextShift ? (
           <div className="service-card__shift">
@@ -1039,12 +1104,18 @@ export function ServiceHub({
           </div>
         ) : (
           <div className="service-card__shift service-card__shift--source">
-            <strong>{opportunity.registrationMode === "self_guided" ? "Start when ready" : "Confirm with source"}</strong>
+            <strong>
+              {opportunity.registrationMode === "self_guided"
+                ? "Start when ready"
+                : "Confirm with source"}
+            </strong>
             <span>{opportunity.registrationMode.replace("_", " ")}</span>
           </div>
         )}
         <footer>
-          <button type="button" onClick={() => setSelectedId(opportunity.id)}>View details</button>
+          <button type="button" onClick={() => setSelectedId(opportunity.id)}>
+            View details
+          </button>
           <button
             type="button"
             className={opportunity.bookmarked ? "active" : ""}
@@ -1070,16 +1141,28 @@ export function ServiceHub({
           </p>
         </div>
         <div className="service-hero__metrics">
-          <div><strong>{opportunities.length}</strong><span>ways to serve</span></div>
-          <div><strong>{commitments.length}</strong><span>saved or joined</span></div>
-          <div><strong>{proposals.filter((proposal) => proposal.status === "pending").length}</strong><span>ideas in review</span></div>
+          <div>
+            <strong>{opportunities.length}</strong>
+            <span>ways to serve</span>
+          </div>
+          <div>
+            <strong>{commitments.length}</strong>
+            <span>saved or joined</span>
+          </div>
+          <div>
+            <strong>{proposals.filter((proposal) => proposal.status === "pending").length}</strong>
+            <span>ideas in review</span>
+          </div>
         </div>
       </section>
 
       <section className="service-guide">
         <div>
           <strong>✦ Serve Guide</strong>
-          <span>Describe your availability, gifts, family needs, ZIP, or the kind of neighbor you hope to support.</span>
+          <span>
+            Describe your availability, gifts, family needs, ZIP, or the kind of neighbor you hope
+            to support.
+          </span>
         </div>
         <div>
           <input
@@ -1091,18 +1174,22 @@ export function ServiceHub({
             placeholder="Example: Our family has two hours Saturday near 01852"
             maxLength={500}
           />
-          <button type="button" onClick={guide}>Guide me</button>
+          <button type="button" onClick={guide}>
+            Guide me
+          </button>
         </div>
       </section>
 
       <nav className="module-tabs service-tabs" aria-label="Service Hub sections">
-        {([
-          ["discover", "Discover"],
-          ["nearby", "Near me"],
-          ["commitments", "My commitments"],
-          ["scripture", "Serve in Scripture"],
-          ["propose", "Propose service"],
-        ] as const).map(([value, label]) => (
+        {(
+          [
+            ["discover", "Discover"],
+            ["nearby", "Near me"],
+            ["commitments", "My commitments"],
+            ["scripture", "Serve in Scripture"],
+            ["propose", "Propose service"],
+          ] as const
+        ).map(([value, label]) => (
           <button
             key={value}
             type="button"
@@ -1114,9 +1201,13 @@ export function ServiceHub({
         ))}
       </nav>
 
-      {notice ? <p className="module-notice" role="status">{notice}</p> : null}
+      {notice ? (
+        <p className="module-notice" role="status">
+          {notice}
+        </p>
+      ) : null}
 
-      {(activeTab === "discover" || activeTab === "nearby") ? (
+      {activeTab === "discover" || activeTab === "nearby" ? (
         <>
           <section className="service-finder">
             <div className="service-finder__location">
@@ -1124,7 +1215,9 @@ export function ServiceHub({
                 ZIP code
                 <input
                   value={postalCode}
-                  onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))}
+                  onChange={(event) =>
+                    setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))
+                  }
                   inputMode="numeric"
                   placeholder="01852"
                 />
@@ -1140,8 +1233,12 @@ export function ServiceHub({
                   <option value={50}>50 miles</option>
                 </select>
               </label>
-              <button type="button" onClick={applyPostalCode}>Find nearby</button>
-              <button type="button" className="secondary" onClick={useCurrentLocation}>Use my location</button>
+              <button type="button" onClick={applyPostalCode}>
+                Find nearby
+              </button>
+              <button type="button" className="secondary" onClick={useCurrentLocation}>
+                Use my location
+              </button>
             </div>
             <p>
               {origin
@@ -1151,16 +1248,38 @@ export function ServiceHub({
           </section>
 
           <section className="service-controls">
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search needs, skills, partners, or locations…" />
-            <select value={category} onChange={(event) => setCategory(event.target.value as typeof category)}>
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search needs, skills, partners, or locations…"
+            />
+            <select
+              value={category}
+              onChange={(event) => setCategory(event.target.value as typeof category)}
+            >
               <option value="all">All service categories</option>
-              {Object.entries(categoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+              {Object.entries(categoryLabels).map(([value, label]) => (
+                <option value={value} key={value}>
+                  {label}
+                </option>
+              ))}
             </select>
             <select value={kind} onChange={(event) => setKind(event.target.value as typeof kind)}>
               <option value="all">All sponsorship types</option>
-              {Object.entries(kindLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+              {Object.entries(kindLabels).map(([value, label]) => (
+                <option value={value} key={value}>
+                  {label}
+                </option>
+              ))}
             </select>
-            <label className="service-check"><input type="checkbox" checked={familyOnly} onChange={(event) => setFamilyOnly(event.target.checked)} /> Family-friendly only</label>
+            <label className="service-check">
+              <input
+                type="checkbox"
+                checked={familyOnly}
+                onChange={(event) => setFamilyOnly(event.target.checked)}
+              />{" "}
+              Family-friendly only
+            </label>
           </section>
 
           <section className="service-kind-key" aria-label="Service sponsorship labels">
@@ -1179,8 +1298,13 @@ export function ServiceHub({
               {!filtered.length ? (
                 <div className="module-empty-state">
                   <h3>No matching opportunities yet</h3>
-                  <p>Expand the radius, remove a filter, check a nearby ZIP, or propose a responsible member-led service idea.</p>
-                  <button type="button" onClick={() => setActiveTab("propose")}>Propose an idea</button>
+                  <p>
+                    Expand the radius, remove a filter, check a nearby ZIP, or propose a responsible
+                    member-led service idea.
+                  </p>
+                  <button type="button" onClick={() => setActiveTab("propose")}>
+                    Propose an idea
+                  </button>
                 </div>
               ) : null}
             </section>
@@ -1191,35 +1315,60 @@ export function ServiceHub({
       {activeTab === "commitments" ? (
         <section className="module-workspace">
           <div className="section-heading">
-            <div><p>Reliable follow-through</p><h3>My saved opportunities and shift commitments</h3></div>
+            <div>
+              <p>Reliable follow-through</p>
+              <h3>My saved opportunities and shift commitments</h3>
+            </div>
           </div>
           <div className="service-commitments">
             {commitments.map((opportunity) => (
               <article key={opportunity.id}>
                 <div>
-                  <span className={`service-kind service-kind--${opportunity.kind}`}>{kindLabels[opportunity.kind]}</span>
+                  <span className={`service-kind service-kind--${opportunity.kind}`}>
+                    {kindLabels[opportunity.kind]}
+                  </span>
                   <h3>{opportunity.title}</h3>
-                  <p>{opportunity.generalLocation} · {opportunity.locality}</p>
+                  <p>
+                    {opportunity.generalLocation} · {opportunity.locality}
+                  </p>
                 </div>
                 <div>
                   {opportunity.shifts
-                    .filter((shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted")
+                    .filter(
+                      (shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted",
+                    )
                     .map((shift) => (
                       <div className="service-commitment-shift" key={shift.id}>
                         <strong>{formatDateTime(shift.startsAt)}</strong>
-                        <span>{shift.userStatus === "going" ? `Going · party of ${shift.partySize ?? 1}` : "Waitlisted"}</span>
-                        {shift.meetingInstructions ? <small>{shift.meetingInstructions}</small> : null}
-                        <button type="button" onClick={() => void cancelSignup(opportunity, shift)}>Cancel signup</button>
+                        <span>
+                          {shift.userStatus === "going"
+                            ? `Going · party of ${shift.partySize ?? 1}`
+                            : "Waitlisted"}
+                        </span>
+                        {shift.meetingInstructions ? (
+                          <small>{shift.meetingInstructions}</small>
+                        ) : null}
+                        <button type="button" onClick={() => void cancelSignup(opportunity, shift)}>
+                          Cancel signup
+                        </button>
                       </div>
                     ))}
-                  {!opportunity.shifts.some((shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted") ? (
+                  {!opportunity.shifts.some(
+                    (shift) => shift.userStatus === "going" || shift.userStatus === "waitlisted",
+                  ) ? (
                     <p>Saved for later review.</p>
                   ) : null}
                 </div>
-                <button type="button" onClick={() => setSelectedId(opportunity.id)}>Open details</button>
+                <button type="button" onClick={() => setSelectedId(opportunity.id)}>
+                  Open details
+                </button>
               </article>
             ))}
-            {!commitments.length ? <p className="module-empty">You have not saved or joined a service opportunity yet.</p> : null}
+            {!commitments.length ? (
+              <p className="module-empty">
+                You have not saved or joined a service opportunity yet.
+              </p>
+            ) : null}
           </div>
         </section>
       ) : null}
@@ -1227,10 +1376,14 @@ export function ServiceHub({
       {activeTab === "scripture" ? (
         <section className="module-workspace service-scripture">
           <div className="section-heading">
-            <div><p>Scripture before activity</p><h3>Let serving be shaped by Jesus, love, humility, and responsibility</h3></div>
+            <div>
+              <p>Scripture before activity</p>
+              <h3>Let serving be shaped by Jesus, love, humility, and responsibility</h3>
+            </div>
           </div>
           <p className="module-boundary">
-            These are references and ministry summaries—not a reproduced Bible translation. Open the approved Bible reader for the full passage and translation.
+            These are references and ministry summaries—not a reproduced Bible translation. Open the
+            approved Bible reader for the full passage and translation.
           </p>
           <div className="service-scripture-grid">
             {scriptureGuides.map((guide) => (
@@ -1238,18 +1391,35 @@ export function ServiceHub({
                 <span>{guide.reference}</span>
                 <h3>{guide.theme}</h3>
                 <p>{guide.reflection}</p>
-                <a href={`/bible?reference=${encodeURIComponent(guide.reference)}`}>Open in Bible Journey →</a>
+                <a href={`/bible?reference=${encodeURIComponent(guide.reference)}`}>
+                  Open in Bible Journey →
+                </a>
               </article>
             ))}
           </div>
           <div className="service-reflection-plan">
             <h3>A simple serving rhythm</h3>
             <ol>
-              <li><strong>Listen:</strong> What need has the community, partner, or church leader actually identified?</li>
-              <li><strong>Discern:</strong> Which role fits your gifts, competence, health, schedule, family, and current capacity?</li>
-              <li><strong>Prepare:</strong> Review safety, accessibility, age, transportation, safeguarding, and supplies.</li>
-              <li><strong>Serve:</strong> Arrive reliably, follow the host’s direction, protect dignity, and avoid using hardship as content.</li>
-              <li><strong>Reflect:</strong> Thank God, follow up responsibly, and share impact only through approved consent-aware channels.</li>
+              <li>
+                <strong>Listen:</strong> What need has the community, partner, or church leader
+                actually identified?
+              </li>
+              <li>
+                <strong>Discern:</strong> Which role fits your gifts, competence, health, schedule,
+                family, and current capacity?
+              </li>
+              <li>
+                <strong>Prepare:</strong> Review safety, accessibility, age, transportation,
+                safeguarding, and supplies.
+              </li>
+              <li>
+                <strong>Serve:</strong> Arrive reliably, follow the host’s direction, protect
+                dignity, and avoid using hardship as content.
+              </li>
+              <li>
+                <strong>Reflect:</strong> Thank God, follow up responsibly, and share impact only
+                through approved consent-aware channels.
+              </li>
             </ol>
           </div>
         </section>
@@ -1257,46 +1427,115 @@ export function ServiceHub({
 
       {activeTab === "propose" ? (
         <section className="service-proposal-layout">
-          <form className="module-form service-proposal-form" onSubmit={(event) => void createProposal(event)}>
-            <div className="section-heading span-2"><div><p>Member initiative with review</p><h3>Propose a service opportunity</h3></div></div>
+          <form
+            className="module-form service-proposal-form"
+            onSubmit={(event) => void createProposal(event)}
+          >
+            <div className="section-heading span-2">
+              <div>
+                <p>Member initiative with review</p>
+                <h3>Propose a service opportunity</h3>
+              </div>
+            </div>
             <label>
               Proposal type
               <select name="proposedKind" defaultValue="member_led">
                 <option value="member_led">Member-led gathering · not church-sponsored</option>
                 <option value="self_guided">Self-guided service idea</option>
-                <option value="approved_partner">Suggest an external partner for church review</option>
+                <option value="approved_partner">
+                  Suggest an external partner for church review
+                </option>
               </select>
             </label>
             <label>
               Category
               <select name="category" defaultValue="neighborhood">
-                {Object.entries(categoryLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                {Object.entries(categoryLabels).map(([value, label]) => (
+                  <option value={value} key={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </label>
-            <label className="span-2">Title<input name="title" required minLength={3} maxLength={180} /></label>
-            <label className="span-2">What need did you identify?<textarea name="needStatement" required minLength={20} maxLength={2500} rows={4} /></label>
-            <label className="span-2">What responsible impact could this create?<textarea name="impactStatement" required minLength={20} maxLength={2500} rows={4} /></label>
-            <label>General location<input name="generalLocation" required maxLength={200} placeholder="Public park area, Lowell" /></label>
-            <label>ZIP code<input name="postalCode" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} placeholder="01852" /></label>
-            <label>Proposed start<input name="proposedStartsAt" type="datetime-local" /></label>
-            <label>Proposed end<input name="proposedEndsAt" type="datetime-local" /></label>
+            <label className="span-2">
+              Title
+              <input name="title" required minLength={3} maxLength={180} />
+            </label>
+            <label className="span-2">
+              What need did you identify?
+              <textarea name="needStatement" required minLength={20} maxLength={2500} rows={4} />
+            </label>
+            <label className="span-2">
+              What responsible impact could this create?
+              <textarea name="impactStatement" required minLength={20} maxLength={2500} rows={4} />
+            </label>
+            <label>
+              General location
+              <input
+                name="generalLocation"
+                required
+                maxLength={200}
+                placeholder="Public park area, Lowell"
+              />
+            </label>
+            <label>
+              ZIP code
+              <input
+                name="postalCode"
+                inputMode="numeric"
+                pattern="[0-9]{5}"
+                maxLength={5}
+                placeholder="01852"
+              />
+            </label>
+            <label>
+              Proposed start
+              <input name="proposedStartsAt" type="datetime-local" />
+            </label>
+            <label>
+              Proposed end
+              <input name="proposedEndsAt" type="datetime-local" />
+            </label>
             <fieldset className="span-2 service-risk-fieldset">
               <legend>Safety and review factors</legend>
-              <label className="check-label"><input type="checkbox" name="familyFriendly" /> Designed for families</label>
-              <label className="check-label"><input type="checkbox" name="publicPlaceConfirmed" /> Uses a lawful public or approved partner location</label>
-              <label className="check-label"><input type="checkbox" name="minorsInvolved" /> Involves minors beyond their own guardian’s supervision</label>
-              <label className="check-label"><input type="checkbox" name="transportationInvolved" /> Includes rides or transportation coordination</label>
-              <label className="check-label"><input type="checkbox" name="homeAccessInvolved" /> Requires entering a private home</label>
-              <label className="check-label"><input type="checkbox" name="hazardousWork" /> Includes hazardous cleanup, construction, medical, or emergency work</label>
-              <label className="check-label"><input type="checkbox" name="cashHandling" /> Collects or transfers cash/payment</label>
-              <label className="check-label"><input type="checkbox" name="professionalService" /> Represents licensed or professional services</label>
+              <label className="check-label">
+                <input type="checkbox" name="familyFriendly" /> Designed for families
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="publicPlaceConfirmed" /> Uses a lawful public or
+                approved partner location
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="minorsInvolved" /> Involves minors beyond their own
+                guardian’s supervision
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="transportationInvolved" /> Includes rides or
+                transportation coordination
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="homeAccessInvolved" /> Requires entering a private home
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="hazardousWork" /> Includes hazardous cleanup,
+                construction, medical, or emergency work
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="cashHandling" /> Collects or transfers cash/payment
+              </label>
+              <label className="check-label">
+                <input type="checkbox" name="professionalService" /> Represents licensed or
+                professional services
+              </label>
             </fieldset>
             <button type="submit">Send for service-team review</button>
           </form>
           <aside className="service-proposal-aside">
             <h3>What approval means</h3>
             <p>
-              Approval can make a responsible proposal visible to members. It does not automatically make a member-led project church-sponsored, insured, professionally licensed, child-safe, or supervised.
+              Approval can make a responsible proposal visible to members. It does not automatically
+              make a member-led project church-sponsored, insured, professionally licensed,
+              child-safe, or supervised.
             </p>
             <h4>Always requires deeper review</h4>
             <ul>
@@ -1311,8 +1550,13 @@ export function ServiceHub({
               {proposals.map((proposal) => (
                 <article key={proposal.id}>
                   <strong>{proposal.title}</strong>
-                  <span>{proposal.status.replace("_", " ")} · {proposal.riskLevel} review</span>
-                  <small>{proposal.generalLocation}{proposal.postalCode ? ` · ${proposal.postalCode}` : ""}</small>
+                  <span>
+                    {proposal.status.replace("_", " ")} · {proposal.riskLevel} review
+                  </span>
+                  <small>
+                    {proposal.generalLocation}
+                    {proposal.postalCode ? ` · ${proposal.postalCode}` : ""}
+                  </small>
                   {proposal.reviewerNote ? <p>{proposal.reviewerNote}</p> : null}
                 </article>
               ))}
@@ -1322,55 +1566,127 @@ export function ServiceHub({
       ) : null}
 
       {selected ? (
-        <section className="service-detail" role="dialog" aria-modal="false" aria-label={`${selected.title} details`}>
-          <button className="service-detail__close" type="button" onClick={() => setSelectedId(null)} aria-label="Close service details">×</button>
+        <section
+          className="service-detail"
+          role="dialog"
+          aria-modal="false"
+          aria-label={`${selected.title} details`}
+        >
+          <button
+            className="service-detail__close"
+            type="button"
+            onClick={() => setSelectedId(null)}
+            aria-label="Close service details"
+          >
+            ×
+          </button>
           <div className="service-detail__header">
             <div>
-              <span className={`service-kind service-kind--${selected.kind}`}>{kindLabels[selected.kind]}</span>
+              <span className={`service-kind service-kind--${selected.kind}`}>
+                {kindLabels[selected.kind]}
+              </span>
               <p>{categoryLabels[selected.category]}</p>
               <h2>{selected.title}</h2>
               <small>{kindDescriptions[selected.kind]}</small>
             </div>
-            {selected.distanceMiles != null ? <strong>{selected.distanceMiles.toFixed(1)} miles away</strong> : null}
+            {selected.distanceMiles != null ? (
+              <strong>{selected.distanceMiles.toFixed(1)} miles away</strong>
+            ) : null}
           </div>
           <div className="service-detail__grid">
-            <article><h3>The need</h3><p>{selected.needStatement}</p></article>
-            <article><h3>Expected impact</h3><p>{selected.impactStatement}</p></article>
-            <article><h3>Location</h3><p>{selected.generalLocation}, {selected.locality}, {selected.region} {selected.postalCode}</p><a href={directionsUrl(selected)} target="_blank" rel="noreferrer">Open public directions ↗</a></article>
-            <article><h3>Who can serve</h3><p>{selected.ageRequirements}</p>{selected.physicalRequirements ? <p>{selected.physicalRequirements}</p> : null}</article>
-            <article><h3>Accessibility</h3><p>{selected.accessibilityNotes ?? "Ask the host about role adaptations."}</p></article>
-            <article><h3>Safeguarding and safety</h3><p>{selected.safeguardingRequirements ?? selected.safetySummary ?? "Follow the host’s approved safety process."}</p></article>
-            <article><h3>What to bring</h3><p>{selected.whatToBring ?? "The host will provide instructions."}</p></article>
-            <article><h3>Skills</h3><div className="tag-row">{selected.skills.map((skill) => <span key={skill}>{skill}</span>)}</div></article>
+            <article>
+              <h3>The need</h3>
+              <p>{selected.needStatement}</p>
+            </article>
+            <article>
+              <h3>Expected impact</h3>
+              <p>{selected.impactStatement}</p>
+            </article>
+            <article>
+              <h3>Location</h3>
+              <p>
+                {selected.generalLocation}, {selected.locality}, {selected.region}{" "}
+                {selected.postalCode}
+              </p>
+              <a href={directionsUrl(selected)} target="_blank" rel="noreferrer">
+                Open public directions ↗
+              </a>
+            </article>
+            <article>
+              <h3>Who can serve</h3>
+              <p>{selected.ageRequirements}</p>
+              {selected.physicalRequirements ? <p>{selected.physicalRequirements}</p> : null}
+            </article>
+            <article>
+              <h3>Accessibility</h3>
+              <p>{selected.accessibilityNotes ?? "Ask the host about role adaptations."}</p>
+            </article>
+            <article>
+              <h3>Safeguarding and safety</h3>
+              <p>
+                {selected.safeguardingRequirements ??
+                  selected.safetySummary ??
+                  "Follow the host’s approved safety process."}
+              </p>
+            </article>
+            <article>
+              <h3>What to bring</h3>
+              <p>{selected.whatToBring ?? "The host will provide instructions."}</p>
+            </article>
+            <article>
+              <h3>Skills</h3>
+              <div className="tag-row">
+                {selected.skills.map((skill) => (
+                  <span key={skill}>{skill}</span>
+                ))}
+              </div>
+            </article>
           </div>
           <div className="service-detail__actions">
             {selected.shifts.map((shift) => (
               <article key={shift.id}>
-                <div><strong>{formatDateTime(shift.startsAt)}</strong><span>{shift.capacity - shift.signedUpCount} open of {shift.capacity}</span></div>
+                <div>
+                  <strong>{formatDateTime(shift.startsAt)}</strong>
+                  <span>
+                    {shift.capacity - shift.signedUpCount} open of {shift.capacity}
+                  </span>
+                </div>
                 {shift.userStatus === "going" || shift.userStatus === "waitlisted" ? (
-                  <button type="button" onClick={() => void cancelSignup(selected, shift)}>Cancel {shift.userStatus}</button>
+                  <button type="button" onClick={() => void cancelSignup(selected, shift)}>
+                    Cancel {shift.userStatus}
+                  </button>
                 ) : (
-                  <button type="button" onClick={() => void joinShift(selected, shift)}>{shift.signedUpCount >= shift.capacity ? "Join waitlist" : "Join shift"}</button>
+                  <button type="button" onClick={() => void joinShift(selected, shift)}>
+                    {shift.signedUpCount >= shift.capacity ? "Join waitlist" : "Join shift"}
+                  </button>
                 )}
               </article>
             ))}
             {selected.registrationMode === "external_link" && selected.sourceUrl ? (
-              <a href={selected.sourceUrl} target="_blank" rel="noreferrer">Open official source and verify availability ↗</a>
+              <a href={selected.sourceUrl} target="_blank" rel="noreferrer">
+                Open official source and verify availability ↗
+              </a>
             ) : null}
             {selected.registrationMode === "self_guided" ? (
-              <button type="button" onClick={() => startSelfGuided(selected)}>Add self-guided plan</button>
+              <button type="button" onClick={() => startSelfGuided(selected)}>
+                Add self-guided plan
+              </button>
             ) : null}
           </div>
           {selected.kind === "public_lead" ? (
             <p className="module-boundary">
-              This is public-source information, not a church endorsement or confirmed opening. Verify availability, requirements, screening, accessibility, and current instructions directly with the organization.
+              This is public-source information, not a church endorsement or confirmed opening.
+              Verify availability, requirements, screening, accessibility, and current instructions
+              directly with the organization.
             </p>
           ) : null}
         </section>
       ) : null}
 
       {mode === "showcase" ? (
-        <button type="button" className="module-secondary" onClick={resetShowcase}>Reset Service Hub showcase</button>
+        <button type="button" className="module-secondary" onClick={resetShowcase}>
+          Reset Service Hub showcase
+        </button>
       ) : null}
     </div>
   );

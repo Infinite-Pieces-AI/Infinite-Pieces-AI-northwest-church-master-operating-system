@@ -10,8 +10,7 @@ export default async function RecoveryPage() {
     hasPermission(viewer.roles, "moderation.review") ||
     hasPermission(viewer.roles, "safeguarding.review");
   const programName = process.env.NEXT_PUBLIC_RECOVERY_MINISTRY_NAME ?? "Recovery Ministry";
-  const officialProgramConfirmed =
-    process.env.RECOVERY_OFFICIAL_PROGRAM_CONFIRMED === "true";
+  const officialProgramConfirmed = process.env.RECOVERY_OFFICIAL_PROGRAM_CONFIRMED === "true";
 
   return (
     <>

@@ -164,7 +164,9 @@ function audienceLabel(
   contexts: PrayerPayload["contexts"],
 ): string {
   if (visibility === "ministry") {
-    return contexts.ministries.find((context) => context.id === contextId)?.name ?? "Selected ministry";
+    return (
+      contexts.ministries.find((context) => context.id === contextId)?.name ?? "Selected ministry"
+    );
   }
   if (visibility === "group") {
     return contexts.groups.find((context) => context.id === contextId)?.name ?? "Selected group";
@@ -204,7 +206,10 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
 
   useEffect(() => {
     if (mode !== "showcase") return;
-    window.localStorage.setItem(storageKey, JSON.stringify({ requests, contexts } satisfies PrayerPayload));
+    window.localStorage.setItem(
+      storageKey,
+      JSON.stringify({ requests, contexts } satisfies PrayerPayload),
+    );
   }, [contexts, mode, requests]);
 
   async function refreshLive() {
@@ -234,7 +239,8 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
       body: JSON.stringify({ action, ...payload }),
     });
     const result = (await response.json()) as { message?: string };
-    if (!response.ok) throw new Error(result.message ?? "The prayer action could not be completed.");
+    if (!response.ok)
+      throw new Error(result.message ?? "The prayer action could not be completed.");
     await refreshLive();
   }
 
@@ -316,20 +322,24 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
           : "The request was routed only to the restricted leader workflow.",
       );
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "The prayer request could not be created.");
+      setNotice(
+        error instanceof Error ? error.message : "The prayer request could not be created.",
+      );
     }
   }
 
   async function addInteraction(request: PrayerRequest, type: PrayerInteraction["type"]) {
     let body: string | undefined;
     if (type !== "prayed") {
-      body = window.prompt(
-        type === "scripture"
-          ? "Share an approved Scripture reference and a short encouragement:"
-          : type === "update"
-            ? "Share an update:"
-            : "Write a short encouragement:",
-      )?.trim();
+      body = window
+        .prompt(
+          type === "scripture"
+            ? "Share an approved Scripture reference and a short encouragement:"
+            : type === "update"
+              ? "Share an update:"
+              : "Write a short encouragement:",
+        )
+        ?.trim();
       if (!body) return;
     }
     try {
@@ -368,7 +378,9 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
 
   async function markAnswered(request: PrayerRequest) {
     const summary = window
-      .prompt("How was this prayer answered? Share only what is appropriate for the selected audience:")
+      .prompt(
+        "How was this prayer answered? Share only what is appropriate for the selected audience:",
+      )
       ?.trim();
     if (!summary) return;
     try {
@@ -439,12 +451,14 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
       </section>
 
       <nav className="module-tabs" aria-label="Prayer Well sections">
-        {([
-          ["feed", "Prayer list"],
-          ["mine", "My requests"],
-          ["answered", "Answered"],
-          ["create", "Add request"],
-        ] as const).map(([value, label]) => (
+        {(
+          [
+            ["feed", "Prayer list"],
+            ["mine", "My requests"],
+            ["answered", "Answered"],
+            ["create", "Add request"],
+          ] as const
+        ).map(([value, label]) => (
           <button
             key={value}
             type="button"
@@ -502,13 +516,16 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
                     <span>
                       <strong>{request.title}</strong>
                       <small>
-                        {request.authorName} · {categoryLabels[request.category]} · {prayedCount} prayed
+                        {request.authorName} · {categoryLabels[request.category]} · {prayedCount}{" "}
+                        prayed
                       </small>
                     </span>
                   </button>
                 );
               })}
-              {!visible.length ? <p className="module-empty">No prayer requests match this view.</p> : null}
+              {!visible.length ? (
+                <p className="module-empty">No prayer requests match this view.</p>
+              ) : null}
             </div>
           </div>
 
@@ -547,7 +564,10 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
                     </button>
                   ) : null}
                   {selected.allowEncouragement && selected.status === "open" ? (
-                    <button type="button" onClick={() => void addInteraction(selected, "scripture")}>
+                    <button
+                      type="button"
+                      onClick={() => void addInteraction(selected, "scripture")}
+                    >
                       Share Scripture
                     </button>
                   ) : null}
@@ -671,16 +691,19 @@ export function PrayerWell({ mode, canLead }: { mode: "showcase" | "live"; canLe
               <input type="checkbox" name="anonymous" /> Hide my name from the selected audience
             </label>
             <label className="check-label">
-              <input type="checkbox" name="allowPrayed" defaultChecked /> Let members mark that they prayed
+              <input type="checkbox" name="allowPrayed" defaultChecked /> Let members mark that they
+              prayed
             </label>
             <label className="check-label">
-              <input type="checkbox" name="allowEncouragement" defaultChecked /> Allow encouragement and Scripture comments
+              <input type="checkbox" name="allowEncouragement" defaultChecked /> Allow encouragement
+              and Scripture comments
             </label>
             <button type="submit">Add to Prayer Well</button>
           </form>
           <p className="module-boundary">
             Prayer content is excluded from advertising, search targeting, visitor profiling, and
-            default AI processing. Anonymous requests separate the owner mapping from the member feed.
+            default AI processing. Anonymous requests separate the owner mapping from the member
+            feed.
           </p>
           {mode === "showcase" ? (
             <button type="button" className="module-secondary" onClick={resetShowcase}>

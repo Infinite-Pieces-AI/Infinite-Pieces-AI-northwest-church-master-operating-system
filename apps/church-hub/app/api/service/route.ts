@@ -53,7 +53,10 @@ function dateOrNull(value: unknown): string | null {
 
 function stringList(value: unknown): string[] {
   return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string").map((item) => item.trim()).filter(Boolean)
+    ? value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
     : [];
 }
 
@@ -74,9 +77,7 @@ async function loadServicePayload(
   if (nearbyError) throw nearbyError;
 
   const nearbyRows = (nearbyData ?? []) as Row[];
-  const opportunityIds = nearbyRows
-    .map((row) => String(row.opportunity_id ?? ""))
-    .filter(Boolean);
+  const opportunityIds = nearbyRows.map((row) => String(row.opportunity_id ?? "")).filter(Boolean);
 
   const [shiftResult, bookmarkResult, proposalResult, extraResult] = await Promise.all([
     opportunityIds.length
@@ -113,9 +114,7 @@ async function loadServicePayload(
   const bookmarks = new Set(
     ((bookmarkResult.data ?? []) as Row[]).map((row) => String(row.opportunity_id)),
   );
-  const extraMap = new Map(
-    ((extraResult.data ?? []) as Row[]).map((row) => [String(row.id), row]),
-  );
+  const extraMap = new Map(((extraResult.data ?? []) as Row[]).map((row) => [String(row.id), row]));
 
   return {
     opportunities: nearbyRows.map((row) => {
@@ -152,8 +151,7 @@ async function loadServicePayload(
         sourceVerifiedAt:
           typeof extra?.source_verified_at === "string" ? extra.source_verified_at : undefined,
         churchSponsored: row.church_sponsored === true,
-        safetySummary:
-          typeof extra?.safety_summary === "string" ? extra.safety_summary : undefined,
+        safetySummary: typeof extra?.safety_summary === "string" ? extra.safety_summary : undefined,
         transportationAvailable: extra?.transportation_available === true,
         backgroundCheckRequired: extra?.background_check_required === true,
         bookmarked: bookmarks.has(id),
@@ -173,16 +171,14 @@ async function loadServicePayload(
             signedUpCount: Number(shift.signed_up_count ?? 0),
             allowWaitlist: shift.allow_waitlist === true,
             status: String(shift.status ?? "open"),
-            minimumAge:
-              typeof shift.minimum_age === "number" ? shift.minimum_age : undefined,
+            minimumAge: typeof shift.minimum_age === "number" ? shift.minimum_age : undefined,
             weatherStatus:
               typeof shift.weather_status === "string" ? shift.weather_status : undefined,
             meetingInstructions:
               typeof shift.meeting_instructions === "string"
                 ? shift.meeting_instructions
                 : undefined,
-            userStatus:
-              typeof shift.user_status === "string" ? shift.user_status : null,
+            userStatus: typeof shift.user_status === "string" ? shift.user_status : null,
             partySize:
               typeof shift.user_party_size === "number" ? shift.user_party_size : undefined,
           })),
@@ -197,8 +193,7 @@ async function loadServicePayload(
       proposedKind: String(proposal.proposed_kind),
       status: String(proposal.status),
       riskLevel: String(proposal.risk_level),
-      reviewerNote:
-        typeof proposal.reviewer_note === "string" ? proposal.reviewer_note : undefined,
+      reviewerNote: typeof proposal.reviewer_note === "string" ? proposal.reviewer_note : undefined,
       createdAt: String(proposal.created_at),
     })),
   };

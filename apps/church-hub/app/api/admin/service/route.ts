@@ -48,16 +48,21 @@ function postalCode(value: unknown): string | null {
 }
 
 function categoryKey(value: unknown): string {
-  const normalized = String(value ?? "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_");
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_");
   if (normalized.includes("hunger") || normalized.includes("food")) return "hunger";
   if (normalized.includes("housing") || normalized.includes("shelter")) return "housing";
   if (normalized.includes("child") || normalized.includes("youth")) return "children_youth";
-  if (normalized.includes("older") || normalized.includes("senior") || normalized.includes("elder")) return "older_adults";
+  if (normalized.includes("older") || normalized.includes("senior") || normalized.includes("elder"))
+    return "older_adults";
   if (normalized.includes("disability")) return "disability_support";
   if (normalized.includes("environment") || normalized.includes("cleanup")) return "environment";
   if (normalized.includes("health")) return "public_health";
   if (normalized.includes("recovery")) return "recovery_support";
-  if (normalized.includes("neighborhood") || normalized.includes("community")) return "neighborhood";
+  if (normalized.includes("neighborhood") || normalized.includes("community"))
+    return "neighborhood";
   if (normalized.includes("church") || normalized.includes("setup")) return "church_operations";
   if (normalized.includes("hospitality") || normalized.includes("welcome")) return "hospitality";
   if (normalized.includes("mentor") || normalized.includes("tutor")) return "mentoring";
@@ -145,7 +150,9 @@ async function loadPayload(client: SupabaseClient) {
       const shifts = shiftRows
         .filter((shift) => String(shift.opportunity_id) === String(opportunity.id))
         .sort((a, b) => String(a.starts_at).localeCompare(String(b.starts_at)));
-      const nextShift = shifts.find((shift) => new Date(String(shift.starts_at)).getTime() >= Date.now());
+      const nextShift = shifts.find(
+        (shift) => new Date(String(shift.starts_at)).getTime() >= Date.now(),
+      );
       return {
         id: String(opportunity.id),
         title: String(opportunity.title),
@@ -171,7 +178,8 @@ async function loadPayload(client: SupabaseClient) {
       if (proposal.hazardous_work === true) riskFlags.push("Hazardous work");
       if (proposal.cash_handling === true) riskFlags.push("Cash handling");
       if (proposal.professional_service === true) riskFlags.push("Professional service");
-      if (proposal.public_place_confirmed !== true) riskFlags.push("Public/approved place not confirmed");
+      if (proposal.public_place_confirmed !== true)
+        riskFlags.push("Public/approved place not confirmed");
       return {
         id: String(proposal.id),
         title: String(proposal.title),
@@ -208,8 +216,7 @@ async function loadPayload(client: SupabaseClient) {
       opportunityTitle:
         opportunityTitleMap.get(String(impact.opportunity_id)) ?? "Service opportunity",
       summary: String(impact.summary),
-      peopleServed:
-        typeof impact.people_served === "number" ? impact.people_served : undefined,
+      peopleServed: typeof impact.people_served === "number" ? impact.people_served : undefined,
       volunteerCount:
         typeof impact.volunteer_count === "number" ? impact.volunteer_count : undefined,
       hoursServed:
@@ -233,7 +240,9 @@ export async function GET() {
     return NextResponse.json(await loadPayload(client));
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Service administration is unavailable." },
+      {
+        message: error instanceof Error ? error.message : "Service administration is unavailable.",
+      },
       { status: viewer ? 403 : 401 },
     );
   }
@@ -245,7 +254,10 @@ export async function POST(request: Request) {
     ensureServiceAdministrator(viewer);
     const body: unknown = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ message: "Invalid service administration request." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Invalid service administration request." },
+        { status: 400 },
+      );
     }
     const row = body as Row;
     const action = text(row.action, 80, true);
@@ -276,12 +288,17 @@ export async function POST(request: Request) {
       const opportunityRow = opportunity as Row;
       const kind = String(opportunityRow.opportunity_kind);
       if ((kind === "church_hosted") !== (opportunityRow.church_sponsored === true)) {
-        throw new Error("The sponsorship label is inconsistent and must be corrected before publication.");
+        throw new Error(
+          "The sponsorship label is inconsistent and must be corrected before publication.",
+        );
       }
       if (kind === "public_lead" && typeof opportunityRow.source_url !== "string") {
         throw new Error("A public lead requires an official source URL before publication.");
       }
-      if (typeof opportunityRow.safety_summary !== "string" || opportunityRow.safety_summary.length < 10) {
+      if (
+        typeof opportunityRow.safety_summary !== "string" ||
+        opportunityRow.safety_summary.length < 10
+      ) {
         throw new Error("A reviewed safety summary is required before publication.");
       }
       const { error } = await client
@@ -339,7 +356,11 @@ export async function POST(request: Request) {
           service_category: categoryKey(row.category),
           location_visibility: visibility === "public" ? "general" : "after_signup",
           indoor_outdoor: "either",
-          commitment_level: startsAt ? "one_time" : kind === "self_guided" ? "self_guided" : "flexible",
+          commitment_level: startsAt
+            ? "one_time"
+            : kind === "self_guided"
+              ? "self_guided"
+              : "flexible",
           registration_mode:
             kind === "public_lead"
               ? "external_link"
@@ -385,7 +406,8 @@ export async function POST(request: Request) {
         throw new Error("Content publishing permission is required.");
       }
       const reviewStatus = text(row.reviewStatus, 40, true);
-      if (!locationStatuses.has(reviewStatus)) throw new Error("Unsupported location review status.");
+      if (!locationStatuses.has(reviewStatus))
+        throw new Error("Unsupported location review status.");
       const approved = reviewStatus === "approved";
       const { error } = await client
         .from("service_location_catalog")
@@ -398,13 +420,19 @@ export async function POST(request: Request) {
         .eq("id", text(row.locationId, 80, true));
       if (error) throw error;
     } else {
-      return NextResponse.json({ message: "Unsupported service administration action." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Unsupported service administration action." },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
-      { message: error instanceof Error ? error.message : "The service administration action failed." },
+      {
+        message:
+          error instanceof Error ? error.message : "The service administration action failed.",
+      },
       { status: viewer ? 400 : 401 },
     );
   }

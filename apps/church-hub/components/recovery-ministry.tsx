@@ -258,8 +258,7 @@ export function RecoveryMinistry({
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(mode === "live");
   const [guideQuestion, setGuideQuestion] = useState("");
-  const effectiveCanLead =
-    canLead || membershipRole === "leader" || membershipRole === "admin";
+  const effectiveCanLead = canLead || membershipRole === "leader" || membershipRole === "admin";
 
   useEffect(() => {
     if (mode === "showcase") {
@@ -352,8 +351,7 @@ export function RecoveryMinistry({
   );
   const completion = sessions.length
     ? Math.round(
-        (sessions.filter((session) => session.progress === "completed").length /
-          sessions.length) *
+        (sessions.filter((session) => session.progress === "completed").length / sessions.length) *
           100,
       )
     : 0;
@@ -392,7 +390,9 @@ export function RecoveryMinistry({
     const request: RecoveryMembershipRequest = {
       id: crypto.randomUUID(),
       programId,
-      requestedRole: String(data.get("requestedRole")) as RecoveryMembershipRequest["requestedRole"],
+      requestedRole: String(
+        data.get("requestedRole"),
+      ) as RecoveryMembershipRequest["requestedRole"],
       displayMode: String(data.get("displayMode")) as RecoveryMembershipRequest["displayMode"],
       status: "pending",
       reason: String(data.get("reason") ?? "").trim() || undefined,
@@ -423,9 +423,7 @@ export function RecoveryMinistry({
     try {
       if (mode === "showcase") {
         setMembershipRequests((current) =>
-          current.map((row) =>
-            row.id === request.id ? { ...row, status: "withdrawn" } : row,
-          ),
+          current.map((row) => (row.id === request.id ? { ...row, status: "withdrawn" } : row)),
         );
       } else {
         await sendLive("withdraw_membership_request", { requestId: request.id });
@@ -449,9 +447,7 @@ export function RecoveryMinistry({
       ?.trim();
     try {
       if (mode === "showcase") {
-        setPendingMembershipRequests((current) =>
-          current.filter((row) => row.id !== request.id),
-        );
+        setPendingMembershipRequests((current) => current.filter((row) => row.id !== request.id));
       } else {
         await sendLive("review_membership_request", {
           requestId: request.id,
@@ -513,7 +509,9 @@ export function RecoveryMinistry({
 
   async function comment(post: RecoveryPost) {
     const body = window
-      .prompt("Write a brief group response. Do not post another person’s private recovery details:")
+      .prompt(
+        "Write a brief group response. Do not post another person’s private recovery details:",
+      )
       ?.trim();
     if (!body) return;
     try {
@@ -605,12 +603,16 @@ export function RecoveryMinistry({
             </p>
           </div>
           <div className="module-hero__metric">
-            <strong>{membershipRequests.filter((request) => request.status === "pending").length}</strong>
+            <strong>
+              {membershipRequests.filter((request) => request.status === "pending").length}
+            </strong>
             <span>pending access requests</span>
           </div>
         </section>
         <section className="prayer-safety">
-          <strong>This is church peer support—not detoxification, treatment, or emergency care.</strong>
+          <strong>
+            This is church peer support—not detoxification, treatment, or emergency care.
+          </strong>
           <span>
             Call 911 for immediate danger or overdose. In the United States, call or text 988 for
             crisis support. Use licensed treatment providers for medical and clinical care.
@@ -685,7 +687,9 @@ export function RecoveryMinistry({
           {!requestablePrograms.length ? (
             <section className="module-empty-state">
               <h3>No recovery ministry is currently accepting access requests.</h3>
-              <p>Use the public recovery-support page for official resources or a private inquiry.</p>
+              <p>
+                Use the public recovery-support page for official resources or a private inquiry.
+              </p>
               <a href="/recovery-support-lowell">Open recovery-support information</a>
             </section>
           ) : null}
@@ -735,8 +739,8 @@ export function RecoveryMinistry({
         <div>
           <strong>✦ Recovery Guide</strong>
           <span>
-            Find this week’s lesson, the private group, access settings, leader tools, or professional
-            resources.
+            Find this week’s lesson, the private group, access settings, leader tools, or
+            professional resources.
           </span>
         </div>
         <div>
@@ -776,7 +780,8 @@ export function RecoveryMinistry({
             <span>Week {currentSession?.week ?? "—"}</span>
             <h3>{currentSession?.title ?? "No published session"}</h3>
             <p>
-              {currentSession?.summary ?? "A leader has not published this week’s participant guide."}
+              {currentSession?.summary ??
+                "A leader has not published this week’s participant guide."}
             </p>
             {currentSession?.scriptureReferences.length ? (
               <div className="tag-row">
@@ -811,9 +816,13 @@ export function RecoveryMinistry({
           <aside className="recovery-meeting-card">
             <p>Private gathering</p>
             <h3>
-              {program.meetingDay ?? "Approved day"} · {program.meetingTime ?? "Time shared privately"}
+              {program.meetingDay ?? "Approved day"} ·{" "}
+              {program.meetingTime ?? "Time shared privately"}
             </h3>
-            <span>{program.generalLocation ?? "Approved participants receive room directions privately."}</span>
+            <span>
+              {program.generalLocation ??
+                "Approved participants receive room directions privately."}
+            </span>
             <ul>
               <li>Welcome and confidentiality reminder</li>
               <li>Approved teaching or testimony</li>
@@ -860,8 +869,9 @@ export function RecoveryMinistry({
             ))}
           </div>
           <p className="module-boundary">
-            The Hub records only the progress status you choose. It does not require a sobriety date,
-            diagnosis, substance history, setback narrative, medication record, or private journal.
+            The Hub records only the progress status you choose. It does not require a sobriety
+            date, diagnosis, substance history, setback narrative, medication record, or private
+            journal.
           </p>
         </section>
       ) : null}
@@ -894,7 +904,10 @@ export function RecoveryMinistry({
               </article>
             ))}
           </div>
-          <form className="module-form recovery-post-form" onSubmit={(event) => void createPost(event)}>
+          <form
+            className="module-form recovery-post-form"
+            onSubmit={(event) => void createPost(event)}
+          >
             <h3>Share with the group</h3>
             <label>
               Type
@@ -960,11 +973,7 @@ export function RecoveryMinistry({
               <span>State resources for treatment, recovery support, and families.</span>
               <b>Open Mass.gov ↗</b>
             </a>
-            <a
-              href="https://celebraterecovery.com/find-help-2/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="https://celebraterecovery.com/find-help-2/" target="_blank" rel="noreferrer">
               <strong>Celebrate Recovery official group finder</strong>
               <span>Official group-finder and online-resource information.</span>
               <b>Open official site ↗</b>
@@ -996,7 +1005,10 @@ export function RecoveryMinistry({
             </div>
             <div>
               <dt>Participant directory</dt>
-              <dd>Visible only inside the approved program and according to each member’s display setting.</dd>
+              <dd>
+                Visible only inside the approved program and according to each member’s display
+                setting.
+              </dd>
             </div>
             <div>
               <dt>Outreach and advertising</dt>
@@ -1004,7 +1016,10 @@ export function RecoveryMinistry({
             </div>
             <div>
               <dt>AI use</dt>
-              <dd>Private recovery content is unavailable to AI unless a separate approved policy explicitly permits a narrowly defined function.</dd>
+              <dd>
+                Private recovery content is unavailable to AI unless a separate approved policy
+                explicitly permits a narrowly defined function.
+              </dd>
             </div>
           </dl>
           <p className="module-boundary">
@@ -1037,7 +1052,11 @@ export function RecoveryMinistry({
               </label>
               <label>
                 Licensed resource URL
-                <input name="resourceUrl" type="url" placeholder="https://approved-provider.example/resource" />
+                <input
+                  name="resourceUrl"
+                  type="url"
+                  placeholder="https://approved-provider.example/resource"
+                />
               </label>
               <label>
                 Scheduled date/time
@@ -1047,12 +1066,24 @@ export function RecoveryMinistry({
             </form>
             <aside className="leader-checklist">
               <h3>Leader release checklist</h3>
-              <label><input type="checkbox" /> Approved curriculum or original church content</label>
-              <label><input type="checkbox" /> Copyright and program-name permission verified</label>
-              <label><input type="checkbox" /> Crisis and treatment referral resources current</label>
-              <label><input type="checkbox" /> Confidentiality reminder prepared</label>
-              <label><input type="checkbox" /> No testimony published without written consent</label>
-              <label><input type="checkbox" /> No private data sent to Outreach or advertising</label>
+              <label>
+                <input type="checkbox" /> Approved curriculum or original church content
+              </label>
+              <label>
+                <input type="checkbox" /> Copyright and program-name permission verified
+              </label>
+              <label>
+                <input type="checkbox" /> Crisis and treatment referral resources current
+              </label>
+              <label>
+                <input type="checkbox" /> Confidentiality reminder prepared
+              </label>
+              <label>
+                <input type="checkbox" /> No testimony published without written consent
+              </label>
+              <label>
+                <input type="checkbox" /> No private data sent to Outreach or advertising
+              </label>
             </aside>
           </div>
 
@@ -1069,7 +1100,8 @@ export function RecoveryMinistry({
                   <div>
                     <strong>{request.displayName}</strong>
                     <span>
-                      {request.requestedRole.replaceAll("_", " ")} · display: {request.displayMode.replaceAll("_", " ")}
+                      {request.requestedRole.replaceAll("_", " ")} · display:{" "}
+                      {request.displayMode.replaceAll("_", " ")}
                     </span>
                     {request.reason ? <p>{request.reason}</p> : null}
                     <small>Requested {new Date(request.createdAt).toLocaleString()}</small>

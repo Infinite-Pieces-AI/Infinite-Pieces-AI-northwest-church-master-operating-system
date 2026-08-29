@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("public recovery-support page provides low-pressure information and voluntary next steps", async ({ page }) => {
+test("public recovery-support page provides low-pressure information and voluntary next steps", async ({
+  page,
+}) => {
   await page.goto("/recovery-support-lowell");
   await expect(
     page.getByRole("heading", { level: 1, name: "You do not have to pursue recovery alone." }),
