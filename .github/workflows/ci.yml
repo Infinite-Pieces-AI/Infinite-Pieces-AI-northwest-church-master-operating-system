@@ -32,16 +32,28 @@ jobs:
           const fs = require("node:fs");
           const path = "scripts/normalize-ministry-release.mjs";
           let source = fs.readFileSync(path, "utf8");
+
           source = source.replaceAll(
             "0039_recovery_outreach_partner_actions.sql",
             "0041_recovery_outreach_partner_actions.sql",
           );
-          const needle = `  replaceInFile(path, canonicalReplacements);\n}\n`;
-          const restoration = `${needle}\n// Keep the original community prayer-intake table and its policies/tests.\n// The richer Prayer Well uses member_prayer_requests from migration 0027.\nfor (const path of [\n  "supabase/migrations/0005_community.sql",\n  "supabase/migrations/0008_rls_helpers_and_policies.sql",\n  "supabase/tests/0002_rls_boundaries.test.sql",\n]) {\n  replaceInFile(path, [["member_prayer_requests", "prayer_requests"]]);\n}\n`;
-          if (!source.includes("Keep the original community prayer-intake table")) {
-            if (!source.includes(needle)) throw new Error("Normalizer insertion point was not found");
-            source = source.replace(needle, restoration);
+
+          const originalCall = "  replaceInFile(path, canonicalReplacements);";
+          const protectedCall = `  replaceInFile(
+            path,
+            [
+              "supabase/migrations/0005_community.sql",
+              "supabase/migrations/0008_rls_helpers_and_policies.sql",
+              "supabase/tests/0002_rls_boundaries.test.sql",
+            ].includes(path)
+              ? canonicalReplacements.slice(3)
+              : canonicalReplacements,
+          );`;
+
+          if (!source.includes(originalCall)) {
+            throw new Error("Normalizer replacement call was not found");
           }
+          source = source.replace(originalCall, protectedCall);
           fs.writeFileSync(path, source);
           NODE
           node scripts/normalize-ministry-release.mjs
