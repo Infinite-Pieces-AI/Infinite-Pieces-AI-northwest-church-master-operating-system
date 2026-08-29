@@ -1,0 +1,72 @@
+name: Temporary Finalize Gifts Prayer Recovery
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-finalize-gifts-prayer-recovery
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out ministry branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format release files
+        run: |
+          pnpm exec prettier --write \
+            'apps/outreach-command/app/(protected)/overview/page.tsx' \
+            apps/outreach-command/lib/recovery-outreach-types.ts \
+            apps/outreach-command/app/api/recovery-outreach/route.ts \
+            apps/outreach-command/lib/recovery-intelligence.ts \
+            apps/outreach-command/components/recovery-outreach-workspace.tsx
+
+      - name: Verify repaired Outreach application
+        run: |
+          pnpm --filter @church/outreach-command lint
+          pnpm --filter @church/outreach-command typecheck
+
+      - name: Remove temporary repair files
+        run: |
+          rm -f scripts/fix-recovery-outreach-hooks.mjs
+          rm -f .github/workflows/temporary-apply-recovery-outreach-hook-fix.yml
+          rm -f .github/workflows/temporary-finalize-gifts-prayer-recovery.yml
+
+      - name: Commit finalized release files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No release cleanup changes were needed."
+            exit 0
+          fi
+          git commit -m "chore: finalize gifts prayer and recovery release"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
