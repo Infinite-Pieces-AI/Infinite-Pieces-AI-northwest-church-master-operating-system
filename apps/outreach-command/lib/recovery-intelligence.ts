@@ -8,6 +8,22 @@ import type {
 
 type AnyRow = Record<string, unknown>;
 
+type RecoveryQueryResult = {
+  data: unknown[] | null;
+  error: unknown;
+};
+
+interface RecoveryQuery extends PromiseLike<RecoveryQueryResult> {
+  select(columns?: string): RecoveryQuery;
+  neq(column: string, value: unknown): RecoveryQuery;
+  order(column: string, options: { ascending: boolean }): RecoveryQuery;
+  limit(value: number): RecoveryQuery;
+}
+
+type RecoveryDatabaseClient = {
+  from(table: string): RecoveryQuery;
+};
+
 function stringValue(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
 }
@@ -119,9 +135,7 @@ export async function loadRecoveryOutreach(): Promise<RecoveryOutreachPayload> {
     };
   }
 
-  const client = (await createClient()) as unknown as {
-    from: (table: string) => any;
-  };
+  const client = (await createClient()) as unknown as RecoveryDatabaseClient;
   const [interestResult, topicResult, partnerResult] = await Promise.all([
     client
       .from("recovery_interest_requests")
