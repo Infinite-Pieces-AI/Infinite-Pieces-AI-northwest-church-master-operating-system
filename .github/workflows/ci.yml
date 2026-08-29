@@ -6,79 +6,18 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  normalize-ministry-release:
-    if: github.event_name == 'pull_request' && github.head_ref == 'feature/gifts-prayer-recovery-ministries' && github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-      - name: Normalize ministry release candidate
-        shell: bash
-        run: |
-          node <<'NODE'
-          const fs = require("node:fs");
-          const path = "scripts/normalize-ministry-release.mjs";
-          let source = fs.readFileSync(path, "utf8");
-
-          source = source.replaceAll(
-            "0039_recovery_outreach_partner_actions.sql",
-            "0041_recovery_outreach_partner_actions.sql",
-          );
-
-          const originalCall = "  replaceInFile(path, canonicalReplacements);";
-          const protectedCall = `  replaceInFile(
-            path,
-            [
-              "supabase/migrations/0005_community.sql",
-              "supabase/migrations/0008_rls_helpers_and_policies.sql",
-              "supabase/tests/0002_rls_boundaries.test.sql",
-            ].includes(path)
-              ? canonicalReplacements.slice(3)
-              : canonicalReplacements,
-          );`;
-
-          if (!source.includes(originalCall)) {
-            throw new Error("Normalizer replacement call was not found");
-          }
-          source = source.replace(originalCall, protectedCall);
-          fs.writeFileSync(path, source);
-          NODE
-          node scripts/normalize-ministry-release.mjs
-      - name: Commit normalized ministry release
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No normalization changes were produced."
-            exit 0
-          fi
-          git commit -m "fix: normalize ministry migrations and release workflows"
-          git push origin HEAD:${{ github.head_ref }}
-
   validate:
-    needs: normalize-ministry-release
-    if: always() && (needs.normalize-ministry-release.result == 'success' || needs.normalize-ministry-release.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10.14.0
@@ -116,8 +55,6 @@ jobs:
     needs: validate
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
       - uses: pnpm/action-setup@v6.0.9
         with:
           version: 10.14.0
