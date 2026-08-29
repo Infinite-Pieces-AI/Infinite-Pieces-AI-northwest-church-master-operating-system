@@ -1,0 +1,69 @@
+name: Temporary Apply Ministry Showroom Effect Fix
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-apply-ministry-showroom-effect-fix
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out ministry branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply unified showroom and SQL repair
+        run: node scripts/fix-ministry-showroom-effects.mjs
+
+      - name: Format repaired files
+        run: pnpm format
+
+      - name: Verify Hub and SQL statically
+        run: |
+          pnpm --filter @church/church-hub lint
+          pnpm --filter @church/church-hub typecheck
+          pnpm verify:sql-static
+
+      - name: Remove temporary repair machinery
+        run: |
+          rm -f scripts/fix-ministry-showroom-effects.mjs
+          rm -f .github/workflows/temporary-apply-showroom-effect-fix.yml
+
+      - name: Commit repaired ministry release
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repair changes were produced."
+            exit 0
+          fi
+          git commit -m "fix: stabilize ministry showrooms and service SQL"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
