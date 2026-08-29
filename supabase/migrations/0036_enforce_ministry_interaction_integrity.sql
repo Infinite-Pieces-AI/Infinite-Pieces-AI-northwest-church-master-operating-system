@@ -72,7 +72,7 @@ create policy prayer_interactions_insert
     and public.can_read_prayer_request(request_id)
     and exists (
       select 1
-      from public.prayer_requests pr
+      from public.member_prayer_requests pr
       where pr.id = request_id
         and (
           (interaction_type = 'prayed' and pr.allow_prayed_events)

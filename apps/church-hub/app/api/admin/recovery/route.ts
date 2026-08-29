@@ -53,8 +53,8 @@ async function loadPayload(client: SupabaseClient) {
       : Promise.resolve({ data: [], error: null }),
     programIds.length
       ? client
-          .from("recovery_access_requests")
-          .select("id,program_id,profile_id,request_message,status,created_at")
+          .from("recovery_membership_requests")
+          .select("id,program_id,profile_id,reason,status,created_at")
           .in("program_id", programIds)
           .order("created_at", { ascending: false })
           .limit(250)
@@ -109,7 +109,7 @@ async function loadPayload(client: SupabaseClient) {
       programName: programNameMap.get(String(request.program_id)) ?? "Recovery Ministry",
       profileName: profileMap.get(String(request.profile_id)) ?? "Member",
       requestMessage:
-        typeof request.request_message === "string" ? request.request_message : undefined,
+        typeof request.reason === "string" ? request.reason : undefined,
       status: String(request.status),
       createdAt: String(request.created_at),
     })),

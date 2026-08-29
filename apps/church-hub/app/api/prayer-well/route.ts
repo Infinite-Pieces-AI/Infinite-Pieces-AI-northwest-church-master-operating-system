@@ -97,7 +97,7 @@ async function loadContexts(client: SupabaseClient, viewerId: string) {
 async function loadPayload(client: SupabaseClient, viewerId: string) {
   const contexts = await loadContexts(client, viewerId);
   const { data: requestData, error: requestError } = await client
-    .from("prayer_requests")
+    .from("member_prayer_requests")
     .select(
       "id,title,request_text,submitted_by_display,display_anonymous,visibility,ministry_id,group_id,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at",
     )
@@ -270,7 +270,7 @@ export async function POST(request: Request) {
       }
     } else if (action === "mark_answered") {
       const { error } = await client
-        .from("prayer_requests")
+        .from("member_prayer_requests")
         .update({
           status: "answered",
           answered_summary: text(row.answeredSummary, 3000, true),

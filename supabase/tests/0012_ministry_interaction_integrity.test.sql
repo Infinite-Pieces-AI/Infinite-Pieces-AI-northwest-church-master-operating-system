@@ -163,7 +163,7 @@ select lives_ok(
       request_id, created_by, interaction_type, body
     ) select id, auth.uid(), 'encouragement',
       'A fictional encouragement used only for authorization testing.'
-    from public.prayer_requests
+    from public.member_prayer_requests
     where title = 'Prayer interaction ownership'$$,
   'An authorized member may encourage a normal prayer request'
 );
@@ -172,7 +172,7 @@ select throws_ok(
       request_id, created_by, interaction_type, body
     ) select id, auth.uid(), 'update',
       'This non-owner update must be rejected.'
-    from public.prayer_requests
+    from public.member_prayer_requests
     where title = 'Prayer interaction ownership'$$,
   '42501',
   null,

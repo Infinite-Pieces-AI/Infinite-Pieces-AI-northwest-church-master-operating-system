@@ -56,7 +56,7 @@ async function loadAudiences(client: SupabaseClient, viewerId: string) {
 
 async function loadPayload(client: SupabaseClient, viewerId: string) {
   const { data: requestData, error: requestError } = await client
-    .from("prayer_requests")
+    .from("member_prayer_requests")
     .select("id,title,request_text,submitted_by_display,display_anonymous,visibility,ministry_id,group_id,category,sensitivity,allow_encouragement,allow_prayed_events,status,answered_summary,answered_at,created_at")
     .in("status", ["open", "answered", "archived"])
     .order("created_at", { ascending: false })
@@ -177,7 +177,7 @@ export async function POST(request: Request) {
         throw error;
       }
     } else if (action === "mark_answered") {
-      const { error } = await client.from("prayer_requests").update({ status: "answered", answered_summary: text(row.answeredSummary, 3000, true), answered_at: new Date().toISOString() }).eq("id", text(row.requestId, 80, true));
+      const { error } = await client.from("member_prayer_requests").update({ status: "answered", answered_summary: text(row.answeredSummary, 3000, true), answered_at: new Date().toISOString() }).eq("id", text(row.requestId, 80, true));
       if (error) throw error;
     } else {
       return NextResponse.json({ message: "Unsupported action." }, { status: 400 });

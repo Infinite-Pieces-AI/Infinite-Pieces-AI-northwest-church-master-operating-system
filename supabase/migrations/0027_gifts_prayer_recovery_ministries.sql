@@ -80,7 +80,7 @@ create table public.gift_post_responses (
   unique(post_id, profile_id)
 );
 
-create table public.prayer_requests (
+create table public.member_prayer_requests (
   id uuid primary key default extensions.gen_random_uuid(),
   title text not null check (char_length(title) between 2 and 180),
   request_text text not null check (char_length(request_text) between 3 and 5000),
@@ -107,14 +107,14 @@ create table public.prayer_requests (
 );
 
 create table public.prayer_request_owners (
-  request_id uuid primary key references public.prayer_requests(id) on delete cascade,
+  request_id uuid primary key references public.member_prayer_requests(id) on delete cascade,
   profile_id uuid not null references public.profiles(id) on delete cascade,
   created_at timestamptz not null default timezone('utc', now())
 );
 
 create table public.prayer_interactions (
   id uuid primary key default extensions.gen_random_uuid(),
-  request_id uuid not null references public.prayer_requests(id) on delete cascade,
+  request_id uuid not null references public.member_prayer_requests(id) on delete cascade,
   created_by uuid not null references public.profiles(id) on delete cascade,
   interaction_type text not null check (interaction_type in ('prayed','encouragement','scripture','update')),
   body text check (body is null or char_length(body) <= 2500),
@@ -289,7 +289,7 @@ set row_security = off
 as $$
   select public.may_check_target_user(target_user) and exists (
     select 1
-    from public.prayer_requests pr
+    from public.member_prayer_requests pr
     where pr.id = requested_request_id
       and pr.status <> 'withdrawn'
       and (
@@ -376,7 +376,7 @@ begin
     p_visibility := 'leaders_only';
   end if;
   select p.display_name into display_name from public.profiles p where p.id = auth.uid();
-  insert into public.prayer_requests (
+  insert into public.member_prayer_requests (
     title, request_text, submitted_by_display, display_anonymous, visibility,
     ministry_id, group_id, category, sensitivity, allow_encouragement, allow_prayed_events
   ) values (
@@ -406,7 +406,7 @@ create trigger gift_posts_set_updated_at before update on public.gift_posts
   for each row execute function public.set_updated_at();
 create trigger gift_post_responses_set_updated_at before update on public.gift_post_responses
   for each row execute function public.set_updated_at();
-create trigger prayer_requests_set_updated_at before update on public.prayer_requests
+create trigger prayer_requests_set_updated_at before update on public.member_prayer_requests
   for each row execute function public.set_updated_at();
 create trigger prayer_interactions_set_updated_at before update on public.prayer_interactions
   for each row execute function public.set_updated_at();
@@ -434,7 +434,7 @@ alter table public.gift_assessments enable row level security;
 alter table public.gift_strengths enable row level security;
 alter table public.gift_posts enable row level security;
 alter table public.gift_post_responses enable row level security;
-alter table public.prayer_requests enable row level security;
+alter table public.member_prayer_requests enable row level security;
 alter table public.prayer_request_owners enable row level security;
 alter table public.prayer_interactions enable row level security;
 alter table public.recovery_programs enable row level security;
@@ -487,12 +487,12 @@ create policy gift_responses_update on public.gift_post_responses for update to 
     or exists (select 1 from public.gift_posts gp where gp.id = post_id and gp.created_by = auth.uid())
   );
 
-create policy prayer_requests_read on public.prayer_requests for select to authenticated
+create policy prayer_requests_read on public.member_prayer_requests for select to authenticated
   using (public.can_read_prayer_request(id));
-create policy prayer_requests_update on public.prayer_requests for update to authenticated
+create policy prayer_requests_update on public.member_prayer_requests for update to authenticated
   using (public.owns_prayer_request(id) or public.is_privileged_actor(array['minister','safety_admin','super_admin']))
   with check (public.owns_prayer_request(id) or public.is_privileged_actor(array['minister','safety_admin','super_admin']));
-create policy prayer_requests_delete on public.prayer_requests for delete to authenticated
+create policy prayer_requests_delete on public.member_prayer_requests for delete to authenticated
   using (public.owns_prayer_request(id) or public.is_privileged_actor(array['minister','super_admin']));
 create policy prayer_owners_read on public.prayer_request_owners for select to authenticated
   using (profile_id = auth.uid() or public.is_privileged_actor(array['minister','safety_admin','super_admin']));
@@ -503,7 +503,7 @@ create policy prayer_interactions_insert on public.prayer_interactions for inser
     created_by = auth.uid()
     and public.can_read_prayer_request(request_id)
     and exists (
-      select 1 from public.prayer_requests pr
+      select 1 from public.member_prayer_requests pr
       where pr.id = request_id
         and ((interaction_type = 'prayed' and pr.allow_prayed_events)
           or (interaction_type <> 'prayed' and pr.allow_encouragement))
@@ -558,20 +558,20 @@ create policy recovery_partners_privileged on public.recovery_outreach_partners 
 -- Grants
 -- -----------------------------------------------------------------------------
 revoke all on table public.gift_assessments, public.gift_strengths, public.gift_posts,
-  public.gift_post_responses, public.prayer_requests, public.prayer_request_owners,
+  public.gift_post_responses, public.member_prayer_requests, public.prayer_request_owners,
   public.prayer_interactions, public.recovery_programs, public.recovery_memberships,
   public.recovery_sessions, public.recovery_session_guides, public.recovery_progress,
   public.recovery_posts, public.recovery_post_comments, public.recovery_outreach_partners from anon;
 
 grant select, insert, update, delete on table public.gift_assessments, public.gift_strengths,
-  public.gift_posts, public.gift_post_responses, public.prayer_requests,
+  public.gift_posts, public.gift_post_responses, public.member_prayer_requests,
   public.prayer_request_owners, public.prayer_interactions, public.recovery_programs,
   public.recovery_memberships, public.recovery_sessions, public.recovery_session_guides,
   public.recovery_progress, public.recovery_posts, public.recovery_post_comments,
   public.recovery_outreach_partners to authenticated;
 
 grant all on table public.gift_assessments, public.gift_strengths, public.gift_posts,
-  public.gift_post_responses, public.prayer_requests, public.prayer_request_owners,
+  public.gift_post_responses, public.member_prayer_requests, public.prayer_request_owners,
   public.prayer_interactions, public.recovery_programs, public.recovery_memberships,
   public.recovery_sessions, public.recovery_session_guides, public.recovery_progress,
   public.recovery_posts, public.recovery_post_comments, public.recovery_outreach_partners to service_role;

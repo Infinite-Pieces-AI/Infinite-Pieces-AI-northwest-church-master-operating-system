@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
   if (action === "withdraw") {
     const { error } = await client
-      .from("recovery_access_requests")
+      .from("recovery_membership_requests")
       .update({ status: "withdrawn" })
       .eq("program_id", programId)
       .eq("profile_id", viewer.id)

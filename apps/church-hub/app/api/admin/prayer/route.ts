@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const filter = new URL(request.url).searchParams.get("filter") ?? "open";
   const client = dynamicClient(await createClient());
   let query = client
-    .from("prayer_requests")
+    .from("member_prayer_requests")
     .select("id,title,request_text,display_anonymous,category,sensitivity,leader_workflow_status,assigned_to,leader_note,created_at")
     .or("sensitivity.neq.normal,visibility.eq.leaders_only")
     .order("created_at", { ascending: false })
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
   if (workflowStatus !== "unassigned") update.assigned_to = viewer.id;
   if (workflowStatus === "closed") update.status = "archived";
   const { error } = await client
-    .from("prayer_requests")
+    .from("member_prayer_requests")
     .update(update)
     .eq("id", text(row.requestId, 80, true));
   if (error) return NextResponse.json({ message: "The restricted prayer workflow could not be updated." }, { status: 400 });

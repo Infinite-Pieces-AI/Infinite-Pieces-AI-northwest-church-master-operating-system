@@ -4,11 +4,11 @@ select plan(29);
 
 select has_table('public', 'gift_assessments', 'Gift assessments table exists');
 select has_table('public', 'gift_posts', 'Gift marketplace table exists');
-select has_table('public', 'prayer_requests', 'Prayer Well table exists');
+select has_table('public', 'member_prayer_requests', 'Prayer Well table exists');
 select has_table('public', 'prayer_request_owners', 'Prayer ownership is stored separately');
 select has_table('public', 'recovery_programs', 'Recovery programs table exists');
-select has_table('public', 'recovery_access_requests', 'Recovery access request table exists');
-select has_table('public', 'public_recovery_inquiries', 'Voluntary public recovery inquiry table exists');
+select has_table('public', 'recovery_membership_requests', 'Recovery access request table exists');
+select has_table('public', 'recovery_interest_requests', 'Voluntary public recovery inquiry table exists');
 select has_table('public', 'recovery_public_topics', 'Aggregate/public recovery topic table exists');
 
 select is(
@@ -19,11 +19,11 @@ select is(
     where n.nspname = 'public'
       and c.relname in (
         'gift_assessments','gift_strengths','gift_posts','gift_post_responses',
-        'prayer_requests','prayer_request_owners','prayer_interactions',
+        'member_prayer_requests','prayer_request_owners','prayer_interactions',
         'recovery_programs','recovery_memberships','recovery_sessions',
         'recovery_session_guides','recovery_progress','recovery_posts',
-        'recovery_post_comments','recovery_access_requests','public_recovery_inquiries',
-        'recovery_public_topics','recovery_outreach_partners','recovery_partner_actions'
+        'recovery_post_comments','recovery_membership_requests','recovery_interest_requests',
+        'recovery_public_topics','recovery_outreach_partners','recovery_outreach_partner_actions'
       )
       and c.relkind = 'r'
       and not c.relrowsecurity
@@ -37,7 +37,7 @@ select is(
     select count(*)::integer
     from information_schema.columns
     where table_schema = 'public'
-      and table_name = 'public_recovery_inquiries'
+      and table_name = 'recovery_interest_requests'
       and column_name in ('diagnosis','substance','sobriety_date','medication','treatment_history','relapse_history')
   ),
   0,
@@ -59,7 +59,7 @@ select is(
     select count(*)::integer
     from information_schema.columns
     where table_schema = 'public'
-      and table_name = 'prayer_requests'
+      and table_name = 'member_prayer_requests'
       and column_name = 'profile_id'
   ),
   0,
@@ -151,7 +151,7 @@ select lives_ok(
   'A member can submit a private recovery access request'
 );
 select is(
-  (select count(*)::integer from public.recovery_access_requests where profile_id = auth.uid() and status = 'pending'),
+  (select count(*)::integer from public.recovery_membership_requests where profile_id = auth.uid() and status = 'pending'),
   1,
   'The member can see their own pending recovery access request'
 );
@@ -173,7 +173,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000402', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000402","role":"authenticated","aal":"aal1"}', true);
 select is(
-  (select count(*)::integer from public.recovery_access_requests),
+  (select count(*)::integer from public.recovery_membership_requests),
   0,
   'Another ordinary member cannot see someone else’s recovery access request'
 );
@@ -189,7 +189,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000403
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000403","role":"authenticated","aal":"aal2"}', true);
 select lives_ok(
   $$select public.review_recovery_access_request(
-      (select id from public.recovery_access_requests where profile_id = '00000000-0000-4000-8000-000000000401'),
+      (select id from public.recovery_membership_requests where profile_id = '00000000-0000-4000-8000-000000000401'),
       'approved',
       'Authorization test approval.'
     )$$,
@@ -242,7 +242,7 @@ select lives_ok(
   'A member can add an anonymous normal prayer request'
 );
 select is(
-  (select count(*)::integer from public.prayer_requests where display_anonymous),
+  (select count(*)::integer from public.member_prayer_requests where display_anonymous),
   1,
   'The anonymous prayer request is visible through the member prayer policy'
 );
@@ -268,7 +268,7 @@ select lives_ok(
   'A pastoral request can be submitted through restricted routing'
 );
 select is(
-  (select count(*)::integer from public.prayer_requests where sensitivity = 'pastoral' and visibility = 'leaders_only'),
+  (select count(*)::integer from public.member_prayer_requests where sensitivity = 'pastoral' and visibility = 'leaders_only'),
   1,
   'Pastoral requests are forced to leaders-only visibility'
 );
@@ -278,7 +278,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000402', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000402","role":"authenticated","aal":"aal1"}', true);
 select is(
-  (select count(*)::integer from public.prayer_requests where sensitivity = 'pastoral'),
+  (select count(*)::integer from public.member_prayer_requests where sensitivity = 'pastoral'),
   0,
   'Another ordinary member cannot see a restricted pastoral request'
 );

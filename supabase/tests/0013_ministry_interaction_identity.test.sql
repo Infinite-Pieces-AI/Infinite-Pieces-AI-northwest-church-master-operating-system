@@ -194,7 +194,7 @@ insert into public.prayer_interactions (
   auth.uid(),
   'encouragement',
   'Original fictional encouragement.'
-from public.prayer_requests
+from public.member_prayer_requests
 where title = 'Prayer identity request';
 select lives_ok(
   $$update public.prayer_interactions

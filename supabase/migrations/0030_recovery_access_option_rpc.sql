@@ -1,5 +1,8 @@
 begin;
 
+alter table public.recovery_programs
+  add column if not exists accepting_access_requests boolean not null default true;
+
 create or replace function public.list_recovery_access_options()
 returns table (
   program_id uuid,
@@ -26,23 +29,31 @@ as $$
     rp.program_type,
     rp.official_program_confirmation,
     rp.accepting_access_requests,
-    rar.status,
+    latest_request.status,
     exists (
-      select 1 from public.recovery_memberships rm
+      select 1
+      from public.recovery_memberships rm
       where rm.program_id = rp.id
         and rm.profile_id = auth.uid()
         and rm.ended_at is null
     )
   from public.recovery_programs rp
-  left join public.recovery_access_requests rar
-    on rar.program_id = rp.id and rar.profile_id = auth.uid()
+  left join lateral (
+    select rmr.status
+    from public.recovery_membership_requests rmr
+    where rmr.program_id = rp.id
+      and rmr.profile_id = auth.uid()
+    order by rmr.created_at desc
+    limit 1
+  ) latest_request on true
   where public.is_active_member(auth.uid())
     and rp.status = 'active'
     and (
       rp.accepting_access_requests
-      or rar.profile_id = auth.uid()
+      or latest_request.status is not null
       or exists (
-        select 1 from public.recovery_memberships rm
+        select 1
+        from public.recovery_memberships rm
         where rm.program_id = rp.id
           and rm.profile_id = auth.uid()
           and rm.ended_at is null
@@ -55,6 +66,6 @@ revoke all on function public.list_recovery_access_options() from public;
 grant execute on function public.list_recovery_access_options() to authenticated;
 
 comment on function public.list_recovery_access_options() is
-  'Returns only the minimal program information needed for an active church member to request private recovery-ministry access. It never returns participant rosters, exact private locations, posts, progress, or attendance.';
+  'Returns only the minimal public program description and the caller own request/membership state. It never exposes rosters, exact locations, posts, progress, or attendance.';
 
 commit;

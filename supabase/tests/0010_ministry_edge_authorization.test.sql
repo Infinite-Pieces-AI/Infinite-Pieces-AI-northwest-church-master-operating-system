@@ -7,8 +7,8 @@ select is(
     select count(*)::integer
     from pg_catalog.pg_policies
     where schemaname = 'public'
-      and tablename = 'public_recovery_inquiries'
-      and policyname = 'public_recovery_inquiries_minister_read'
+      and tablename = 'recovery_interest_requests'
+      and policyname = 'recovery_interest_requests_minister_read'
   ),
   1,
   'Recovery inquiries have a minister-only read policy'
@@ -18,8 +18,8 @@ select is(
     select count(*)::integer
     from pg_catalog.pg_policies
     where schemaname = 'public'
-      and tablename = 'public_recovery_inquiries'
-      and policyname = 'public_recovery_inquiries_minister_update'
+      and tablename = 'recovery_interest_requests'
+      and policyname = 'recovery_interest_requests_minister_update'
   ),
   1,
   'Recovery inquiries have a minister-only update policy'
@@ -72,12 +72,12 @@ insert into public.recovery_memberships (
   'participant', 'first_name', now(), now()
 );
 
-insert into public.public_recovery_inquiries (
-  first_name, email, preferred_contact, requested_next_step,
-  source_path, communication_consent, consented_at, status
+insert into public.recovery_interest_requests (
+  first_name, contact_method, email, interest_type,
+  source_path, consent_to_contact, status
 ) values (
-  'Voluntary Visitor', 'visitor@example.invalid', 'email', 'talk_to_leader',
-  '/recovery-support-lowell', true, now(), 'new'
+  'Voluntary Visitor', 'email', 'visitor@example.invalid', 'church_peer_support',
+  '/recovery-support-lowell', true, 'new'
 );
 
 set local role authenticated;
@@ -115,7 +115,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000472', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000472","role":"authenticated","aal":"aal2"}', true);
 select is(
-  (select count(*)::integer from public.public_recovery_inquiries),
+  (select count(*)::integer from public.recovery_interest_requests),
   0,
   'A content editor cannot read voluntary recovery inquiries'
 );
@@ -125,7 +125,7 @@ set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000473', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000473","role":"authenticated","aal":"aal2"}', true);
 select is(
-  (select count(*)::integer from public.public_recovery_inquiries),
+  (select count(*)::integer from public.recovery_interest_requests),
   1,
   'An MFA-verified minister can read the voluntary recovery inquiry queue'
 );

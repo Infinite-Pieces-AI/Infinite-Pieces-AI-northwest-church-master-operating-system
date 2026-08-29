@@ -1,10 +1,5 @@
 begin;
 
--- -----------------------------------------------------------------------------
--- Gift post authorization must hold on UPDATE as well as INSERT. Ordinary
--- members cannot convert a personal offer into an official church need or move
--- a post into a group/ministry they do not belong to through a direct client.
--- -----------------------------------------------------------------------------
 create or replace function public.enforce_gift_post_moderation()
 returns trigger
 language plpgsql
@@ -34,20 +29,13 @@ begin
     end if;
   end if;
 
-  sensitive_text := lower(
-    concat_ws(
-      ' ',
-      new.title,
-      new.description,
-      new.price_note,
-      array_to_string(new.skill_tags, ' ')
-    )
-  );
-
-  if sensitive_text ~ '(child ?care|babysit|transport|ride|home access|medical|therapy|counsel|electric|plumb|roof|legal|financial|cash|venmo|cashapp|paypal)' then
-    if new.risk_level = 'standard' then new.risk_level := 'review'; end if;
-  end if;
-  if new.exchange_type = 'paid' or new.post_type = 'item_share' then
+  sensitive_text := lower(concat_ws(
+    ' ', new.title, new.description, new.price_note,
+    array_to_string(new.skill_tags, ' ')
+  ));
+  if sensitive_text ~ '(child ?care|babysit|transport|ride|home access|medical|therapy|counsel|electric|plumb|roof|legal|financial|cash|venmo|cashapp|paypal)'
+    or new.exchange_type = 'paid'
+    or new.post_type = 'item_share' then
     if new.risk_level = 'standard' then new.risk_level := 'review'; end if;
   end if;
 
@@ -72,10 +60,11 @@ begin
 end;
 $$;
 
--- A current participant does not need or receive another pending access request.
-create or replace function public.request_recovery_access(
+create or replace function public.request_recovery_membership(
   p_program_id uuid,
-  p_message text default null
+  p_requested_role text,
+  p_display_mode text,
+  p_reason text
 )
 returns uuid
 language plpgsql
@@ -84,82 +73,71 @@ set search_path = public, auth
 set row_security = off
 as $$
 declare
-  request_id uuid;
+  new_id uuid;
 begin
   if not public.is_active_member(auth.uid()) then
     raise exception 'Active church membership is required';
   end if;
   if exists (
-    select 1
-    from public.recovery_memberships rm
+    select 1 from public.recovery_memberships rm
     where rm.program_id = p_program_id
       and rm.profile_id = auth.uid()
       and rm.ended_at is null
   ) then
-    raise exception 'You already have active access to this recovery program';
+    raise exception 'You already have active access to this recovery ministry';
+  end if;
+  if p_requested_role not in ('participant','peer_support') then
+    raise exception 'Unsupported requested role';
+  end if;
+  if p_display_mode not in ('first_name','initials','private') then
+    raise exception 'Unsupported display mode';
   end if;
   if not exists (
-    select 1
-    from public.recovery_programs rp
+    select 1 from public.recovery_programs rp
     where rp.id = p_program_id
       and rp.status = 'active'
       and rp.accepting_access_requests
   ) then
-    raise exception 'Recovery program is not accepting access requests';
+    raise exception 'Recovery ministry is not accepting access requests';
   end if;
 
-  insert into public.recovery_access_requests (
-    program_id,
-    profile_id,
-    request_message,
-    privacy_agreement_accepted_at,
-    status,
-    reviewed_by,
-    reviewed_at,
-    decision_note
-  ) values (
-    p_program_id,
-    auth.uid(),
-    left(nullif(trim(p_message), ''), 1500),
-    timezone('utc', now()),
-    'pending',
-    null,
-    null,
-    null
-  )
-  on conflict (program_id, profile_id) do update set
-    request_message = excluded.request_message,
-    privacy_agreement_accepted_at = excluded.privacy_agreement_accepted_at,
-    status = 'pending',
-    reviewed_by = null,
-    reviewed_at = null,
-    decision_note = null,
-    updated_at = timezone('utc', now())
-  returning id into request_id;
+  update public.recovery_membership_requests
+  set status = 'expired', updated_at = timezone('utc', now())
+  where program_id = p_program_id
+    and profile_id = auth.uid()
+    and status = 'pending';
 
-  return request_id;
+  insert into public.recovery_membership_requests (
+    program_id, profile_id, requested_role, display_mode,
+    privacy_acknowledged_at, reason, status
+  ) values (
+    p_program_id, auth.uid(), p_requested_role, p_display_mode,
+    timezone('utc', now()), left(nullif(trim(p_reason), ''), 2000), 'pending'
+  ) returning id into new_id;
+  return new_id;
 end;
 $$;
 
--- Voluntary recovery inquiries can contain sensitive free text. Keep them inside
--- the narrow minister/super-administrator boundary even though public and
--- aggregate recovery topics may be researched by approved content operators.
-drop policy if exists public_recovery_inquiries_outreach_read
-  on public.public_recovery_inquiries;
-drop policy if exists public_recovery_inquiries_outreach_update
-  on public.public_recovery_inquiries;
+drop policy if exists recovery_interest_requests_outreach_read
+  on public.recovery_interest_requests;
+drop policy if exists recovery_interest_requests_outreach_update
+  on public.recovery_interest_requests;
+drop policy if exists recovery_interest_requests_minister_read
+  on public.recovery_interest_requests;
+drop policy if exists recovery_interest_requests_minister_update
+  on public.recovery_interest_requests;
 
-create policy public_recovery_inquiries_minister_read
-  on public.public_recovery_inquiries for select to authenticated
-  using (public.is_privileged_actor(array['minister','super_admin']));
-create policy public_recovery_inquiries_minister_update
-  on public.public_recovery_inquiries for update to authenticated
-  using (public.is_privileged_actor(array['minister','super_admin']))
-  with check (public.is_privileged_actor(array['minister','super_admin']));
+create policy recovery_interest_requests_minister_read
+  on public.recovery_interest_requests for select to authenticated
+  using (public.has_outreach_mfa_role(array['minister','super_admin']));
+create policy recovery_interest_requests_minister_update
+  on public.recovery_interest_requests for update to authenticated
+  using (public.has_outreach_mfa_role(array['minister','super_admin']))
+  with check (public.has_outreach_mfa_role(array['minister','super_admin']));
 
 comment on function public.enforce_gift_post_moderation() is
-  'Enforces gift-post role, group/ministry membership, moderation, and elevated-risk rules on both insert and update.';
-comment on table public.public_recovery_inquiries is
+  'Enforces gift-post role, scope, moderation, and elevated-risk rules on insert and update.';
+comment on table public.recovery_interest_requests is
   'Voluntary and potentially sensitive recovery next-step requests. Read/update access is limited to MFA-verified ministers and super administrators.';
 
 commit;

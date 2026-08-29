@@ -84,7 +84,7 @@ begin
 
   select pr.allow_encouragement, pr.allow_prayed_events
   into allow_encouragement, allow_prayed
-  from public.prayer_requests pr
+  from public.member_prayer_requests pr
   where pr.id = target_request_id;
 
   if not found then

@@ -24,13 +24,13 @@ const partnerStatuses = new Set([
   "do_not_contact",
 ]);
 const sourceKinds = new Set([
-  "aggregate_search",
+  "search_console",
   "public_forum",
   "public_web",
   "public_rss",
-  "community_partner",
+  "manual_research",
 ]);
-const inquiryStatuses = new Set(["new", "assigned", "contacted", "scheduled", "closed", "opted_out"]);
+const inquiryStatuses = new Set(["new", "assigned", "contacted", "conversation", "closed", "opted_out"]);
 
 function dynamicClient(client: Awaited<ReturnType<typeof createClient>>): SupabaseClient {
   return client as unknown as SupabaseClient;
@@ -56,12 +56,12 @@ async function loadPayload(client: SupabaseClient) {
       .limit(250),
     client
       .from("recovery_public_topics")
-      .select("id,source_kind,topic,locality,public_url,aggregate_impressions,aggregate_clicks,opportunity_score,sensitivity_score,recommended_action,status")
-      .order("opportunity_score", { ascending: false })
+      .select("id,source_kind,topic,locality,public_url,aggregate_impressions,aggregate_clicks,priority_score,sensitivity_risk,recommended_action,status")
+      .order("priority_score", { ascending: false })
       .limit(500),
     client
-      .from("public_recovery_inquiries")
-      .select("id,first_name,preferred_contact,requested_next_step,source_path,status,assigned_to,created_at")
+      .from("recovery_interest_requests")
+      .select("id,first_name,contact_method,interest_type,source_path,status,assigned_to,created_at")
       .order("created_at", { ascending: false })
       .limit(250),
   ]);
@@ -107,8 +107,8 @@ async function loadPayload(client: SupabaseClient) {
     impressions:
       typeof topic.aggregate_impressions === "number" ? topic.aggregate_impressions : undefined,
     clicks: typeof topic.aggregate_clicks === "number" ? topic.aggregate_clicks : undefined,
-    opportunityScore: Number(topic.opportunity_score ?? 0),
-    sensitivityScore: Number(topic.sensitivity_score ?? 0),
+    opportunityScore: Number(topic.priority_score ?? 0),
+    sensitivityScore: Number(topic.sensitivity_risk ?? 0),
     recommendedAction:
       typeof topic.recommended_action === "string" ? topic.recommended_action : undefined,
     status: String(topic.status),
@@ -116,8 +116,8 @@ async function loadPayload(client: SupabaseClient) {
   const inquiryRows = inquiries.map((inquiry) => ({
     id: String(inquiry.id),
     firstName: String(inquiry.first_name),
-    preferredContact: String(inquiry.preferred_contact),
-    requestedNextStep: String(inquiry.requested_next_step),
+    preferredContact: String(inquiry.contact_method),
+    requestedNextStep: String(inquiry.interest_type),
     sourcePath: String(inquiry.source_path),
     status: String(inquiry.status),
     assignedTo:
@@ -206,7 +206,7 @@ export async function POST(request: Request) {
                   : status === "do_not_contact"
                     ? "do_not_contact"
                     : "research_note";
-      const { error: actionError } = await client.from("recovery_partner_actions").insert({
+      const { error: actionError } = await client.from("recovery_outreach_partner_actions").insert({
         partner_id: partnerId,
         action_type: actionType,
         note: "Status updated through Recovery Outreach.",
@@ -227,8 +227,8 @@ export async function POST(request: Request) {
           typeof row.impressions === "number" ? Math.max(0, Math.round(row.impressions)) : null,
         aggregate_clicks:
           typeof row.clicks === "number" ? Math.max(0, Math.round(row.clicks)) : null,
-        opportunity_score: integer(row.opportunityScore, 0, 100),
-        sensitivity_score: integer(row.sensitivityScore, 0, 100),
+        priority_score: integer(row.opportunityScore, 0, 100),
+        sensitivity_risk: integer(row.sensitivityScore, 0, 100),
         recommended_action: text(row.recommendedAction, 2000),
         status: "new",
       });
@@ -239,7 +239,7 @@ export async function POST(request: Request) {
       const update: Row = { status };
       if (status === "assigned") update.assigned_to = viewer.id;
       const { error } = await client
-        .from("public_recovery_inquiries")
+        .from("recovery_interest_requests")
         .update(update)
         .eq("id", text(row.inquiryId, 80, true));
       if (error) throw error;
