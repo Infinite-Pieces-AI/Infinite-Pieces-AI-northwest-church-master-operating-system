@@ -1,0 +1,62 @@
+name: Temporary Apply Recovery Outreach Hook Fix
+
+on:
+  push:
+    branches:
+      - feature/gifts-prayer-recovery-ministries
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-apply-recovery-outreach-hook-fix
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out ministry branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/gifts-prayer-recovery-ministries
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 10.14.0
+
+      - name: Install Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Rewrite Recovery Outreach hooks
+        run: node scripts/fix-recovery-outreach-hooks.mjs
+
+      - name: Format and verify Outreach package
+        run: |
+          pnpm exec prettier --write apps/outreach-command/components/recovery-outreach-workspace.tsx apps/outreach-command/lib/recovery-intelligence.ts
+          pnpm --filter @church/outreach-command lint
+          pnpm --filter @church/outreach-command typecheck
+
+      - name: Remove temporary repair files
+        run: |
+          rm scripts/fix-recovery-outreach-hooks.mjs
+          rm .github/workflows/temporary-apply-recovery-outreach-hook-fix.yml
+
+      - name: Commit repaired implementation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/outreach-command/components/recovery-outreach-workspace.tsx apps/outreach-command/lib/recovery-intelligence.ts scripts/fix-recovery-outreach-hooks.mjs .github/workflows/temporary-apply-recovery-outreach-hook-fix.yml
+          git commit -m "fix: stabilize Recovery Outreach state and query types"
+          git push origin HEAD:feature/gifts-prayer-recovery-ministries
