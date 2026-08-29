@@ -26,7 +26,10 @@ jobs:
         with:
           node-version-file: .nvmrc
       - name: Normalize ministry release candidate
-        run: node scripts/normalize-ministry-release.mjs
+        shell: bash
+        run: |
+          node -e "const fs=require('node:fs');const p='scripts/normalize-ministry-release.mjs';const s=fs.readFileSync(p,'utf8').replaceAll('0039_recovery_outreach_partner_actions.sql','0041_recovery_outreach_partner_actions.sql');fs.writeFileSync(p,s);"
+          node scripts/normalize-ministry-release.mjs
       - name: Commit normalized ministry release
         shell: bash
         run: |
