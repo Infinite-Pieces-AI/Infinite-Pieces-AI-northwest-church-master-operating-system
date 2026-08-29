@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface Partner {
   id: string;
   organizationName: string;
   organizationType: string;
   publicUrl: string;
-  publicContact?: string;
+  publicContact?: string | undefined;
   locality: string;
   partnershipStatus: string;
-  notes?: string;
-  verifiedPublicSourceAt?: string;
+  notes?: string | undefined;
+  verifiedPublicSourceAt?: string | undefined;
 }
 
 interface PublicTopic {
@@ -19,12 +19,12 @@ interface PublicTopic {
   sourceKind: string;
   topic: string;
   locality: string;
-  publicUrl?: string;
-  impressions?: number;
-  clicks?: number;
+  publicUrl?: string | undefined;
+  impressions?: number | undefined;
+  clicks?: number | undefined;
   opportunityScore: number;
   sensitivityScore: number;
-  recommendedAction?: string;
+  recommendedAction?: string | undefined;
   status: string;
 }
 
@@ -35,7 +35,7 @@ interface Inquiry {
   requestedNextStep: string;
   sourcePath: string;
   status: string;
-  assignedTo?: string;
+  assignedTo?: string | undefined;
   createdAt: string;
 }
 
@@ -154,28 +154,7 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
     previewPayload.inquiries[0]?.id ?? null,
   );
 
-  useEffect(() => {
-    if (mode === "showcase") {
-      const stored = window.localStorage.getItem(storageKey);
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored) as RecoveryOutreachPayload;
-          if (Array.isArray(parsed.partners) && Array.isArray(parsed.topics)) setPayload(parsed);
-        } catch {
-          window.localStorage.removeItem(storageKey);
-        }
-      }
-      return;
-    }
-    void refreshLive();
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "showcase") return;
-    window.localStorage.setItem(storageKey, JSON.stringify(payload));
-  }, [mode, payload]);
-
-  async function refreshLive() {
+  const refreshLive = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/recovery-outreach", { cache: "no-store" });
@@ -188,7 +167,40 @@ export function RecoveryOutreachWorkspace({ mode }: { mode: "showcase" | "live" 
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      if (mode === "showcase") {
+        const stored = window.localStorage.getItem(storageKey);
+        if (!stored) return;
+
+        try {
+          const parsed = JSON.parse(stored) as RecoveryOutreachPayload;
+          if (
+            Array.isArray(parsed.partners) &&
+            Array.isArray(parsed.topics) &&
+            Array.isArray(parsed.inquiries)
+          ) {
+            setPayload(parsed);
+            setSelectedInquiryId(parsed.inquiries[0]?.id ?? null);
+          }
+        } catch {
+          window.localStorage.removeItem(storageKey);
+        }
+        return;
+      }
+
+      void refreshLive();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [mode, refreshLive]);
+
+  useEffect(() => {
+    if (mode !== "showcase") return;
+    window.localStorage.setItem(storageKey, JSON.stringify(payload));
+  }, [mode, payload]);
 
   async function sendLive(action: string, values: Record<string, unknown>) {
     const response = await fetch("/api/recovery-outreach", {
