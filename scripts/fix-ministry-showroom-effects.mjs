@@ -6,6 +6,25 @@ const targets = [
     path: "apps/church-hub/components/family-showcase.tsx",
     removeReactImports: ["useMemo"],
     effectDeps: "",
+    sourceReplacements: [
+      [
+        "return String(100000 + (values[0] % 900000));",
+        "return String(100000 + ((values[0] ?? 0) % 900000));",
+      ],
+      [
+        "const [selectedService, setSelectedService] = useState(services[0].id);",
+        'const [selectedService, setSelectedService] = useState<(typeof services)[number]["id"]>(\n    services[0]!.id,\n  );',
+      ],
+      [
+        "const [selectedConsentChild, setSelectedConsentChild] = useState(initialState.children[0].id);",
+        "const [selectedConsentChild, setSelectedConsentChild] = useState<string>(\n    initialState.children[0]!.id,\n  );",
+      ],
+      ["?? services[0];", "?? services[0]!;"],
+      [
+        "setSelectedConsentChild(initialState.children[0].id);",
+        "setSelectedConsentChild(initialState.children[0]!.id);",
+      ],
+    ],
   },
   {
     path: "apps/church-hub/components/gift-moderation-console.tsx",
@@ -55,7 +74,7 @@ const targets = [
     loaderDeps: "",
     effectDeps: "canLead, mode, previewRole, refreshLive",
     removeLines: [
-      "  const pendingOwnRequest = membershipRequests.find((request) => request.status === \"pending\");\n",
+      '  const pendingOwnRequest = membershipRequests.find((request) => request.status === "pending");\n',
     ],
   },
   {
@@ -78,10 +97,42 @@ const targets = [
     ],
     componentReplacement: [
       "  function guide() {\n    const question = guideQuestion.toLowerCase();",
-      "  function guide() {\n    const question = guideQuestion.toLowerCase();\n    if (canLead && /approve|review|admin|publish/.test(question)) {\n      setNotice(\"Leader review and publishing controls are available in Ministry Admin → Service.\");\n      return;\n    }",
+      '  function guide() {\n    const question = guideQuestion.toLowerCase();\n    if (canLead && /approve|review|admin|publish/.test(question)) {\n      setNotice("Leader review and publishing controls are available in Ministry Admin → Service.");\n      return;\n    }',
     ],
   },
 ];
+
+const requiredTextRoutes = [
+  "apps/church-hub/app/api/admin/gifts/route.ts",
+  "apps/church-hub/app/api/admin/prayer/route.ts",
+  "apps/church-hub/app/api/admin/recovery/route.ts",
+  "apps/church-hub/app/api/admin/service/route.ts",
+  "apps/church-hub/app/api/gifts/route.ts",
+  "apps/church-hub/app/api/prayer-well-complete/route.ts",
+  "apps/church-hub/app/api/prayer-well/route.ts",
+  "apps/church-hub/app/api/recovery/route.ts",
+  "apps/church-hub/app/api/service/route.ts",
+];
+
+function widenOptionalProperties(source) {
+  return source.replace(
+    /(\b[A-Za-z_$][\w$]*\?)\s*:\s*([^;\n]+);/g,
+    (match, property, valueType) =>
+      /\bundefined\b/.test(valueType)
+        ? match
+        : `${property}: ${valueType.trim()} | undefined;`,
+  );
+}
+
+function applySourceReplacements(source, replacements, path) {
+  for (const [before, after] of replacements ?? []) {
+    if (!source.includes(before)) {
+      throw new Error(`${path}: source replacement anchor not found: ${before}`);
+    }
+    source = source.replace(before, after);
+  }
+  return source;
+}
 
 function updateReactImport(source, addUseCallback, removals = []) {
   const pattern = /import \{([^}]+)\} from "react";/;
@@ -129,6 +180,20 @@ function findLoader(sourceFile, name) {
   return result;
 }
 
+function findFunction(sourceFile, name) {
+  let result;
+  const visit = (node) => {
+    if (result) return;
+    if (ts.isFunctionDeclaration(node) && node.name?.text === name) {
+      result = node;
+      return;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return result;
+}
+
 function dedent(text) {
   const lines = text.replace(/^\n/, "").replace(/\s+$/, "").split("\n");
   const indents = lines
@@ -148,6 +213,8 @@ function indent(text, spaces) {
 
 function transformTarget(target) {
   let source = readFileSync(target.path, "utf8");
+  source = widenOptionalProperties(source);
+  source = applySourceReplacements(source, target.sourceReplacements, target.path);
   for (const line of target.removeLines ?? []) source = source.replace(line, "");
   if (target.componentReplacement) {
     const [before, after] = target.componentReplacement;
@@ -202,9 +269,7 @@ function transformTarget(target) {
     loaderEnd = loader.getEnd();
   }
 
-  const edits = [
-    { start: effect.getStart(sourceFile), end: effect.getEnd(), text: replacement },
-  ];
+  const edits = [{ start: effect.getStart(sourceFile), end: effect.getEnd(), text: replacement }];
   if (loaderStart != null && loaderEnd != null) {
     edits.push({ start: loaderStart, end: loaderEnd, text: "" });
   }
@@ -218,7 +283,62 @@ function transformTarget(target) {
   console.log(`Updated ${target.path}`);
 }
 
+function upgradeRequiredTextRoute(path) {
+  let source = readFileSync(path, "utf8");
+  let sourceFile = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const edits = [];
+  const visit = (node) => {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === "text" &&
+      node.arguments.length >= 3 &&
+      node.arguments[2].kind === ts.SyntaxKind.TrueKeyword
+    ) {
+      edits.push({
+        start: node.getStart(sourceFile),
+        end: node.getEnd(),
+        text: `requiredText(${node.arguments[0].getText(sourceFile)}, ${node.arguments[1].getText(sourceFile)})`,
+      });
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  edits.sort((a, b) => b.start - a.start);
+  for (const edit of edits) source = source.slice(0, edit.start) + edit.text + source.slice(edit.end);
+
+  if (!source.includes("function requiredText(")) {
+    sourceFile = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    const textFunction = findFunction(sourceFile, "text");
+    if (!textFunction) throw new Error(`${path}: text helper not found`);
+    const helper = `\n\nfunction requiredText(value: unknown, maximum: number): string {\n  const normalized = text(value, maximum, true);\n  if (!normalized) throw new Error("Complete the required information.");\n  return normalized;\n}`;
+    source = `${source.slice(0, textFunction.getEnd())}${helper}${source.slice(textFunction.getEnd())}`;
+  }
+
+  writeFileSync(path, source, "utf8");
+  console.log(`Hardened required text handling in ${path}`);
+}
+
 for (const target of targets) transformTarget(target);
+for (const path of requiredTextRoutes) upgradeRequiredTextRoute(path);
+
+const giftsPagePath = "apps/church-hub/app/(protected)/gifts/page.tsx";
+let giftsPage = readFileSync(giftsPagePath, "utf8");
+giftsPage = giftsPage.replace(
+  "        assessmentUrl={process.env.NEXT_PUBLIC_SPIRITUAL_GIFTS_ASSESSMENT_URL}\n",
+  "        {...(process.env.NEXT_PUBLIC_SPIRITUAL_GIFTS_ASSESSMENT_URL\n          ? { assessmentUrl: process.env.NEXT_PUBLIC_SPIRITUAL_GIFTS_ASSESSMENT_URL }\n          : {})}\n",
+);
+writeFileSync(giftsPagePath, giftsPage, "utf8");
+console.log(`Updated ${giftsPagePath}`);
+
+const navigationPath = "apps/church-hub/lib/ministry-navigation.ts";
+let navigation = readFileSync(navigationPath, "utf8");
+navigation = navigation.replace(
+  "    return [ministryRouteCatalog[0], ministryRouteCatalog[2], ministryRouteCatalog[1]];",
+  "    return [ministryRouteCatalog[0]!, ministryRouteCatalog[2]!, ministryRouteCatalog[1]!];",
+);
+writeFileSync(navigationPath, navigation, "utf8");
+console.log(`Updated ${navigationPath}`);
 
 const migrationPath = "supabase/migrations/0039_service_hub_completion.sql";
 let migration = readFileSync(migrationPath, "utf8");
