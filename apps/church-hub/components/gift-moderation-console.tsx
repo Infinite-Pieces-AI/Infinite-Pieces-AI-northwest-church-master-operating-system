@@ -229,7 +229,9 @@ export function GiftModerationConsole({ mode }: { mode: "showcase" | "live" }) {
               </div>
             </article>
           ))}
-          {!visiblePosts.length ? <p className="module-empty">No gift posts are in this queue.</p> : null}
+          {!visiblePosts.length ? (
+            <p className="module-empty">No gift posts are in this queue.</p>
+          ) : null}
         </div>
       ) : null}
       <p className="module-boundary">

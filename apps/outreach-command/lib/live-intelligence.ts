@@ -9,10 +9,7 @@ type DynamicQueryResult = {
 };
 
 interface DynamicQuery extends PromiseLike<DynamicQueryResult> {
-  select(
-    columns?: string,
-    options?: { count?: "exact"; head?: boolean },
-  ): DynamicQuery;
+  select(columns?: string, options?: { count?: "exact"; head?: boolean }): DynamicQuery;
   order(column: string, options: { ascending: boolean }): DynamicQuery;
   limit(value: number): DynamicQuery;
   in(column: string, values: readonly unknown[]): DynamicQuery;

@@ -40,7 +40,8 @@ const previewRequests: RestrictedPrayer[] = [
     category: "safety",
     workflowStatus: "safeguarding_followup",
     assignedTo: "Safety Leader",
-    leaderNote: "Use the church's approved safeguarding process; do not copy details into ordinary channels.",
+    leaderNote:
+      "Use the church's approved safeguarding process; do not copy details into ordinary channels.",
     createdAt: new Date(Date.now() - 5 * 60 * 60_000).toISOString(),
   },
   {
@@ -113,10 +114,12 @@ export function PrayerLeaderConsole({ mode }: { mode: "showcase" | "live" }) {
 
   const visibleRequests = useMemo(() => {
     if (mode !== "showcase") return requests;
-    if (filter === "pastoral") return requests.filter((request) => request.sensitivity === "pastoral");
+    if (filter === "pastoral")
+      return requests.filter((request) => request.sensitivity === "pastoral");
     if (filter === "safeguarding")
       return requests.filter((request) => request.sensitivity === "safeguarding");
-    if (filter === "closed") return requests.filter((request) => request.workflowStatus === "closed");
+    if (filter === "closed")
+      return requests.filter((request) => request.workflowStatus === "closed");
     return requests.filter((request) => request.workflowStatus !== "closed");
   }, [filter, mode, requests]);
 
