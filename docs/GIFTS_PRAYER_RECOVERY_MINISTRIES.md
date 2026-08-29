@@ -160,11 +160,15 @@ Every public reply, organization contact, partnership, content claim, campaign, 
 | Program naming and curriculum  | Central church and ministry leadership           |
 | Security and incident response | Technical/security owner                         |
 
+## Validation state
+
+The canonical ministry release uses migrations `0027` through `0041`. Formatting is normalized before the standard repository CI, database policy suite, browser tests, and CodeQL checks are treated as authoritative. A passing software test suite does not replace church approval of prayer routing, recovery leadership, curriculum rights, crisis escalation, or moderation policy.
+
 ## Release gates
 
 Before real data is enabled:
 
-1. Migrations 0027–0031 apply successfully.
+1. Migrations 0027–0041 apply successfully.
 2. RLS tests prove members cannot self-enroll or see another member’s recovery data.
 3. Prayer anonymity and audience policies pass authorization tests.
 4. Restricted prayer routing is rehearsed against the written safeguarding protocol.
