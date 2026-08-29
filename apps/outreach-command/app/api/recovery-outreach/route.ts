@@ -43,10 +43,15 @@ function dynamicClient(client: Awaited<ReturnType<typeof createClient>>): Supaba
   return client as unknown as SupabaseClient;
 }
 
-function text(value: unknown, maximum: number, required = false): string | null {
+function text(value: unknown, maximum: number): string | null {
   const normalized = typeof value === "string" ? value.trim().slice(0, maximum) : "";
-  if (required && !normalized) throw new Error("Complete the required information.");
   return normalized || null;
+}
+
+function requiredText(value: unknown, maximum: number): string {
+  const normalized = text(value, maximum);
+  if (!normalized) throw new Error("Complete the required information.");
+  return normalized;
 }
 
 function integer(value: unknown, minimum: number, maximum: number): number {
@@ -185,21 +190,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid request." }, { status: 400 });
   }
   const row = body as Row;
-  const action = text(row.action, 80, true);
+  const action = requiredText(row.action, 80);
   const client = dynamicClient(await createClient());
 
   try {
     if (action === "add_partner") {
-      const organizationType = text(row.organizationType, 50, true);
+      const organizationType = requiredText(row.organizationType, 50);
       if (!partnerTypes.has(organizationType)) throw new Error("Unsupported organization type.");
-      const publicUrl = text(row.publicUrl, 2000, true);
-      if (!publicUrl?.startsWith("https://")) throw new Error("Use a verified public HTTPS URL.");
+      const publicUrl = requiredText(row.publicUrl, 2000);
+      if (!publicUrl.startsWith("https://")) throw new Error("Use a verified public HTTPS URL.");
       const { error } = await client.from("recovery_outreach_partners").insert({
-        organization_name: text(row.organizationName, 180, true),
+        organization_name: requiredText(row.organizationName, 180),
         organization_type: organizationType,
         public_url: publicUrl,
         public_contact: text(row.publicContact, 300),
-        locality: text(row.locality, 160, true),
+        locality: requiredText(row.locality, 160),
         partnership_status: "research",
         notes: text(row.notes, 2000),
         verified_public_source_at: new Date().toISOString(),
@@ -207,9 +212,9 @@ export async function POST(request: Request) {
       });
       if (error) throw error;
     } else if (action === "update_partner") {
-      const status = text(row.partnershipStatus, 50, true);
+      const status = requiredText(row.partnershipStatus, 50);
       if (!partnerStatuses.has(status)) throw new Error("Unsupported partnership status.");
-      const partnerId = text(row.partnerId, 80, true);
+      const partnerId = requiredText(row.partnerId, 80);
       const { error } = await client
         .from("recovery_outreach_partners")
         .update({ partnership_status: status })
@@ -237,15 +242,15 @@ export async function POST(request: Request) {
       });
       if (actionError) throw actionError;
     } else if (action === "add_topic") {
-      const sourceKind = text(row.sourceKind, 50, true);
+      const sourceKind = requiredText(row.sourceKind, 50);
       if (!sourceKinds.has(sourceKind)) throw new Error("Unsupported public source type.");
       const publicUrl = text(row.publicUrl, 2000);
       if (publicUrl && !publicUrl.startsWith("https://"))
         throw new Error("Public sources must use HTTPS.");
       const { error } = await client.from("recovery_public_topics").insert({
         source_kind: sourceKind,
-        topic: text(row.topic, 300, true),
-        locality: text(row.locality, 160, true),
+        topic: requiredText(row.topic, 300),
+        locality: requiredText(row.locality, 160),
         public_url: publicUrl,
         aggregate_impressions:
           typeof row.impressions === "number" ? Math.max(0, Math.round(row.impressions)) : null,
@@ -258,14 +263,15 @@ export async function POST(request: Request) {
       });
       if (error) throw error;
     } else if (action === "update_inquiry") {
-      const status = text(row.status, 40, true);
+      const status = requiredText(row.status, 40);
       if (!inquiryStatuses.has(status)) throw new Error("Unsupported inquiry status.");
       const update: Row = { status };
       if (status === "assigned") update.assigned_to = viewer.id;
+      const inquiryId = requiredText(row.inquiryId, 80);
       const { error } = await client
         .from("recovery_interest_requests")
         .update(update)
-        .eq("id", text(row.inquiryId, 80, true));
+        .eq("id", inquiryId);
       if (error) throw error;
     } else {
       return NextResponse.json({ message: "Unsupported action." }, { status: 400 });
