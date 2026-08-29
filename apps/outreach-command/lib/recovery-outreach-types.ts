@@ -1,31 +1,42 @@
 export type RecoveryInterestStatus =
-  "new" | "assigned" | "contacted" | "conversation" | "closed" | "opted_out" | "removed";
+  | "new"
+  | "assigned"
+  | "contacted"
+  | "conversation"
+  | "closed"
+  | "opted_out"
+  | "removed";
 
 export interface RecoveryInterestRecord {
   id: string;
   firstName: string;
   contactMethod: "email" | "phone";
-  email?: string;
-  phone?: string;
+  email?: string | undefined;
+  phone?: string | undefined;
   interestType:
     | "church_peer_support"
     | "online_conversation"
     | "family_support"
     | "treatment_resources"
     | "general_question";
-  message?: string;
+  message?: string | undefined;
   sourcePath: string;
-  sourceCampaign?: string;
+  sourceCampaign?: string | undefined;
   status: RecoveryInterestStatus;
-  assignedTo?: string;
-  assignedAt?: string;
-  contactedAt?: string;
-  closedAt?: string;
+  assignedTo?: string | undefined;
+  assignedAt?: string | undefined;
+  contactedAt?: string | undefined;
+  closedAt?: string | undefined;
   createdAt: string;
 }
 
 export type RecoveryTopicStatus =
-  "new" | "review" | "content_queued" | "partner_research" | "dismissed" | "expired";
+  | "new"
+  | "review"
+  | "content_queued"
+  | "partner_research"
+  | "dismissed"
+  | "expired";
 
 export interface RecoveryPublicTopic {
   id: string;
@@ -37,22 +48,22 @@ export interface RecoveryPublicTopic {
     | "public_social"
     | "manual_research";
   sourceLabel: string;
-  publicUrl?: string;
+  publicUrl?: string | undefined;
   topic: string;
-  publicExcerpt?: string;
+  publicExcerpt?: string | undefined;
   locality: string;
-  aggregateImpressions?: number;
-  aggregateClicks?: number;
-  averagePosition?: number;
+  aggregateImpressions?: number | undefined;
+  aggregateClicks?: number | undefined;
+  averagePosition?: number | undefined;
   churchSupportIntent: number;
   treatmentResourceIntent: number;
   localRelevance: number;
   contentOpportunity: number;
   sensitivityRisk: number;
   priorityScore: number;
-  recommendedAction?: string;
+  recommendedAction?: string | undefined;
   status: RecoveryTopicStatus;
-  observedAt?: string;
+  observedAt?: string | undefined;
   expiresAt: string;
   createdAt: string;
 }
@@ -78,11 +89,11 @@ export interface RecoveryPartner {
     | "church"
     | "other";
   publicUrl: string;
-  publicContact?: string;
+  publicContact?: string | undefined;
   locality: string;
   partnershipStatus: RecoveryPartnerStatus;
-  notes?: string;
-  verifiedPublicSourceAt?: string;
+  notes?: string | undefined;
+  verifiedPublicSourceAt?: string | undefined;
   createdAt: string;
 }
 
