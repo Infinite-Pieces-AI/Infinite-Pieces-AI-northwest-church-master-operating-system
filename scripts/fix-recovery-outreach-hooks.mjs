@@ -10,6 +10,20 @@ if (!source.includes(oldImport)) {
 }
 source = source.replace(oldImport, newImport);
 
+const optionalFieldReplacements = [
+  ["  publicContact?: string;", "  publicContact?: string | undefined;"],
+  ["  notes?: string;", "  notes?: string | undefined;"],
+  ["  verifiedPublicSourceAt?: string;", "  verifiedPublicSourceAt?: string | undefined;"],
+  ["  publicUrl?: string;", "  publicUrl?: string | undefined;"],
+  ["  impressions?: number;", "  impressions?: number | undefined;"],
+  ["  clicks?: number;", "  clicks?: number | undefined;"],
+  ["  recommendedAction?: string;", "  recommendedAction?: string | undefined;"],
+  ["  assignedTo?: string;", "  assignedTo?: string | undefined;"],
+];
+for (const [before, after] of optionalFieldReplacements) {
+  source = source.replace(before, after);
+}
+
 const refreshStart = source.indexOf("  async function refreshLive() {");
 const sendLiveStart = source.indexOf("\n\n  async function sendLive", refreshStart);
 if (refreshStart < 0 || sendLiveStart < 0) {
@@ -62,4 +76,6 @@ const safeModeEffect = `  useEffect(() => {
 source = `${source.slice(0, firstEffectStart)}${refreshCallback}\n\n${safeModeEffect}${source.slice(firstEffectEnd)}`;
 
 writeFileSync(path, source, "utf8");
-console.log("Recovery Outreach hooks were rewritten with stable callback and scheduled storage/live hydration.");
+console.log(
+  "Recovery Outreach hooks and exact optional fields were rewritten for strict React and TypeScript.",
+);
