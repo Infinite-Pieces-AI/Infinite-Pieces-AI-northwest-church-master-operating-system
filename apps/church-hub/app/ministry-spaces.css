@@ -1,0 +1,1254 @@
+/* Gifts of the Church, Prayer Well, and Recovery Ministry */
+
+.ministry-showcase,
+.space-stack {
+  display: grid;
+  gap: 20px;
+}
+
+.space-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 32px;
+  align-items: center;
+  min-height: 300px;
+  padding: 36px;
+  border-radius: 30px;
+  color: white;
+  box-shadow: 0 22px 60px rgba(7, 25, 43, 0.16);
+}
+
+.space-hero::after {
+  position: absolute;
+  right: -100px;
+  bottom: -160px;
+  width: 390px;
+  height: 390px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  content: "";
+}
+
+.space-hero--gifts {
+  background:
+    radial-gradient(circle at 80% 20%, rgba(239, 199, 94, 0.3), transparent 30%),
+    linear-gradient(135deg, #07192b 5%, #14486d 58%, #176da8 100%);
+}
+
+.space-hero--prayer {
+  background:
+    radial-gradient(circle at 83% 24%, rgba(219, 196, 255, 0.26), transparent 32%),
+    linear-gradient(135deg, #11132f, #34306c 58%, #5652a5);
+}
+
+.space-hero--recovery {
+  background:
+    radial-gradient(circle at 82% 20%, rgba(142, 231, 191, 0.24), transparent 32%),
+    linear-gradient(135deg, #09271f, #15553f 58%, #19734a);
+}
+
+.space-hero > div {
+  position: relative;
+  z-index: 1;
+}
+
+.space-eyebrow {
+  margin: 0 0 8px;
+  color: #f7e1a4;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.space-hero h2 {
+  margin: 0 0 12px;
+  font-family: Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  line-height: 0.98;
+}
+
+.space-hero p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.space-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.space-stat-ring,
+.prayer-well-visual,
+.recovery-next-meeting {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 210px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(16px);
+  text-align: center;
+}
+
+.space-stat-ring strong,
+.prayer-well-visual strong {
+  display: block;
+  font-family: Georgia, serif;
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.space-stat-ring span,
+.prayer-well-visual small,
+.recovery-next-meeting span,
+.recovery-next-meeting small {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.prayer-well-visual > span {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 10rem;
+}
+
+.recovery-next-meeting {
+  justify-items: start;
+  place-content: center stretch;
+  text-align: left;
+}
+
+.recovery-next-meeting strong {
+  display: block;
+  margin: 6px 0;
+  font-family: Georgia, serif;
+  font-size: 1.65rem;
+}
+
+.recovery-next-meeting b {
+  margin-top: 18px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #0b4733;
+  background: #c9f4de;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.space-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: white;
+  box-shadow: 0 8px 26px rgba(7, 25, 43, 0.05);
+}
+
+.space-tabs button {
+  min-height: 42px;
+  padding: 8px 15px;
+  border: 0;
+  border-radius: 11px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.space-tabs button:hover,
+.space-tabs button.active {
+  color: var(--blue);
+  background: var(--sky);
+}
+
+.space-tabs .space-tabs__reset {
+  margin-left: auto;
+  color: #7b5c10;
+  background: #fff7da;
+}
+
+.space-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 220px auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: white;
+}
+
+.space-toolbar input,
+.space-toolbar select,
+.space-form input,
+.space-form select,
+.space-form textarea,
+.inline-reply input,
+.inline-reply select,
+.inline-reply textarea,
+.recovery-guide input,
+.recovery-journal textarea,
+.opportunity-status-form select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #bfd0d9;
+  border-radius: 11px;
+  color: var(--ink);
+  background: #fbfdfe;
+}
+
+.space-form-card {
+  padding: 26px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 10px 34px rgba(7, 25, 43, 0.05);
+}
+
+.space-form-card > h2,
+.space-form-card .panel-heading h2 {
+  margin-top: 4px;
+}
+
+.space-form-card > p,
+.space-form-card .panel-heading + p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.space-icon-button,
+.space-text-button {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.space-icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--ink);
+  background: #eef4f7;
+  font-size: 1.4rem;
+}
+
+.space-text-button {
+  color: var(--blue);
+  font-weight: 850;
+}
+
+.space-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.space-form--compact {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+.space-form label,
+.inline-reply label,
+.recovery-journal label {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.space-form textarea,
+.inline-reply textarea,
+.recovery-journal textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.space-form__wide {
+  grid-column: 1 / -1;
+}
+
+.space-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.space-form__actions small {
+  max-width: 650px;
+  color: var(--muted);
+}
+
+.space-check {
+  display: flex !important;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px !important;
+}
+
+.space-check input {
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+}
+
+.space-two-column,
+.recovery-home-grid,
+.leader-console {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.opportunity-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+  padding: 23px;
+  border: 1px solid var(--border);
+  border-radius: 21px;
+  background: white;
+  box-shadow: 0 10px 32px rgba(7, 25, 43, 0.05);
+}
+
+.opportunity-card header,
+.prayer-production-heading,
+.recovery-post-list article header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.opportunity-card h2 {
+  margin: 7px 0 10px;
+  font-size: 1.25rem;
+}
+
+.opportunity-card > p {
+  color: var(--muted);
+}
+
+.opportunity-card__author {
+  margin-bottom: 0;
+  color: var(--blue) !important;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.space-badge,
+.space-status {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.space-badge {
+  color: #155d3d;
+  background: #dcf3e7;
+}
+
+.space-badge--church_need,
+.space-badge--member_need {
+  color: #7b4311;
+  background: #fff0d6;
+}
+
+.space-badge--item_for_sale,
+.space-badge--barter {
+  color: #473785;
+  background: #eeeaff;
+}
+
+.space-status {
+  color: #39515e;
+  background: #edf3f6;
+}
+
+.space-status--matched {
+  color: #6c4e00;
+  background: #fff0bd;
+}
+
+.space-status--fulfilled,
+.space-status--answered {
+  color: #155d3d;
+  background: #dcf3e7;
+}
+
+.opportunity-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 18px;
+  padding: 13px;
+  border-radius: 13px;
+  background: #f5f8fa;
+}
+
+.opportunity-card dl div {
+  display: grid;
+  grid-template-columns: 95px 1fr;
+  gap: 8px;
+}
+
+.opportunity-card dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.opportunity-card dd {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.space-thread {
+  display: grid;
+  gap: 9px;
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid #d6e2e8;
+  border-radius: 13px;
+  background: #f8fbfc;
+}
+
+.space-thread > div {
+  padding: 10px;
+  border-radius: 10px;
+  background: white;
+}
+
+.space-thread strong,
+.space-thread span,
+.space-thread small {
+  display: block;
+}
+
+.space-thread span {
+  margin: 4px 0;
+  color: #40545f;
+  font-size: 0.8rem;
+}
+
+.space-thread small {
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.inline-reply {
+  display: grid;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.inline-reply > div,
+.opportunity-card__actions,
+.opportunity-status-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.opportunity-status-form {
+  margin-top: 12px;
+}
+
+.opportunity-status-form select {
+  width: auto;
+  flex: 1;
+}
+
+.gift-skill-list {
+  display: grid;
+  gap: 9px;
+}
+
+.gift-skill-list article {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfdfe;
+}
+
+.gift-skill-list strong,
+.gift-skill-list span {
+  display: block;
+}
+
+.gift-skill-list span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.gift-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.gift-flags span {
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #155d3d;
+  background: #dcf3e7;
+  font-size: 0.62rem;
+  font-weight: 850;
+}
+
+.assessment-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.assessment-list label {
+  display: grid;
+  grid-template-columns: 150px 1fr 45px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  text-transform: capitalize;
+}
+
+.assessment-list input {
+  accent-color: var(--blue);
+}
+
+.assessment-results article,
+.curriculum-admin-list article {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.assessment-results article > span,
+.curriculum-admin-list article > span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--navy);
+  background: var(--gold2);
+  font-weight: 900;
+}
+
+.assessment-results article strong,
+.assessment-results article small,
+.curriculum-admin-list article strong,
+.curriculum-admin-list article small {
+  display: block;
+}
+
+.assessment-results article small,
+.curriculum-admin-list article small {
+  color: var(--muted);
+}
+
+.space-callout,
+.answered-testimony {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #d2e2e9;
+  border-radius: 15px;
+  background: #f5fafc;
+}
+
+.space-callout strong,
+.space-callout p,
+.answered-testimony strong,
+.answered-testimony span {
+  display: block;
+}
+
+.space-callout p,
+.answered-testimony span {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.prayer-safety-note,
+.recovery-safety-note {
+  display: grid;
+  gap: 4px;
+  padding: 15px 18px;
+  border: 1px solid #e8c9cf;
+  border-radius: 15px;
+  color: #692736;
+  background: #fff3f5;
+}
+
+.recovery-safety-note {
+  color: #315541;
+  border-color: #c5dfd0;
+  background: #effaf4;
+}
+
+.prayer-safety-note span,
+.recovery-safety-note span {
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.prayer-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.prayer-summary-grid article {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: white;
+}
+
+.prayer-summary-grid strong,
+.prayer-summary-grid span {
+  display: block;
+}
+
+.prayer-summary-grid strong {
+  font-family: Georgia, serif;
+  font-size: 2rem;
+}
+
+.prayer-summary-grid span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.prayer-list {
+  display: grid;
+  gap: 14px;
+}
+
+.prayer-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 8px 26px rgba(7, 25, 43, 0.04);
+}
+
+.prayer-card--answered {
+  border-color: #b5dcc7;
+}
+
+.prayer-card__header {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 46px 1fr 30px;
+  gap: 13px;
+  align-items: center;
+  padding: 18px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.prayer-card__header > span:nth-child(2) > * {
+  display: block;
+}
+
+.prayer-card__header small,
+.prayer-production-heading small {
+  color: var(--muted);
+}
+
+.prayer-card__header strong {
+  margin: 3px 0;
+  font-size: 1.05rem;
+}
+
+.prayer-card__header em {
+  color: #5b58a0;
+  font-size: 0.67rem;
+  font-style: normal;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.prayer-card__icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #49468f;
+  background: #eeedff;
+  font-weight: 900;
+}
+
+.prayer-card--answered .prayer-card__icon {
+  color: #155d3d;
+  background: #dcf3e7;
+}
+
+.prayer-card__body {
+  padding: 0 20px 20px 79px;
+  border-top: 1px solid #edf1f3;
+}
+
+.prayer-card__body--always {
+  padding: 20px;
+  border-top: 0;
+}
+
+.prayer-card__body > p {
+  color: #40545f;
+  line-height: 1.65;
+}
+
+.prayer-production-heading {
+  justify-content: flex-start;
+}
+
+.prayer-production-heading > div {
+  flex: 1;
+}
+
+.prayer-production-heading h2 {
+  margin: 4px 0;
+}
+
+.prayer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.prayed-button {
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid #c8c5ef;
+  border-radius: 12px;
+  color: #49468f;
+  background: #f4f3ff;
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.prayed-button.active {
+  color: white;
+  border-color: #5652a5;
+  background: #5652a5;
+}
+
+.prayer-owner-actions {
+  align-items: start;
+  margin-top: 14px;
+}
+
+.space-success {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  color: #155d3d !important;
+  background: #e7f8ef;
+  font-size: 0.78rem;
+}
+
+.recovery-guide {
+  padding: 18px;
+  border: 1px solid #c5dfd0;
+  border-radius: 18px;
+  background: white;
+}
+
+.recovery-guide > div:first-child {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.recovery-guide > div:first-child > span {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #0b4733;
+  background: #c9f4de;
+}
+
+.recovery-guide strong,
+.recovery-guide small {
+  display: block;
+}
+
+.recovery-guide small {
+  color: var(--muted);
+}
+
+.recovery-guide form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 9px;
+  margin-top: 13px;
+}
+
+.recovery-guide > p {
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 12px;
+  color: #315541;
+  background: #effaf4;
+}
+
+.recovery-home-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recovery-current-week {
+  grid-row: span 2;
+}
+
+.recovery-week-number {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin: 14px 0;
+  border-radius: 18px;
+  color: white;
+  background: #19734a;
+  font-family: Georgia, serif;
+  font-size: 2rem;
+}
+
+.scripture-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 14px 0;
+}
+
+.scripture-pills span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #155d3d;
+  background: #e2f5eb;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.recovery-progress {
+  overflow: hidden;
+  height: 10px;
+  margin: 14px 0;
+  border-radius: 999px;
+  background: #e4ece8;
+}
+
+.recovery-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #19734a;
+}
+
+.recovery-program-boundary {
+  border-color: #ddce95;
+  background: #fffaf0;
+}
+
+.curriculum-layout {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 18px;
+}
+
+.curriculum-week-list {
+  align-self: start;
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 7px;
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 19px;
+  background: white;
+}
+
+.curriculum-week-list h2 {
+  margin-top: 0;
+}
+
+.curriculum-week-list button {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.curriculum-week-list button:hover,
+.curriculum-week-list button.active {
+  border-color: #b7d7c6;
+  background: #effaf4;
+}
+
+.curriculum-week-list button > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #155d3d;
+  background: #dcf3e7;
+  font-weight: 900;
+}
+
+.curriculum-week-list strong,
+.curriculum-week-list small {
+  display: block;
+}
+
+.curriculum-week-list small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.curriculum-detail > h3 {
+  margin-top: 25px;
+}
+
+.curriculum-theme {
+  font-size: 1.04rem;
+  line-height: 1.7;
+}
+
+.curriculum-detail li {
+  margin: 10px 0;
+  line-height: 1.55;
+}
+
+.recovery-journal {
+  display: grid;
+  gap: 11px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.recovery-group-layout {
+  align-items: start;
+}
+
+.recovery-post-list {
+  display: grid;
+  gap: 12px;
+}
+
+.recovery-post-list article {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: white;
+}
+
+.recovery-post-list article header span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #155d3d;
+  background: #dcf3e7;
+  font-size: 0.65rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.recovery-post-list article p {
+  margin-bottom: 0;
+  color: #40545f;
+}
+
+.leader-checklist {
+  display: grid;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.leader-checklist label {
+  display: flex;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfdfe;
+}
+
+.leader-checklist input {
+  width: 18px;
+  height: 18px;
+  accent-color: #19734a;
+}
+
+.meeting-agenda {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.meeting-agenda li {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 10px;
+  padding: 11px;
+  border-radius: 11px;
+  background: #f4f8f6;
+}
+
+.meeting-agenda span {
+  color: var(--muted);
+}
+
+.leader-boundaries {
+  border-color: #e5c4cb;
+  background: #fff7f8;
+}
+
+.leader-boundaries li {
+  margin: 8px 0;
+}
+
+.attendance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attendance-actions button {
+  padding: 8px 12px;
+  border: 1px solid #bdd8c9;
+  border-radius: 11px;
+  color: #155d3d;
+  background: white;
+  cursor: pointer;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.attendance-actions button.active {
+  color: white;
+  background: #19734a;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  padding: 21px;
+  border: 1px solid #c9dfd3;
+  border-radius: 19px;
+  background: white;
+}
+
+.resource-card > span {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #155d3d;
+  background: #dcf3e7;
+  font-weight: 900;
+}
+
+.resource-card h2 {
+  margin: 17px 0 8px;
+  font-size: 1.15rem;
+}
+
+.resource-card p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.resource-card a,
+.resource-card button {
+  margin-top: auto;
+}
+
+.resource-card a {
+  color: #155d3d;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.resource-card--urgent {
+  color: #682739;
+  border-color: #e5bdc7;
+  background: #fff6f7;
+}
+
+.resource-card--urgent > span {
+  color: #8e233a;
+  background: #f8dbe1;
+}
+
+.recovery-production-hero {
+  min-height: 270px;
+}
+
+.curriculum-admin-list {
+  display: grid;
+}
+
+/* Give the enlarged ministry navigation room in the existing shell. */
+.hub-sidebar nav {
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.bottom-nav {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+@media (max-width: 1050px) {
+  .space-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .space-stat-ring,
+  .prayer-well-visual,
+  .recovery-next-meeting {
+    min-height: 150px;
+  }
+
+  .opportunity-grid,
+  .space-two-column,
+  .recovery-home-grid,
+  .leader-console,
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recovery-current-week {
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .space-hero {
+    padding: 26px;
+    border-radius: 22px;
+  }
+
+  .space-toolbar,
+  .space-form,
+  .recovery-guide form,
+  .curriculum-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .space-form__wide {
+    grid-column: auto;
+  }
+
+  .curriculum-week-list {
+    position: static;
+    max-height: none;
+  }
+
+  .prayer-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .prayer-card__body {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .space-hero h2 {
+    font-size: 2.4rem;
+  }
+
+  .space-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .space-tabs button {
+    flex: 0 0 auto;
+  }
+
+  .space-tabs .space-tabs__reset {
+    margin-left: 0;
+  }
+
+  .prayer-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assessment-list label {
+    grid-template-columns: 1fr;
+  }
+
+  .gift-skill-list article {
+    flex-direction: column;
+  }
+
+  .gift-flags {
+    justify-content: flex-start;
+  }
+}
