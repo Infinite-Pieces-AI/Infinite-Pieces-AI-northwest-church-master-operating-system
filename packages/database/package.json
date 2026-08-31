@@ -17,6 +17,6 @@
     "./generated": "./src/generated.types.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.112.2"
+    "@supabase/supabase-js": "2.112.4"
   }
 }

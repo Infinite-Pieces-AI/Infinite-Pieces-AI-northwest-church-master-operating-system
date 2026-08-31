@@ -17,7 +17,7 @@
     "@church/database": "workspace:*",
     "@church/ui": "workspace:*",
     "@church/validation": "workspace:*",
-    "@supabase/supabase-js": "2.112.2",
+    "@supabase/supabase-js": "2.112.4",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^2.0.0",
     "next": "16.3.2",
