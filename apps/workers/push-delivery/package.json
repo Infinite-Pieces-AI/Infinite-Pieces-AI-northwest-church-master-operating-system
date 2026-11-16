@@ -15,7 +15,7 @@
   "dependencies": {
     "@church/notifications": "workspace:*",
     "@church/worker-runtime": "workspace:*",
-    "web-push": "^3.6.7",
+    "web-push": "^4.0.0",
     "@church/pwa": "workspace:*"
   },
   "devDependencies": {
